@@ -56,9 +56,9 @@ const InteractiveCircle = ({
           transition: { duration: 0.08, ease: "easeOut" }
         }}
       >
-        <div className="flex flex-col items-center justify-center gap-2 p-4 text-center">
-          <Icon className={`w-6 h-6 md:w-8 md:h-8 ${colorClasses[circle.color]}`} />
-          <span className="text-[10px] md:text-sm font-semibold text-foreground/90 leading-tight">
+        <div className="flex flex-col items-center justify-center gap-1 md:gap-2 p-2 md:p-4 text-center">
+          <Icon className={`w-5 h-5 md:w-8 md:h-8 ${colorClasses[circle.color]}`} />
+          <span className="text-xs md:text-sm font-semibold text-foreground/90 leading-tight">
             {circle.label}
           </span>
         </div>

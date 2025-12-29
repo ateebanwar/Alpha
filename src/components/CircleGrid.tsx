@@ -50,8 +50,8 @@ const CircleGrid = () => {
   // Responsive Grid Layout
   // Responsive Grid Layout
   const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
-    height: typeof window !== 'undefined' ? window.innerHeight : 800
+    width: 1200,
+    height: 800
   });
 
   useEffect(() => {
@@ -100,10 +100,10 @@ const CircleGrid = () => {
     if (windowSize.width <= 768) {
       const cols = 4;
       const padding = 20;
-      const horizontalGap = 15;
+      const horizontalGap = 10;
       const availableWidth = windowSize.width - padding * 2;
       const size = (availableWidth - horizontalGap * 3) / 4;
-      const verticalGap = 15;
+      const verticalGap = 10;
 
       return {
         cols,
