@@ -20,8 +20,17 @@ import {
   MonitorSmartphone,
   Palette,
   Settings,
-  HeartHandshake
+  HeartHandshake,
+  CloudCogIcon,
+  Grab,
+  GitGraph,
+  Webhook,
+  SoapDispenserDroplet,
+  SoapDispenserDropletIcon,
+  WandSparkles,
+  AppleIcon
 } from "lucide-react";
+import { resumeToPipeableStream } from "react-dom/server";
 
 export interface CircleData {
   id: string;
@@ -82,20 +91,20 @@ export const circleData: CircleData[] = [
   // Services Section
   {
     id: "web-dev",
-    label: "Web Development",
+    label: "Web Application",
     icon: Globe,
     size: "lg",
     color: "primary",
     category: "service",
     delay: 0.2,
     content: {
-      title: "Web Development",
+      title: "Web Application",
       description: "Modern, responsive web applications built with cutting-edge technologies.",
       items: [
-        { label: "React & Next.js", icon: Code2 },
-        { label: "Progressive Web Apps", icon: MonitorSmartphone },
-        { label: "E-commerce Solutions", icon: Briefcase },
-        { label: "Custom CMS", icon: Layers },
+        { label: ".NET", icon: Code2 },
+        { label: ".NET core", icon: MonitorSmartphone },
+        { label: "MVC", icon: Briefcase },
+        { label: "Python & Django", icon: Layers },
       ]
     }
   },
@@ -120,20 +129,25 @@ export const circleData: CircleData[] = [
   },
   {
     id: "backend",
-    label: "Backend",
+    label: "MicroServices",
     icon: Server,
     size: "lg",
     color: "primary",
     category: "service",
     delay: 0.15,
     content: {
-      title: "Backend Development",
+      title: "MicroServices",
       description: "Robust, scalable server-side solutions and APIs.",
       items: [
         { label: "Node.js & Express", icon: Terminal },
         { label: "Python & Django", icon: Code2 },
         { label: "RESTful APIs", icon: GitBranch },
         { label: "GraphQL", icon: Layers },
+        { label: "REST APIs", icon : AppleIcon},
+        { label: "GraphQL" , icon : GitGraph},
+        { label: "Webhooks", icon : Webhook },
+        { label: "SOAP Api", icon: SoapDispenserDropletIcon },
+        { label: "WSDL APi", icon : WandSparkles}
 
       ]
     }
@@ -152,46 +166,53 @@ export const circleData: CircleData[] = [
       items: [
         { label: "PostgreSQL", icon: Database },
         { label: "MongoDB", icon: Database },
-        { label: "Redis Caching", icon: Zap },
-        { label: "Data Migration", icon: GitBranch },
+        { label: "Redis Caching", icon: Database },
+        { label: "Cosmos Db", icon: Database },
+        { label: "SQL Server", icon: Database },
+        { label: "Oracle", icon: Database },
+        { label: "MySql", icon: Database },
+        
       ]
     }
   },
   {
     id: "cloud",
-    label: "Cloud Services",
+    label: "Azure",
     icon: Cloud,
     size: "lg",
     color: "accent",
     category: "tech",
     delay: 0.35,
     content: {
-      title: "Cloud Services",
+      title: "Azure",
       description: "Cloud infrastructure setup, migration, and management.",
       items: [
-        { label: "AWS Solutions", icon: Cloud },
+        { label: "Web Apps", icon: Cloud },
         { label: "Azure Services", icon: Cloud },
-        { label: "Google Cloud", icon: Cloud },
-        { label: "DevOps & CI/CD", icon: Settings },
+        { label: "ILB (Internet Load Balancer)", icon: Cloud },
+        { label: "Networking", icon: Cloud },
+        { label: "CDN", icon: Cloud },
       ]
     }
   },
   {
     id: "security",
-    label: "Security",
-    icon: Shield,
+    label: "AWS",
+    icon: CloudCogIcon,
     size: "md",
     color: "primary",
     category: "tech",
     delay: 0.4,
     content: {
-      title: "Cybersecurity",
+      title: "AWS",
       description: "Protecting your digital assets with enterprise-grade security.",
       items: [
-        { label: "Security Audits", icon: Shield },
-        { label: "Penetration Testing", icon: Terminal },
-        { label: "SSL & Encryption", icon: Shield },
-        { label: "Compliance", icon: Award },
+        { label: "Networking & Content Delivery", icon: Shield },
+        { label: "Machine Learning & AI", icon: Terminal },
+        { label: "Analytics", icon: Shield },
+        { label: "Security, Identity & Compliance", icon: Award },
+        { label: "Application Integration", icon: Award },
+        { label: "Management & Governance", icon: Award },
       ]
     }
   },
@@ -199,14 +220,14 @@ export const circleData: CircleData[] = [
   // Technology Section
   {
     id: "frontend-tech",
-    label: "Frontend",
+    label: "UI/UX",
     icon: Palette,
     size: "md",
     color: "accent",
     category: "tech",
     delay: 0.45,
     content: {
-      title: "Frontend Technologies",
+      title: "UI/UX",
       description: "Modern UI frameworks and libraries we excel in.",
       items: [
         { label: "React.js" },
@@ -215,42 +236,46 @@ export const circleData: CircleData[] = [
         { label: "Tailwind CSS" },
         { label: "Html5" },
         { label: "JavaScript" },
+         { label: "User Research" },
+        { label: "Wireframing & Prototyping" },
+        { label: "Visual Design" },
+        { label: "Usability Testing" }
       ]
     }
   },
-  {
-    id: "backend-tech",
-    label: "Backend Tech",
-    icon: Terminal,
-    size: "md",
-    color: "muted",
-    category: "tech",
-    delay: 0.5,
-    content: {
-      title: "Backend Technologies",
-      description: "Powerful server-side technologies for robust applications.",
-      items: [
-        { label: "Node.js" },
-        { label: "Python" },
-        { label: "Java" },
-        { label: "Go" },
-      ]
-    }
-  },
+  // {
+  //   id: "backend-tech",
+  //   label: "Backend Tech",
+  //   icon: Terminal,
+  //   size: "md",
+  //   color: "muted",
+  //   category: "tech",
+  //   delay: 0.5,
+  //   content: {
+  //     title: "Backend Technologies",
+  //     description: "Powerful server-side technologies for robust applications.",
+  //     items: [
+  //       { label: "Node.js" },
+  //       { label: "Python" },
+  //       { label: "Java" },
+  //       { label: "Go" },
+  //     ]
+  //   }
+  // },
   {
     id: "devops",
-    label: "DevOps",
+    label: "CI/CD",
     icon: Settings,
     size: "sm",
     color: "primary",
     category: "tech",
     delay: 0.55,
     content: {
-      title: "DevOps & Automation",
+      title: "CI/CD",
       description: "Streamline your development and deployment processes.",
       items: [
-        { label: "Docker" },
-        { label: "Kubernetes" },
+        { label: "DevOps" },
+        { label: "BitBucket" },
         { label: "Jenkins" },
         { label: "GitHub Actions" },
       ]
@@ -336,24 +361,24 @@ export const circleData: CircleData[] = [
   },
 
   // Additional decorative/smaller circles
-  {
-    id: "api",
-    label: "APIs",
-    icon: GitBranch,
-    size: "sm",
-    color: "accent",
-    category: "tech",
-    delay: 0.8,
-    content: {
-      title: "API Development",
-      description: "Custom API solutions for seamless integrations.",
-      items: [
-        { label: "REST APIs" },
-        { label: "GraphQL" },
-        { label: "Webhooks" },
-      ]
-    }
-  },
+  // {
+  //   id: "api",
+  //   label: "APIs",
+  //   icon: GitBranch,
+  //   size: "sm",
+  //   color: "accent",
+  //   category: "tech",
+  //   delay: 0.8,
+  //   content: {
+  //     title: "API Development",
+  //     description: "Custom API solutions for seamless integrations.",
+  //     items: [
+  //       { label: "REST APIs" },
+  //       { label: "GraphQL" },
+  //       { label: "Webhooks" },
+  //     ]
+  //   }
+  // },
   {
     id: "performance",
     label: "Performance",
@@ -413,25 +438,25 @@ export const circleData: CircleData[] = [
   },
 
   // Additional circles for richer layout
-  {
-    id: "ui-ux",
-    label: "UI/UX Design",
-    icon: Palette,
-    size: "md",
-    color: "primary",
-    category: "service",
-    delay: 1.0,
-    content: {
-      title: "UI/UX Design",
-      description: "Beautiful, intuitive interfaces that users love.",
-      items: [
-        { label: "User Research" },
-        { label: "Wireframing & Prototyping" },
-        { label: "Visual Design" },
-        { label: "Usability Testing" },
-      ]
-    }
-  },
+  // {
+  //   id: "ui-ux",
+  //   label: "UI/UX Design",
+  //   icon: Palette,
+  //   size: "md",
+  //   color: "primary",
+  //   category: "service",
+  //   delay: 1.0,
+  //   content: {
+  //     title: "UI/UX Design",
+  //     description: "Beautiful, intuitive interfaces that users love.",
+  //     items: [
+  //       { label: "User Research" },
+  //       { label: "Wireframing & Prototyping" },
+  //       { label: "Visual Design" },
+  //       { label: "Usability Testing" },
+  //     ]
+  //   }
+  // },
   {
     id: "automation",
     label: "Automation",
@@ -448,6 +473,7 @@ export const circleData: CircleData[] = [
         { label: "CI/CD Pipelines" },
         { label: "Testing Automation" },
         { label: "Infrastructure as Code" },
+        { label: "n8n" },
       ]
     }
   },
