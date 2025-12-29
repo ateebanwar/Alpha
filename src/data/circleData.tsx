@@ -28,7 +28,8 @@ import {
   SoapDispenserDroplet,
   SoapDispenserDropletIcon,
   WandSparkles,
-  AppleIcon
+  AppleIcon,
+  ShoppingCart
 } from "lucide-react";
 import { resumeToPipeableStream } from "react-dom/server";
 
@@ -479,8 +480,8 @@ export const circleData: CircleData[] = [
   },
   {
     id: "data",
-    label: "Data",
-    icon: Layers,
+    label: "Amazon/Flipkart (E-Commerce)",
+    icon: ShoppingCart,
     size: "sm",
     color: "muted",
     category: "tech",
@@ -489,10 +490,10 @@ export const circleData: CircleData[] = [
       title: "Data Solutions",
       description: "Turn your data into actionable insights.",
       items: [
-        { label: "Data Analytics" },
-        { label: "ETL Pipelines" },
-        { label: "Business Intelligence" },
-        { label: "Data Visualization" },
+        { label: "Product Listing" },
+        { label: "Price Listing Optimization" },
+        { label: "Catalog Management" },
+        { label: "Marketplace Management" },
       ]
     }
   },
