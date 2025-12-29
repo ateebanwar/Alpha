@@ -1,0 +1,282 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Neumorphic Pastel Blue Palette */
+    --background: 200 30% 92%;
+    --foreground: 210 25% 25%;
+
+    --card: 200 28% 94%;
+    --card-foreground: 210 25% 25%;
+
+    --popover: 200 28% 94%;
+    --popover-foreground: 210 25% 25%;
+
+    --primary: 200 60% 50%;
+    --primary-foreground: 200 30% 98%;
+
+    --secondary: 200 20% 88%;
+    --secondary-foreground: 210 25% 30%;
+
+    --muted: 200 15% 85%;
+    --muted-foreground: 210 15% 45%;
+
+    --accent: 180 45% 55%;
+    --accent-foreground: 200 30% 98%;
+
+    --destructive: 0 60% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 200 20% 85%;
+    --input: 200 20% 88%;
+    --ring: 200 60% 50%;
+
+    --radius: 1rem;
+
+    /* Neumorphic Colors */
+    --neu-bg: 200 30% 90%;
+    --neu-light: 200 30% 98%;
+    --neu-dark: 200 25% 78%;
+    --neu-accent: 190 50% 60%;
+
+    /* Shadows for Neumorphism */
+    --shadow-light: -8px -8px 20px hsl(200 30% 98% / 0.8);
+    --shadow-dark: 8px 8px 20px hsl(200 25% 78% / 0.5);
+    --shadow-inset-light: inset -4px -4px 10px hsl(200 30% 98% / 0.6);
+    --shadow-inset-dark: inset 4px 4px 10px hsl(200 25% 78% / 0.4);
+
+    --sidebar-background: 200 30% 92%;
+    --sidebar-foreground: 210 25% 25%;
+    --sidebar-primary: 200 60% 50%;
+    --sidebar-primary-foreground: 200 30% 98%;
+    --sidebar-accent: 200 20% 88%;
+    --sidebar-accent-foreground: 210 25% 30%;
+    --sidebar-border: 200 20% 85%;
+    --sidebar-ring: 200 60% 50%;
+  }
+
+  .dark {
+    --background: 210 25% 12%;
+    --foreground: 200 30% 92%;
+
+    --card: 210 25% 14%;
+    --card-foreground: 200 30% 92%;
+
+    --popover: 210 25% 14%;
+    --popover-foreground: 200 30% 92%;
+
+    --primary: 200 60% 60%;
+    --primary-foreground: 210 25% 10%;
+
+    --secondary: 210 20% 20%;
+    --secondary-foreground: 200 30% 90%;
+
+    --muted: 210 20% 18%;
+    --muted-foreground: 200 15% 60%;
+
+    --accent: 180 45% 50%;
+    --accent-foreground: 210 25% 10%;
+
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 20% 20%;
+    --input: 210 20% 20%;
+    --ring: 200 60% 60%;
+
+    --neu-bg: 210 25% 12%;
+    --neu-light: 210 25% 18%;
+    --neu-dark: 210 25% 8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+
+  /* Neumorphic Base Styles */
+  .neu-raised {
+    background: hsl(var(--neu-bg));
+    box-shadow:
+      -8px -8px 20px hsl(var(--neu-light) / 0.8),
+      8px 8px 20px hsl(var(--neu-dark) / 0.5);
+  }
+
+  .neu-pressed {
+    background: hsl(var(--neu-bg));
+    box-shadow:
+      inset -4px -4px 10px hsl(var(--neu-light) / 0.6),
+      inset 4px 4px 10px hsl(var(--neu-dark) / 0.4);
+  }
+
+  .neu-flat {
+    background: hsl(var(--neu-bg));
+    box-shadow:
+      -4px -4px 12px hsl(var(--neu-light) / 0.6),
+      4px 4px 12px hsl(var(--neu-dark) / 0.3);
+  }
+
+  .neu-card {
+    @apply rounded-2xl p-4 transition-all duration-300;
+    background: hsl(var(--card));
+    box-shadow:
+      -6px -6px 15px hsl(var(--neu-light) / 0.7),
+      6px 6px 15px hsl(var(--neu-dark) / 0.4);
+  }
+
+  .neu-circle {
+    @apply rounded-full transition-all duration-200 cursor-pointer;
+    background: linear-gradient(145deg, hsl(var(--neu-light) / 0.3), hsl(var(--neu-bg)));
+    box-shadow:
+      -10px -10px 25px hsl(var(--neu-light) / 0.9),
+      10px 10px 25px hsl(var(--neu-dark) / 0.5);
+    /* Mobile performance optimizations */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .neu-circle:hover {
+    box-shadow:
+      -12px -12px 30px hsl(var(--neu-light) / 1),
+      12px 12px 30px hsl(var(--neu-dark) / 0.6);
+  }
+
+  .neu-circle-pressed {
+    @apply rounded-full;
+    background: hsl(var(--neu-bg));
+    box-shadow:
+      inset -6px -6px 15px hsl(var(--neu-light) / 0.5),
+      inset 6px 6px 15px hsl(var(--neu-dark) / 0.3);
+  }
+
+  .neu-tile {
+    @apply rounded-xl p-3 transition-all duration-150;
+    background: hsl(var(--card));
+    box-shadow:
+      -4px -4px 10px hsl(var(--neu-light) / 0.6),
+      4px 4px 10px hsl(var(--neu-dark) / 0.3);
+    /* Mobile performance optimizations */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .neu-tile:hover {
+    box-shadow:
+      -6px -6px 14px hsl(var(--neu-light) / 0.7),
+      6px 6px 14px hsl(var(--neu-dark) / 0.4);
+  }
+
+  /* Floating Animation */
+  .floating {
+    animation: floating 6s ease-in-out infinite;
+  }
+
+  .floating-slow {
+    animation: floating 8s ease-in-out infinite;
+  }
+
+  .floating-fast {
+    animation: floating 4s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  }
+
+  .backdrop-blur-neu {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #3EA4C9;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #3EA4C9;
+  }
+
+  /* Firefox support */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #3EA4C9 transparent;
+  }
+}
+
+/* Keyframes */
+@keyframes floating {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
