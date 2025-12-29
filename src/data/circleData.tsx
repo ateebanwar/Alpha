@@ -53,7 +53,7 @@ export const circleData: CircleData[] = [
       description: "Transforming businesses through innovative technology solutions since 2016.",
       items: [
         { label: "8+ Years Experience", description: "Delivering excellence in IT consulting", icon: Clock },
-        { label: "Global Reach", description: "Serving UK and international clients", icon: Globe },
+        { label: "Global Reach", description: "Serving international clients", icon: Globe },
         { label: "Expert Team", description: "Skilled professionals across all domains", icon: Users },
         { label: "Trusted Partner", description: "Building lasting client relationships", icon: HeartHandshake },
       ]
@@ -213,6 +213,8 @@ export const circleData: CircleData[] = [
         { label: "Vue.js" },
         { label: "TypeScript" },
         { label: "Tailwind CSS" },
+        { label: "Html5" },
+        { label: "JavaScript" },
       ]
     }
   },
@@ -309,7 +311,7 @@ export const circleData: CircleData[] = [
       description: "Ready to transform your business? Let's talk.",
       items: [
         { label: "hello@alphabetconsultancy.com", icon: Mail },
-        { label: "United Kingdom", icon: MapPin },
+        { label: "Kalyan (Mumbai)", icon: MapPin },
         { label: "Schedule a Call", icon: Clock },
         { label: "Start a Project", icon: Briefcase },
       ]
@@ -325,7 +327,7 @@ export const circleData: CircleData[] = [
     delay: 0.75,
     content: {
       title: "Our Location",
-      description: "Headquartered in the UK, serving clients globally.",
+      description: "serving clients globally.",
       items: [
         { label: "London, UK", description: "Headquarters" },
         { label: "Remote-First", description: "Global team" },
@@ -349,15 +351,6 @@ export const circleData: CircleData[] = [
         { label: "REST APIs" },
         { label: "GraphQL" },
         { label: "Webhooks" },
-        { label: "Third-party Integrations" },
-        { label: "REST APIs" },
-        { label: "GraphQL" },
-        { label: "Webhooks" },
-        { label: "Third-party Integrations" },
-        { label: "REST APIs" },
-        { label: "GraphQL" },
-        { label: "Webhooks" },
-        { label: "Third-party Integrations" },
       ]
     }
   },
