@@ -24,7 +24,7 @@ export default function HomeClient() {
                 </div>
             </header>
 
-            <div className="flex-1 relative mt-[70px] overflow-hidden">
+            <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden">
                 <CircleGrid layoutMode={layoutMode} />
             </div>
         </main>
