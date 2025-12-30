@@ -2,14 +2,17 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import { circleData } from "@/data/circleData";
 import InteractiveCircle from "./InteractiveCircle";
-import CirclePopup from "./CirclePopup";
 import CircleWrapper from "./CircleWrapper";
+import CircleContent from "./CircleContent";
 import { useOscillation } from "@/hooks/use-oscillation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const CircleGrid = () => {
+const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympic" }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   // Navbar circle IDs
   // Priority Order for Top Row
@@ -68,7 +71,25 @@ const CircleGrid = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { cols, circleSize, verticalGap, horizontalGap, wrapperPadding, isStaggered } = useMemo(() => {
+  const { cols, circleSize, gridCellSize, verticalGap, horizontalGap, wrapperPadding, isStaggered } = useMemo(() => {
+    // --- Olympic Layout (Scrollable 3-2 pattern) ---
+    if (layoutMode === "olympic") {
+      const isSmall = windowSize.width < 640;
+      const widthConstraint = (windowSize.width - 80) / 3.2; // Fit 3 across
+      const heightConstraint = (windowSize.height - 100) / 2.2; // Fit 2 rows high
+      const determinedSize = Math.min(widthConstraint, heightConstraint);
+      const size = Math.max(determinedSize, 80); // Min size constraint
+
+      return {
+        cols: 6, // 6 columns to allow 2-span items centered
+        circleSize: size,
+        gridCellSize: size / 2, // Columns are half-width
+        verticalGap: 0,
+        horizontalGap: isSmall ? 10 : 20,
+        wrapperPadding: 40,
+        isStaggered: false
+      };
+    }
 
     // --- Desktop and Tablet Layout (Fixed constraints) ---
     if (windowSize.width >= 1024 || (windowSize.width > 768 && windowSize.width < 1024)) {
@@ -91,6 +112,7 @@ const CircleGrid = () => {
       return {
         cols: targetCols,
         circleSize: size,
+        gridCellSize: size,
         verticalGap: -(size * 0.25), // Standard overlap for desktop
         horizontalGap: size * 0.2, // Standard gap
         wrapperPadding: 20,
@@ -110,6 +132,7 @@ const CircleGrid = () => {
       return {
         cols,
         circleSize: size,
+        gridCellSize: size,
         verticalGap,
         horizontalGap,
         wrapperPadding: padding,
@@ -121,12 +144,52 @@ const CircleGrid = () => {
     return {
       cols: 4,
       circleSize: 80,
+      gridCellSize: 80,
       verticalGap: 15,
       horizontalGap: 15,
       wrapperPadding: 20,
       isStaggered: false
     };
-  }, [windowSize.width, windowSize.height]);
+  }, [windowSize.width, windowSize.height, layoutMode]);
+
+  // Chunking logic for Olympic mode
+  const olympicChunks = useMemo(() => {
+    if (layoutMode !== "olympic") return [];
+    const chunkSize = 5;
+    const chunks = [];
+    for (let i = 0; i < sortedCircleData.length; i += chunkSize) {
+      chunks.push(sortedCircleData.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }, [sortedCircleData, layoutMode]);
+
+  const getOlympicStyle = (index: number, size: number) => {
+    if (layoutMode !== "olympic") return {};
+
+    const pos = index % 5;
+    // First row (0-2) doesn't need negative margin.
+    // Subsequent rows need to tuck up. 
+    // In our logic: 
+    // Row 1: 0,1,2
+    // Row 2: 3,4
+    // Row 3: 5,6,7
+    // etc.
+    // The "isFirstRow" check effectively is index < 3. 
+    // But conceptually, every row after the first should tuck.
+
+    // Calculate row number implicitly or just apply to all > 2?
+    const tuckAmount = size * 0.25;
+    const marginTop = index < 3 ? 0 : -tuckAmount;
+
+    let col = "auto";
+    if (pos === 0) col = "1 / span 2";
+    else if (pos === 1) col = "3 / span 2";
+    else if (pos === 2) col = "5 / span 2";
+    else if (pos === 3) col = "2 / span 2";
+    else if (pos === 4) col = "4 / span 2";
+
+    return { gridColumn: col, marginTop: `${marginTop}px` };
+  };
 
   // Generate oscillation parameters for each circle
   const oscillationParams = useMemo(() => {
@@ -143,105 +206,229 @@ const CircleGrid = () => {
     [expandedId, sortedCircleData]);
 
   return (
-    <>
-      <div
-        className={`absolute inset-0 overflow-hidden transition-all duration-200 ease-out ${expandedId ? "blur-sm opacity-30 scale-[0.98] pointer-events-none" : ""
-          }`}
+    <div style={{ perspective: 1000, position: 'relative', width: '100%', height: '100%' }}>
+      <motion.div
+        animate={expandedId ? "expanded" : "normal"}
+        variants={{
+          normal: { translateZ: 0, scale: 1, y: 0, opacity: 1, zIndex: 1 },
+          expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5, zIndex: 1 }
+        }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+        className="absolute inset-0"
+        style={{ pointerEvents: expandedId ? 'none' : 'auto' }}
       >
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            className="absolute w-[500px] h-[500px] rounded-full opacity-20"
-            style={{
-              background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
-              top: "10%",
-              left: "5%",
-            }}
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.15, 0.2, 0.15],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute w-[400px] h-[400px] rounded-full opacity-20"
-            style={{
-              background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)",
-              bottom: "15%",
-              right: "10%",
-            }}
-            animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.1, 0.15, 0.1],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-          />
-        </div>
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <motion.div
+              className="absolute w-[500px] h-[500px] rounded-full opacity-20"
+              style={{
+                background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
+                top: "10%",
+                left: "5%",
+              }}
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.15, 0.2, 0.15],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute w-[400px] h-[400px] rounded-full opacity-20"
+              style={{
+                background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)",
+                bottom: "15%",
+                right: "10%",
+              }}
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.1, 0.15, 0.1],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2,
+              }}
+            />
+          </div>
 
-        {/* Circles Container */}
-        <div
-          className="absolute inset-0"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: isStaggered ? 'hidden' : 'auto', // Allow scroll on mobile grid
-            height: '100%'
-          }}
-        >
+          {/* Circles Container */}
           <div
+            className="absolute inset-0"
             style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${cols}, ${circleSize}px)`,
-              gap: `${horizontalGap}px`,
-              padding: `${wrapperPadding}px`,
-              width: '100%',
+              display: 'flex',
+              alignItems: isStaggered ? 'center' : 'flex-start',
               justifyContent: 'center',
-              alignContent: 'center', // Center vertically if logic leaves small gaps
-              // Visual centering helper if content is smaller
-              margin: 'auto',
+              overflow: isStaggered ? 'hidden' : 'auto', // Allow scroll on mobile grid
+              height: '100%'
             }}
           >
-            {sortedCircleData.map((circle, index) => (
-              <CircleWrapper
-                key={circle.id}
-                circle={circle}
-                index={index}
-                cols={cols}
-                isStaggered={isStaggered}
-                circleSize={circleSize}
-                verticalGap={verticalGap}
-                navCircleIds={navCircleIds}
-                expandedId={expandedId}
-                onExpand={() => handleExpand(circle.id)}
-                oscillationParams={oscillationParams[index]}
-              />
-            ))}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${cols}, ${gridCellSize}px)`,
+                gap: `${horizontalGap}px`,
+                padding: `${wrapperPadding}px`,
+                width: '100%',
+                justifyContent: 'center',
+                alignContent: 'center', // Center vertically if logic leaves small gaps
+                // Visual centering helper if content is smaller
+                margin: 'auto',
+                // Overrides for Olympic mode container
+                ...(layoutMode === "olympic" ? {
+                  display: 'block', // Reset grid for the outer container so chunks stack
+                  height: '100%',
+                  padding: 0,
+                  overflowY: 'auto',
+                  scrollSnapType: 'y mandatory',
+                  gridTemplateColumns: 'none', // Remove grid def from container
+                  gap: 0,
+                } : {})
+              }}
+            >
+              {layoutMode === "olympic" ? (
+                // Olympic Mode: Render chunks in viewports
+                olympicChunks.map((chunk, chunkIndex) => (
+                  <div
+                    key={chunkIndex}
+                    style={{
+                      height: '100vh',
+                      width: '100%',
+                      scrollSnapAlign: 'start',
+                      display: 'flex',
+                      alignItems: 'center', // Vertically center the grid in the viewport
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${cols}, ${gridCellSize}px)`,
+                        gap: `${horizontalGap}px`,
+                        padding: `${wrapperPadding}px`,
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                      }}
+                    >
+                      {chunk.map((circle, i) => {
+                        const globalIndex = chunkIndex * 5 + i;
+                        return (
+                          <CircleWrapper
+                            key={circle.id}
+                            circle={circle}
+                            index={globalIndex}
+                            cols={cols}
+                            isStaggered={false}
+                            circleSize={circleSize}
+                            verticalGap={verticalGap}
+                            navCircleIds={navCircleIds}
+                            expandedId={expandedId}
+                            onExpand={() => handleExpand(circle.id)}
+                            oscillationParams={oscillationParams[globalIndex] || oscillationParams[0]} // Fallback safety
+                            overrideStyle={getOlympicStyle(i, circleSize)} // Pass local index (0-4)
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                // Static Mode: Render all in one grid
+                sortedCircleData.map((circle, index) => (
+                  <CircleWrapper
+                    key={circle.id}
+                    circle={circle}
+                    index={index}
+                    cols={cols}
+                    isStaggered={isStaggered}
+                    circleSize={circleSize}
+                    verticalGap={verticalGap}
+                    navCircleIds={navCircleIds}
+                    expandedId={expandedId}
+                    onExpand={() => handleExpand(circle.id)}
+                    oscillationParams={oscillationParams[index]}
+                    overrideStyle={{}}
+                  />
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </div >
+      </motion.div>
 
-      {/* Full Screen Popup Overlay */}
       <AnimatePresence>
-        {
-          activeCircle && (
-            <CirclePopup
-              circle={activeCircle}
-              onClose={handleClose}
-            />
-          )
-        }
-      </AnimatePresence >
-    </>
+        {activeCircle && (
+          <motion.div
+            initial={{ translateZ: -100, scale: 0.8, y: -100, opacity: 0, zIndex: 0 }}
+            animate={{ translateZ: 0, scale: 1, y: 0, opacity: 1, zIndex: 2 }}
+            exit={{ translateZ: -100, scale: 0.8, y: -100, opacity: 0, zIndex: 0 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ willChange: 'transform' }}
+          >
+            <div className="relative w-full max-w-4xl h-[85vh] md:h-[90vh] bg-card rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border border-white/10">
+              {/* Background decorative elements */}
+              <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />
+
+              {/* Header */}
+              <motion.div
+                initial={{ opacity: 0, y: isMobile ? -2 : -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: isMobile ? 0.12 : 0.16,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+                className="relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b border-white/5 bg-card/50 backdrop-blur-sm"
+                style={{
+                  willChange: 'opacity, transform',
+                  WebkitTransform: 'translate3d(0, 0, 0)',
+                  transform: 'translate3d(0, 0, 0)',
+                  backfaceVisibility: 'hidden'
+                }}
+              >
+                <button
+                  onClick={handleClose}
+                  className="neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150 hover:scale-105 active:scale-95"
+                  autoFocus
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
+                </button>
+                <div className="ml-4 font-semibold text-lg text-primary/80">
+                  {activeCircle.label}
+                </div>
+              </motion.div>
+
+              {/* Scrollable Content */}
+              <motion.div
+                initial={{ opacity: 0, y: isMobile ? 4 : 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: isMobile ? 0.14 : 0.18,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+                className="relative flex-1 overflow-y-auto z-10 custom-scrollbar overscroll-contain p-4 md:p-8"
+                style={{
+                  willChange: 'opacity, transform',
+                  WebkitTransform: 'translate3d(0, 0, 0)',
+                  transform: 'translate3d(0, 0, 0)',
+                  backfaceVisibility: 'hidden'
+                }}
+              >
+                <CircleContent circle={activeCircle} isMobile={isMobile} />
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

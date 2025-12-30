@@ -21,6 +21,7 @@ interface CircleWrapperProps {
     phase: number;
     angle: number;
   };
+  overrideStyle?: React.CSSProperties;
 }
 
 const CircleWrapper = ({
@@ -34,6 +35,7 @@ const CircleWrapper = ({
   expandedId,
   onExpand,
   oscillationParams,
+  overrideStyle,
 }: CircleWrapperProps) => {
   const row = Math.floor(index / cols);
   const isOddRow = isStaggered && row % 2 === 1;
@@ -41,6 +43,7 @@ const CircleWrapper = ({
 
   return (
     <motion.div
+      layout
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{
         opacity: 1,
@@ -58,6 +61,7 @@ const CircleWrapper = ({
         marginBottom: `${verticalGap}px`,
         zIndex: navCircleIds.includes(circle.id) ? 20 : 10,
         position: 'relative',
+        ...overrideStyle,
       }}
     >
       <InteractiveCircle
