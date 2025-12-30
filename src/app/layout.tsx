@@ -50,7 +50,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${outfit.variable} ${inter.variable} antialiased`}>
+      <body className={`${outfit.variable} ${inter.variable} antialiased`} suppressHydrationWarning={true}>
         <Providers>
           {children}
           <Toaster />
