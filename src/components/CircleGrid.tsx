@@ -17,10 +17,10 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
 
   const OLYMPIC_COLORS = [
     "#0081C8", // Blue
-    "#FCB131", // Yellow
-    "#000000", // Black
-    "#00A651", // Green
+    "#414141", // Black
     "#EE334E", // Red
+    "#FCB131", // Yellow
+    "#00A651", // Green
   ];
 
   /* 
@@ -285,54 +285,65 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
   return (
     <div style={{ perspective: 1000, position: 'relative', width: '100%', height: '100%' }}>
       <motion.div
-        animate={expandedId ? "expanded" : "normal"}
+        animate={expandedId ? "expanded" : (layoutMode === "olympic" ? "cinematic" : "normal")}
         variants={{
-          normal: { translateZ: 0, scale: 1, y: 0, opacity: 1, zIndex: 1 },
-          expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5, zIndex: 1 }
+          normal: {
+            background: "transparent",
+            translateZ: 0, scale: 1, y: 0, opacity: 1, zIndex: 1
+          },
+          cinematic: {
+            background: "radial-gradient(circle at center, #0a0a0a 0%, #000000 100%)",
+            translateZ: 0, scale: 1, y: 0, opacity: 1, zIndex: 1
+          },
+          expanded: {
+            translateZ: -50, scale: 0.9, y: 50, opacity: 0.5, zIndex: 1
+          }
         }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
         className="absolute inset-0"
         style={{ pointerEvents: expandedId ? 'none' : 'auto' }}
       >
         <div className="absolute inset-0 overflow-hidden">
           {/* Background decorative elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div
-              className="absolute w-[500px] h-[500px] rounded-full opacity-20"
-              style={{
-                background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
-                top: "10%",
-                left: "5%",
-              }}
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.15, 0.2, 0.15],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            <motion.div
-              className="absolute w-[400px] h-[400px] rounded-full opacity-20"
-              style={{
-                background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)",
-                bottom: "15%",
-                right: "10%",
-              }}
-              animate={{
-                scale: [1, 1.15, 1],
-                opacity: [0.1, 0.15, 0.1],
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 2,
-              }}
-            />
-          </div>
+          {layoutMode !== "olympic" && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <motion.div
+                className="absolute w-[500px] h-[500px] rounded-full opacity-20"
+                style={{
+                  background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
+                  top: "10%",
+                  left: "5%",
+                }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.15, 0.2, 0.15],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div
+                className="absolute w-[400px] h-[400px] rounded-full opacity-20"
+                style={{
+                  background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)",
+                  bottom: "15%",
+                  right: "10%",
+                }}
+                animate={{
+                  scale: [1, 1.15, 1],
+                  opacity: [0.1, 0.15, 0.1],
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2,
+                }}
+              />
+            </div>
+          )}
 
           {/* Circles Container */}
           <div
