@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { circleData } from "@/data/circleData";
 import InteractiveCircle from "./InteractiveCircle";
 import CirclePopup from "./CirclePopup";
+import CircleWrapper from "./CircleWrapper";
+import { useOscillation } from "@/hooks/use-oscillation";
 
 const CircleGrid = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -126,13 +128,13 @@ const CircleGrid = () => {
     };
   }, [windowSize.width, windowSize.height]);
 
-  // Pre-calculate oscillation animations to ensure stability (currently disabled for performance)
-  const oscillations = useMemo(() => {
-    return sortedCircleData.map(() => ({
-      x: [0, 0, 0],
-      y: [0, 0, 0],
-      duration: 0,
-      delay: 0
+  // Generate oscillation parameters for each circle
+  const oscillationParams = useMemo(() => {
+    return sortedCircleData.map((circle, index) => ({
+      amplitude: Math.random() * 5, // 0-5px
+      frequency: 0.001 + Math.random() * 0.003, // Slow, smooth frequency for gentle movement
+      phase: Math.random() * Math.PI * 2, // Random phase
+      angle: Math.random() * Math.PI * 2, // Random direction
     }));
   }, [sortedCircleData]);
 
@@ -209,54 +211,21 @@ const CircleGrid = () => {
               margin: 'auto',
             }}
           >
-            {sortedCircleData.map((circle, index) => {
-              const row = Math.floor(index / cols);
-              const isOddRow = isStaggered && row % 2 === 1; // Disable stagger if not staggered
-              const move = oscillations[index];
-
-              return (
-                <motion.div
-                  key={circle.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    x: move.x,
-                    y: move.y
-                  }}
-                  transition={{
-                    opacity: { duration: 0.3, delay: index * 0.02 }, // Reduced delay for faster feel
-                    scale: { duration: 0.3, delay: index * 0.02 },
-                    x: {
-                      duration: move.duration,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: move.delay
-                    },
-                    y: {
-                      duration: move.duration,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: move.delay
-                    }
-                  }}
-                  style={{
-                    marginLeft: isOddRow ? `${circleSize * 0.5}px` : '0', // Standard 50% shift for hex
-                    marginRight: isOddRow ? `-${circleSize * 0.5}px` : '0',
-                    marginBottom: `${verticalGap}px`, // Dynamic vertical overlap/gap
-                    zIndex: navCircleIds.includes(circle.id) ? 20 : 10,
-                    position: 'relative',
-                  }}
-                >
-                  <InteractiveCircle
-                    circle={circle}
-                    isExpanded={expandedId === circle.id}
-                    onExpand={() => handleExpand(circle.id)}
-                    size={circleSize}
-                  />
-                </motion.div>
-              );
-            })}
+            {sortedCircleData.map((circle, index) => (
+              <CircleWrapper
+                key={circle.id}
+                circle={circle}
+                index={index}
+                cols={cols}
+                isStaggered={isStaggered}
+                circleSize={circleSize}
+                verticalGap={verticalGap}
+                navCircleIds={navCircleIds}
+                expandedId={expandedId}
+                onExpand={() => handleExpand(circle.id)}
+                oscillationParams={oscillationParams[index]}
+              />
+            ))}
           </div>
         </div>
       </div >

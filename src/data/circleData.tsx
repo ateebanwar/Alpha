@@ -480,7 +480,7 @@ export const circleData: CircleData[] = [
   },
   {
     id: "data",
-    label: "Amazon/Flipkart (E-Commerce)",
+    label: "Amazon/Fkart (E-Comm)",
     icon: ShoppingCart,
     size: "sm",
     color: "muted",
