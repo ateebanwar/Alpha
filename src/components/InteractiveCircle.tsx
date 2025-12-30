@@ -10,9 +10,10 @@ interface InteractiveCircleProps {
   isExpanded: boolean;
   onExpand: () => void;
   size: number;
+  variant?: "default" | "olympic";
+  borderColor?: string;
 }
 
-// Uniform sizes for perfect honeycomb alignment
 const colorClasses = {
   primary: "text-primary",
   accent: "text-accent",
@@ -24,35 +25,44 @@ const InteractiveCircle = ({
   isExpanded,
   onExpand,
   size,
+  variant = "default",
+  borderColor = "#e5e5e5"
 }: InteractiveCircleProps) => {
   const Icon = circle.icon;
   const isMobile = useIsMobile();
+
+  const isOlympic = variant === "olympic";
 
   return (
     <motion.div
       layoutId={`circle-container-${circle.id}`}
       className={`relative ${isExpanded ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-    // animate={oscillationParams} // Removed oscillation for strict stable layout
     >
       <motion.div
         onClick={onExpand}
         className={`
-          neu-circle flex items-center justify-center
-          cursor-pointer
-          transition-transform duration-200 ease-out
+          ${isOlympic
+            ? "flex items-center justify-center cursor-pointer rounded-full bg-background/40 backdrop-blur-sm transition-all duration-300"
+            : "neu-circle flex items-center justify-center cursor-pointer transition-transform duration-200 ease-out"
+          }
         `}
         style={{
           width: `${size}px`,
           height: `${size}px`,
+          ...(isOlympic ? {
+            border: `3px solid ${borderColor}`,
+            boxShadow: `0 0 15px ${borderColor}20`,
+          } : {}),
           willChange: 'transform',
           WebkitTransform: 'translate3d(0, 0, 0)'
         }}
         whileHover={isMobile ? {} : {
-          scale: 1.03,
+          scale: 1.05,
+          ...(isOlympic ? { boxShadow: `0 0 25px ${borderColor}40` } : {}),
           transition: { duration: 0.1, ease: "easeOut" }
         }}
         whileTap={{
-          scale: isMobile ? 0.97 : 0.96,
+          scale: 0.96,
           transition: { duration: 0.08, ease: "easeOut" }
         }}
       >

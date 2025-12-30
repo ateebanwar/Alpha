@@ -10,9 +10,44 @@ import CircleContent from "./CircleContent";
 import { useOscillation } from "@/hooks/use-oscillation";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympic" }) => {
+const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympic" | "spatial" }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [cameraZ, setCameraZ] = useState(0);
   const isMobile = useIsMobile();
+
+  const OLYMPIC_COLORS = [
+    "#0081C8", // Blue
+    "#FCB131", // Yellow
+    "#000000", // Black
+    "#00A651", // Green
+    "#EE334E", // Red
+  ];
+
+  /* 
+  // Reset camera when entering spatial mode
+  useEffect(() => {
+    if (layoutMode === "spatial") {
+      setCameraZ(0);
+    }
+  }, [layoutMode]);
+
+  // Spatial Mode: Scroll/Zoom handler
+  useEffect(() => {
+    if (layoutMode !== "spatial") return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setCameraZ(prev => {
+        const newZ = prev + e.deltaY;
+        // Limit scroll range to cover all circles
+        return Math.max(0, Math.min(newZ, 20000));
+      });
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [layoutMode]);
+  */
 
   // Navbar circle IDs
   // Priority Order for Top Row
@@ -52,7 +87,6 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     setExpandedId(null);
   };
 
-  // Responsive Grid Layout
   // Responsive Grid Layout
   const [windowSize, setWindowSize] = useState({
     width: 1200,
@@ -140,7 +174,6 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
       };
     }
 
-    // Fallback (should not reach)
     return {
       cols: 4,
       circleSize: 80,
@@ -167,17 +200,6 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     if (layoutMode !== "olympic") return {};
 
     const pos = index % 5;
-    // First row (0-2) doesn't need negative margin.
-    // Subsequent rows need to tuck up. 
-    // In our logic: 
-    // Row 1: 0,1,2
-    // Row 2: 3,4
-    // Row 3: 5,6,7
-    // etc.
-    // The "isFirstRow" check effectively is index < 3. 
-    // But conceptually, every row after the first should tuck.
-
-    // Calculate row number implicitly or just apply to all > 2?
     const tuckAmount = size * 0.25;
     const marginTop = index < 3 ? 0 : -tuckAmount;
 
@@ -191,13 +213,68 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     return { gridColumn: col, marginTop: `${marginTop}px` };
   };
 
+  /* 
+  // Generate random 3D positions for Spatial Mode
+  const spatialPositions = useMemo(() => {
+    return sortedCircleData.map((_, i) => {
+      const pseudoRandom = (seed: number) => {
+        const x = Math.sin(seed) * 10000;
+        return x - Math.floor(x);
+      };
+      const r1 = pseudoRandom(i * 12.34);
+      const r2 = pseudoRandom(i * 56.78);
+
+      const x = (r1 - 0.5) * 80; // -40vw to +40vw
+      const y = (r2 - 0.5) * 60; // -30vh to +30vh
+      const z = -500 - (i * 800);
+
+      return { x, y, z };
+    });
+  }, [sortedCircleData]);
+
+  const getSpatialStyle = (index: number) => {
+    if (layoutMode !== "spatial") return {};
+    const pos = spatialPositions[index];
+    const relativeZ = pos.z + cameraZ;
+
+    if (relativeZ > 200) return { opacity: 0, pointerEvents: 'none' as const };
+
+    const dist = Math.abs(relativeZ);
+    let opacity = 0;
+    let scale = 0;
+
+    if (relativeZ <= 0) {
+      const visibleRange = 2500;
+      const normalizedDist = Math.min(dist, visibleRange) / visibleRange;
+      opacity = 1 - Math.pow(normalizedDist, 1.5);
+      const isFocused = relativeZ > -400 && relativeZ < 0;
+      scale = isFocused ? 1.0 : 0.8;
+    } else {
+      opacity = 1 - (relativeZ / 200);
+      scale = 1 + (relativeZ / 100);
+    }
+
+    return {
+      position: 'absolute' as const,
+      left: '50%',
+      top: '50%',
+      transform: `translate3d(calc(-50% + ${pos.x}vw), calc(-50% + ${pos.y}vh), ${relativeZ}px) scale(${scale})`,
+      opacity,
+      zIndex: Math.round(relativeZ + 20000),
+      pointerEvents: (opacity > 0.5 ? 'auto' : 'none') as any,
+      transition: 'transform 0.1s linear, opacity 0.1s linear',
+      willChange: 'transform, opacity'
+    };
+  };
+  */
+
   // Generate oscillation parameters for each circle
   const oscillationParams = useMemo(() => {
     return sortedCircleData.map((circle, index) => ({
-      amplitude: Math.random() * 5, // 0-5px
-      frequency: 0.001 + Math.random() * 0.003, // Slow, smooth frequency for gentle movement
-      phase: Math.random() * Math.PI * 2, // Random phase
-      angle: Math.random() * Math.PI * 2, // Random direction
+      amplitude: Math.random() * 5,
+      frequency: 0.001 + Math.random() * 0.003,
+      phase: Math.random() * Math.PI * 2,
+      angle: Math.random() * Math.PI * 2,
     }));
   }, [sortedCircleData]);
 
@@ -264,35 +341,57 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
               display: 'flex',
               alignItems: isStaggered ? 'center' : 'flex-start',
               justifyContent: 'center',
-              overflow: isStaggered ? 'hidden' : 'auto', // Allow scroll on mobile grid
+              overflow: isStaggered ? 'hidden' : 'auto',
               height: '100%'
             }}
           >
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: `repeat(${cols}, ${gridCellSize}px)`,
-                gap: `${horizontalGap}px`,
-                padding: `${wrapperPadding}px`,
+                gridTemplateColumns: layoutMode === "spatial" ? 'none' : `repeat(${cols}, ${gridCellSize}px)`,
+                gap: layoutMode === "spatial" ? 0 : `${horizontalGap}px`,
+                padding: layoutMode === "spatial" ? 0 : `${wrapperPadding}px`,
                 width: '100%',
                 justifyContent: 'center',
-                alignContent: 'center', // Center vertically if logic leaves small gaps
-                // Visual centering helper if content is smaller
+                alignContent: 'center',
                 margin: 'auto',
-                // Overrides for Olympic mode container
+                height: '100%',
+                position: 'relative',
                 ...(layoutMode === "olympic" ? {
-                  display: 'block', // Reset grid for the outer container so chunks stack
-                  height: '100%',
-                  padding: 0,
+                  display: 'block',
                   overflowY: 'auto',
                   scrollSnapType: 'y mandatory',
-                  gridTemplateColumns: 'none', // Remove grid def from container
+                  gridTemplateColumns: 'none',
                   gap: 0,
                 } : {})
               }}
             >
+              {/* 
+              layoutMode === "spatial" ? (
+                // Spatial Mode
+                sortedCircleData.map((circle, index) => (
+                  <div key={circle.id} style={(getSpatialStyle as any)(index)}>
+                    <CircleWrapper
+                      circle={circle}
+                      index={index}
+                      cols={1}
+                      isStaggered={false}
+                      circleSize={180}
+                      verticalGap={0}
+                      navCircleIds={navCircleIds}
+                      expandedId={expandedId}
+                      onExpand={() => handleExpand(circle.id)}
+                      oscillationParams={{ amplitude: 0, frequency: 0, phase: 0, angle: 0 }}
+                      overrideStyle={{ width: '180px', height: '180px' }}
+                      variant="olympic"
+                      borderColor={OLYMPIC_COLORS[index % 5]}
+                    />
+                  </div>
+                ))
+              ) : 
+              */}
               {layoutMode === "olympic" ? (
-                // Olympic Mode: Render chunks in viewports
+                // Olympic Mode
                 olympicChunks.map((chunk, chunkIndex) => (
                   <div
                     key={chunkIndex}
@@ -301,7 +400,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
                       width: '100%',
                       scrollSnapAlign: 'start',
                       display: 'flex',
-                      alignItems: 'center', // Vertically center the grid in the viewport
+                      alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                     }}
@@ -331,8 +430,10 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
                             navCircleIds={navCircleIds}
                             expandedId={expandedId}
                             onExpand={() => handleExpand(circle.id)}
-                            oscillationParams={oscillationParams[globalIndex] || oscillationParams[0]} // Fallback safety
-                            overrideStyle={getOlympicStyle(i, circleSize)} // Pass local index (0-4)
+                            oscillationParams={oscillationParams[globalIndex] || oscillationParams[0]}
+                            overrideStyle={getOlympicStyle(i, circleSize)}
+                            variant="olympic"
+                            borderColor={OLYMPIC_COLORS[globalIndex % 5]}
                           />
                         );
                       })}
@@ -340,7 +441,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
                   </div>
                 ))
               ) : (
-                // Static Mode: Render all in one grid
+                // Static Mode
                 sortedCircleData.map((circle, index) => (
                   <CircleWrapper
                     key={circle.id}
@@ -355,6 +456,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
                     onExpand={() => handleExpand(circle.id)}
                     oscillationParams={oscillationParams[index]}
                     overrideStyle={{}}
+                    variant="default"
                   />
                 ))
               )}
@@ -374,28 +476,16 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
             style={{ willChange: 'transform' }}
           >
             <div className="relative w-full max-w-4xl h-[85vh] md:h-[90vh] bg-card rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border border-white/10">
-              {/* Background decorative elements */}
               <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />
-
-              {/* Header */}
               <motion.div
                 initial={{ opacity: 0, y: isMobile ? -2 : -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: isMobile ? 0.12 : 0.16,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
+                transition={{ duration: isMobile ? 0.12 : 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b border-white/5 bg-card/50 backdrop-blur-sm"
-                style={{
-                  willChange: 'opacity, transform',
-                  WebkitTransform: 'translate3d(0, 0, 0)',
-                  transform: 'translate3d(0, 0, 0)',
-                  backfaceVisibility: 'hidden'
-                }}
               >
                 <button
                   onClick={handleClose}
-                  className="neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150 hover:scale-105 active:scale-95"
+                  className="neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
                   autoFocus
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -405,22 +495,11 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
                   {activeCircle.label}
                 </div>
               </motion.div>
-
-              {/* Scrollable Content */}
               <motion.div
                 initial={{ opacity: 0, y: isMobile ? 4 : 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: isMobile ? 0.14 : 0.18,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
+                transition={{ duration: isMobile ? 0.14 : 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="relative flex-1 overflow-y-auto z-10 custom-scrollbar overscroll-contain p-4 md:p-8"
-                style={{
-                  willChange: 'opacity, transform',
-                  WebkitTransform: 'translate3d(0, 0, 0)',
-                  transform: 'translate3d(0, 0, 0)',
-                  backfaceVisibility: 'hidden'
-                }}
               >
                 <CircleContent circle={activeCircle} isMobile={isMobile} />
               </motion.div>

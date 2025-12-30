@@ -22,6 +22,8 @@ interface CircleWrapperProps {
     angle: number;
   };
   overrideStyle?: React.CSSProperties;
+  variant?: "default" | "olympic";
+  borderColor?: string;
 }
 
 const CircleWrapper = ({
@@ -36,6 +38,8 @@ const CircleWrapper = ({
   onExpand,
   oscillationParams,
   overrideStyle,
+  variant,
+  borderColor,
 }: CircleWrapperProps) => {
   const row = Math.floor(index / cols);
   const isOddRow = isStaggered && row % 2 === 1;
@@ -69,6 +73,8 @@ const CircleWrapper = ({
         isExpanded={expandedId === circle.id}
         onExpand={onExpand}
         size={circleSize}
+        variant={variant}
+        borderColor={borderColor}
       />
     </motion.div>
   );
