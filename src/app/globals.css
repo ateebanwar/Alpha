@@ -231,10 +231,52 @@
     background-color: #3EA4C9;
   }
 
-  /* Firefox support */
+  /* Firefox support for custom-scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #3EA4C9 transparent;
+  }
+
+  /* Olympic Scrollbar (Olympic State Only) */
+  .olympic-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .olympic-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  .olympic-scrollbar::-webkit-scrollbar-thumb {
+    background: o-linear-gradient(to bottom,
+        #0081C8 0%,
+        /* Blue */
+        #FCB131 25%,
+        /* Yellow */
+        #414141 50%,
+        /* Black */
+        #00A651 75%,
+        /* Green */
+        #EE334E 100%
+        /* Red */
+      );
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .olympic-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom,
+        #0081C8 0%,
+        #FCB131 25%,
+        #555555 50%,
+        #00A651 75%,
+        #EE334E 100%);
+  }
+
+  /* Firefox support for olympic-scrollbar */
+  .olympic-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #0081C8 rgba(255, 255, 255, 0.05);
   }
 }
 

@@ -192,7 +192,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
           expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="absolute inset-0"
+        className={`absolute inset-0 ${layoutMode === "olympic" ? "olympic-scrollbar" : ""}`}
         style={{
           overflowY: layoutMode === "olympic" ? "auto" : "visible",
           scrollSnapType: layoutMode === "olympic" ? "y mandatory" : "none",
