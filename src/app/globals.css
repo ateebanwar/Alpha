@@ -248,7 +248,7 @@
   }
 
   .olympic-scrollbar::-webkit-scrollbar-thumb {
-    background: o-linear-gradient(to bottom,
+    background: linear-gradient(to bottom,
         #0081C8 0%,
         /* Blue */
         #FCB131 25%,

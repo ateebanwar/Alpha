@@ -135,6 +135,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
 
       const oGridTotalWidth = (3 * 2 * oGridCellSize) + (2 * oHorizontalGap);
       const oChunkStartX = (windowSize.width - oGridTotalWidth) / 2;
+      // In sticky slide mode, each chunk's Y is centered in its own 100vh container
       const oChunkStartY = (windowSize.height - (2 * oSize - tuckAmount)) / 2 + (chunkIndex * windowSize.height);
 
       let ox = 0;
@@ -175,6 +176,17 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     expandedId ? sortedCircleData.find(c => c.id === expandedId) : null,
     [expandedId, sortedCircleData]);
 
+  const chunks = useMemo(() => {
+    const chunked = [];
+    for (let i = 0; i < sortedCircleData.length; i += 5) {
+      const data = sortedCircleData.slice(i, i + 5);
+      const positions = circlePositions.slice(i, i + 5);
+      const osc = oscillationParams.slice(i, i + 5);
+      chunked.push({ data, positions, osc, startIndex: i });
+    }
+    return chunked;
+  }, [sortedCircleData, circlePositions, oscillationParams]);
+
   useEffect(() => {
     if (layoutMode === "static" && containerRef.current) {
       containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -195,14 +207,14 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
         className={`absolute inset-0 ${layoutMode === "olympic" ? "olympic-scrollbar" : ""}`}
         style={{
           overflowY: layoutMode === "olympic" ? "auto" : "visible",
-          scrollSnapType: layoutMode === "olympic" ? "y mandatory" : "none",
+          scrollSnapType: "none", // Manual smooth scroll control
           pointerEvents: expandedId ? 'none' : 'auto'
         }}
       >
         <div
           className="relative w-full"
           style={{
-            height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * 100}vh` : "100%",
+            height: layoutMode === "olympic" ? `${chunks.length * 100}vh` : "100%",
             minHeight: "100vh"
           }}
         >
@@ -221,36 +233,37 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
             </div>
           )}
 
-          {circlePositions.map((pos, index) => (
-            <CircleWrapper
-              key={pos.id}
-              circle={sortedCircleData[index]}
-              index={index}
-              x={pos.x}
-              y={pos.y}
-              circleSize={pos.size}
-              navCircleIds={navCircleIds}
-              expandedId={expandedId}
-              onExpand={() => handleExpand(pos.id)}
-              oscillationParams={oscillationParams[index]}
-              variant={pos.variant}
-              borderColor={layoutMode === "olympic" ? pos.color : undefined}
-            />
-          ))}
-
-          {/* Snap points for Olympic mode */}
-          {layoutMode === "olympic" && Array.from({ length: Math.ceil(sortedCircleData.length / 5) }).map((_, i) => (
+          {chunks.map((chunk, chunkIndex) => (
             <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: `${i * 100}vh`,
-                height: '100vh',
-                width: '1px',
-                scrollSnapAlign: 'start',
-                pointerEvents: 'none'
-              }}
-            />
+              key={`chunk-container-${chunkIndex}`}
+              className={layoutMode === "olympic" ? "h-screen relative" : "absolute inset-0"}
+              style={{ zIndex: chunkIndex + 1 }}
+            >
+              <div className={layoutMode === "olympic" ? "sticky top-0 h-screen w-full" : "h-full w-full"}>
+                {chunk.data.map((circle, i) => {
+                  const pos = chunk.positions[i];
+                  // Adjust Y to be relative to the 100vh slide container
+                  const displayY = layoutMode === "olympic" ? pos.y - (chunkIndex * windowSize.height) : pos.y;
+
+                  return (
+                    <CircleWrapper
+                      key={circle.id}
+                      circle={circle}
+                      index={chunk.startIndex + i}
+                      x={pos.x}
+                      y={displayY}
+                      circleSize={pos.size}
+                      navCircleIds={navCircleIds}
+                      expandedId={expandedId}
+                      onExpand={() => handleExpand(circle.id)}
+                      oscillationParams={chunk.osc[i]}
+                      variant={pos.variant}
+                      borderColor={layoutMode === "olympic" ? pos.color : undefined}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
       </motion.div>
@@ -271,15 +284,15 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
               {!(layoutMode === "olympic") && <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />}
               <div
                 className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${layoutMode === "olympic"
-                    ? "border-white/10 bg-black/50 backdrop-blur-md"
-                    : "border-white/5 bg-card/50 backdrop-blur-sm"
+                  ? "border-white/10 bg-black/50 backdrop-blur-md"
+                  : "border-white/5 bg-card/50 backdrop-blur-sm"
                   }`}
               >
                 <button
                   onClick={handleClose}
                   className={`${layoutMode === "olympic"
-                      ? "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-150 border border-white/20 rounded-xl hover:bg-white/5"
-                      : "neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
+                    ? "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-150 border border-white/20 rounded-xl hover:bg-white/5"
+                    : "neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
                     }`}
                   style={layoutMode === "olympic" ? {
                     textShadow: '0 0 8px rgba(255, 255, 255, 0.4)'
