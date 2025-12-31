@@ -75,12 +75,12 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     const isSmall = windowSize.width < 640;
 
     // --- OLYMPIC CALCULATIONS ---
-    const oWidthConstraint = (windowSize.width - 80) / 3.2;
-    const oHeightConstraint = (windowSize.height - 100) / 2.2;
+    const oWidthConstraint = (windowSize.width - (isSmall ? 40 : 80)) / 3.2;
+    const oHeightConstraint = (windowSize.height - (isSmall ? 60 : 100)) / 2.2;
     const oDeterminedSize = Math.min(oWidthConstraint, oHeightConstraint);
-    const oSize = Math.max(oDeterminedSize, 80);
+    const oSize = isSmall ? Math.max(oDeterminedSize, 100) : Math.max(oDeterminedSize, 80);
     const oGridCellSize = oSize / 2;
-    const oHorizontalGap = isSmall ? 10 : 20;
+    const oHorizontalGap = isSmall ? 12 : 20;
 
     // --- STATIC CALCULATIONS ---
     let sCols = 4;
@@ -175,6 +175,14 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     expandedId ? sortedCircleData.find(c => c.id === expandedId) : null,
     [expandedId, sortedCircleData]);
 
+  const olympicChunks = useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < sortedCircleData.length; i += 5) {
+      chunks.push(circlePositions.slice(i, i + 5));
+    }
+    return chunks;
+  }, [circlePositions, sortedCircleData.length]);
+
   useEffect(() => {
     if (layoutMode === "static" && containerRef.current) {
       containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -221,37 +229,60 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
             </div>
           )}
 
-          {circlePositions.map((pos, index) => (
-            <CircleWrapper
-              key={pos.id}
-              circle={sortedCircleData[index]}
-              index={index}
-              x={pos.x}
-              y={pos.y}
-              circleSize={pos.size}
-              navCircleIds={navCircleIds}
-              expandedId={expandedId}
-              onExpand={() => handleExpand(pos.id)}
-              oscillationParams={oscillationParams[index]}
-              variant={pos.variant}
-              borderColor={layoutMode === "olympic" ? pos.color : undefined}
-            />
-          ))}
-
-          {/* Snap points for Olympic mode */}
-          {layoutMode === "olympic" && Array.from({ length: Math.ceil(sortedCircleData.length / 5) }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: `${i * 100}vh`,
-                height: '100vh',
-                width: '1px',
-                scrollSnapAlign: 'start',
-                pointerEvents: 'none'
-              }}
-            />
-          ))}
+          {layoutMode === "olympic" ? (
+            olympicChunks.map((chunk, chunkIndex) => (
+              <div
+                key={chunkIndex}
+                style={{
+                  position: 'sticky',
+                  top: 0,
+                  height: '100vh',
+                  width: '100%',
+                  scrollSnapAlign: 'start',
+                  zIndex: chunkIndex + 10,
+                  pointerEvents: 'none',
+                }}
+              >
+                {chunk.map((pos, idxInChunk) => {
+                  const globalIndex = chunkIndex * 5 + idxInChunk;
+                  return (
+                    <div key={pos.id} style={{ pointerEvents: 'auto' }}>
+                      <CircleWrapper
+                        circle={sortedCircleData[globalIndex]}
+                        index={globalIndex}
+                        x={pos.x}
+                        y={pos.y - (chunkIndex * windowSize.height)}
+                        circleSize={pos.size}
+                        navCircleIds={navCircleIds}
+                        expandedId={expandedId}
+                        onExpand={() => handleExpand(pos.id)}
+                        oscillationParams={oscillationParams[globalIndex]}
+                        variant={pos.variant}
+                        borderColor={pos.color}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))
+          ) : (
+            circlePositions.map((pos, index) => (
+              <CircleWrapper
+                key={pos.id}
+                circle={sortedCircleData[index]}
+                index={index}
+                x={pos.x}
+                y={pos.y}
+                circleSize={pos.size}
+                navCircleIds={navCircleIds}
+                expandedId={expandedId}
+                onExpand={() => handleExpand(pos.id)}
+                oscillationParams={oscillationParams[index]}
+                variant={pos.variant}
+                borderColor={layoutMode === "olympic" ? pos.color : undefined}
+              />
+            ))
+          )}
         </div>
       </motion.div>
 
@@ -262,24 +293,24 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
             animate={{ translateZ: 0, scale: 1, y: 0, opacity: 1, zIndex: 2 }}
             exit={{ translateZ: -100, scale: 0.8, y: -100, opacity: 0, zIndex: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="absolute inset-0 flex items-center justify-center p-4 z-50 pointer-events-none"
+            className="absolute inset-0 flex items-center justify-center p-2 md:p-4 z-50 pointer-events-none"
           >
             <div
-              className={`relative w-full max-w-4xl h-[85vh] md:h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border ${layoutMode === "olympic" ? "bg-[#080808] border-white/10" : "bg-card border-white/10"
+              className={`relative w-full max-w-4xl h-[88dvh] md:h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border ${layoutMode === "olympic" ? "bg-[#080808] border-white/10" : "bg-card border-white/10"
                 }`}
             >
               {!(layoutMode === "olympic") && <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />}
               <div
                 className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${layoutMode === "olympic"
-                    ? "border-white/10 bg-black/50 backdrop-blur-md"
-                    : "border-white/5 bg-card/50 backdrop-blur-sm"
+                  ? "border-white/10 bg-black/50 backdrop-blur-md"
+                  : "border-white/5 bg-card/50 backdrop-blur-sm"
                   }`}
               >
                 <button
                   onClick={handleClose}
                   className={`${layoutMode === "olympic"
-                      ? "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-150 border border-white/20 rounded-xl hover:bg-white/5"
-                      : "neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
+                    ? "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-150 border border-white/20 rounded-xl hover:bg-white/5"
+                    : "neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
                     }`}
                   style={layoutMode === "olympic" ? {
                     textShadow: '0 0 8px rgba(255, 255, 255, 0.4)'
