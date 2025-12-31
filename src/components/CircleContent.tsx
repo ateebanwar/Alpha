@@ -4,10 +4,15 @@ import { CircleData } from "@/data/circleData";
 interface CircleContentProps {
   circle: CircleData;
   isMobile?: boolean;
+  isOlympic?: boolean;
 }
 
-const CircleContent = ({ circle, isMobile = false }: CircleContentProps) => {
+const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleContentProps) => {
   const Icon = circle.icon;
+
+  const textBlurGlow = isOlympic ? {
+    textShadow: '0 0 12px rgba(255, 255, 255, 0.4)',
+  } : {};
 
   return (
     <motion.div
@@ -38,13 +43,29 @@ const CircleContent = ({ circle, isMobile = false }: CircleContentProps) => {
           WebkitTransform: 'translate3d(0, 0, 0)'
         }}
       >
-        <div className="neu-circle w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-4">
-          <Icon className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+        <div
+          className={`w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-4 rounded-full ${isOlympic ? "border border-primary/40 bg-primary/10" : "neu-circle"
+            }`}
+          style={isOlympic ? {
+            boxShadow: '0 0 20px rgba(var(--primary-rgb), 0.2)'
+          } : {}}
+        >
+          <div style={isOlympic ? { filter: 'drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.5))' } : {}}>
+            <Icon
+              className={`w-8 h-8 md:w-10 md:h-10 ${isOlympic ? "text-primary brightness-125" : "text-primary"}`}
+            />
+          </div>
         </div>
-        <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
+        <h2
+          className={`text-xl md:text-2xl font-semibold mb-2 ${isOlympic ? "text-white" : "text-foreground"}`}
+          style={textBlurGlow}
+        >
           {circle.content.title}
         </h2>
-        <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto">
+        <p
+          className={`text-sm md:text-base max-w-md mx-auto ${isOlympic ? "text-white/70" : "text-muted-foreground"}`}
+          style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.2)' } : {}}
+        >
           {circle.content.description}
         </p>
       </motion.div>
@@ -77,23 +98,35 @@ const CircleContent = ({ circle, isMobile = false }: CircleContentProps) => {
                   duration: isMobile ? 0.15 : 0.2,
                   ease: [0.4, 0.0, 0.2, 1]
                 }}
-                className="neu-tile flex items-start gap-3 p-4"
+                className={`flex items-start gap-3 p-4 rounded-xl ${isOlympic ? "border border-white/10 bg-white/5" : "neu-tile"
+                  }`}
                 style={{
                   willChange: 'opacity, transform',
                   WebkitTransform: 'translate3d(0, 0, 0)'
                 }}
               >
                 {ItemIcon && (
-                  <div className="neu-circle-pressed w-10 h-10 flex items-center justify-center shrink-0">
-                    <ItemIcon className="w-5 h-5 text-primary" />
+                  <div className={`w-10 h-10 flex items-center justify-center shrink-0 rounded-lg ${isOlympic ? "bg-primary/10" : "neu-circle-pressed"
+                    }`}>
+                    <div style={isOlympic ? { filter: 'drop-shadow(0 0 5px rgba(var(--primary-rgb), 0.4))' } : {}}>
+                      <ItemIcon
+                        className={`w-5 h-5 ${isOlympic ? "text-primary brightness-110" : "text-primary"}`}
+                      />
+                    </div>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground text-sm md:text-base truncate">
+                  <p
+                    className={`font-medium text-sm md:text-base truncate ${isOlympic ? "text-white" : "text-foreground"}`}
+                    style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.3)' } : {}}
+                  >
                     {item.label}
                   </p>
                   {item.description && (
-                    <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                    <p
+                      className={`text-xs md:text-sm mt-0.5 ${isOlympic ? "text-white/60" : "text-muted-foreground"}`}
+                      style={isOlympic ? { textShadow: '0 0 5px rgba(255, 255, 255, 0.2)' } : {}}
+                    >
                       {item.description}
                     </p>
                   )}

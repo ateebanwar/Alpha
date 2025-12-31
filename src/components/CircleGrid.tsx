@@ -264,22 +264,45 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
             transition={{ duration: 0.4, ease: "easeInOut" }}
             className="absolute inset-0 flex items-center justify-center p-4 z-50 pointer-events-none"
           >
-            <div className="relative w-full max-w-4xl h-[85vh] md:h-[90vh] bg-card rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border border-white/10">
-              <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />
-              <div className="relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b border-white/5 bg-card/50 backdrop-blur-sm">
+            <div
+              className={`relative w-full max-w-4xl h-[85vh] md:h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border ${layoutMode === "olympic" ? "bg-[#080808] border-white/10" : "bg-card border-white/10"
+                }`}
+            >
+              {!(layoutMode === "olympic") && <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />}
+              <div
+                className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${layoutMode === "olympic"
+                    ? "border-white/10 bg-black/50 backdrop-blur-md"
+                    : "border-white/5 bg-card/50 backdrop-blur-sm"
+                  }`}
+              >
                 <button
                   onClick={handleClose}
-                  className="neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
+                  className={`${layoutMode === "olympic"
+                      ? "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-150 border border-white/20 rounded-xl hover:bg-white/5"
+                      : "neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150"
+                    }`}
+                  style={layoutMode === "olympic" ? {
+                    textShadow: '0 0 8px rgba(255, 255, 255, 0.4)'
+                  } : {}}
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back
                 </button>
-                <div className="ml-4 font-semibold text-lg text-primary/80">
+                <div
+                  className={`ml-4 font-semibold text-lg ${layoutMode === "olympic" ? "text-white" : "text-primary/80"
+                    }`}
+                  style={layoutMode === "olympic" ? {
+                    textShadow: '0 0 10px rgba(255, 255, 255, 0.5)'
+                  } : {}}
+                >
                   {activeCircle.label}
                 </div>
               </div>
-              <div className="relative flex-1 overflow-y-auto z-10 custom-scrollbar overscroll-contain p-4 md:p-8">
-                <CircleContent circle={activeCircle} isMobile={isMobile} />
+              <div
+                className={`relative flex-1 overflow-y-auto z-10 overscroll-contain p-4 md:p-8 ${layoutMode === "olympic" ? "olympic-scrollbar" : "custom-scrollbar"
+                  }`}
+              >
+                <CircleContent circle={activeCircle} isMobile={isMobile} isOlympic={layoutMode === "olympic"} />
               </div>
             </div>
           </motion.div>
