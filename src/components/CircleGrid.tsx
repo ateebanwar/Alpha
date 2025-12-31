@@ -279,7 +279,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
                 onExpand={() => handleExpand(pos.id)}
                 oscillationParams={oscillationParams[index]}
                 variant={pos.variant}
-                borderColor={layoutMode === "olympic" ? pos.color : undefined}
+                borderColor={undefined}
               />
             ))
           )}
