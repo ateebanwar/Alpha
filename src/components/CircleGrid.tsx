@@ -233,38 +233,58 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
             </div>
           )}
 
-          {chunks.map((chunk, chunkIndex) => (
-            <div
-              key={`chunk-container-${chunkIndex}`}
-              className={layoutMode === "olympic" ? "h-screen relative" : "absolute inset-0"}
-              style={{ zIndex: chunkIndex + 1 }}
-            >
-              <div className={layoutMode === "olympic" ? "sticky top-0 h-screen w-full" : "h-full w-full"}>
-                {chunk.data.map((circle, i) => {
-                  const pos = chunk.positions[i];
-                  // Adjust Y to be relative to the 100vh slide container
-                  const displayY = layoutMode === "olympic" ? pos.y - (chunkIndex * windowSize.height) : pos.y;
+          {layoutMode === "static" ? (
+            // In static mode, render all circles in a flat list to prevent overlapping containers from blocking interaction
+            circlePositions.map((pos, index) => (
+              <CircleWrapper
+                key={pos.id}
+                circle={sortedCircleData[index]}
+                index={index}
+                x={pos.x}
+                y={pos.y}
+                circleSize={pos.size}
+                navCircleIds={navCircleIds}
+                expandedId={expandedId}
+                onExpand={() => handleExpand(pos.id)}
+                oscillationParams={oscillationParams[index]}
+                variant={pos.variant}
+                borderColor={undefined}
+              />
+            ))
+          ) : (
+            // In olympic mode, use the sticky slide containers
+            chunks.map((chunk, chunkIndex) => (
+              <div
+                key={`chunk-container-${chunkIndex}`}
+                className="h-screen relative"
+                style={{ zIndex: chunkIndex + 1 }}
+              >
+                <div className="sticky top-0 h-screen w-full">
+                  {chunk.data.map((circle, i) => {
+                    const pos = chunk.positions[i];
+                    const displayY = pos.y - (chunkIndex * windowSize.height);
 
-                  return (
-                    <CircleWrapper
-                      key={circle.id}
-                      circle={circle}
-                      index={chunk.startIndex + i}
-                      x={pos.x}
-                      y={displayY}
-                      circleSize={pos.size}
-                      navCircleIds={navCircleIds}
-                      expandedId={expandedId}
-                      onExpand={() => handleExpand(circle.id)}
-                      oscillationParams={chunk.osc[i]}
-                      variant={pos.variant}
-                      borderColor={layoutMode === "olympic" ? pos.color : undefined}
-                    />
-                  );
-                })}
+                    return (
+                      <CircleWrapper
+                        key={circle.id}
+                        circle={circle}
+                        index={chunk.startIndex + i}
+                        x={pos.x}
+                        y={displayY}
+                        circleSize={pos.size}
+                        navCircleIds={navCircleIds}
+                        expandedId={expandedId}
+                        onExpand={() => handleExpand(circle.id)}
+                        oscillationParams={chunk.osc[i]}
+                        variant={pos.variant}
+                        borderColor={pos.color}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </motion.div>
 
