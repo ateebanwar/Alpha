@@ -175,6 +175,12 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     expandedId ? sortedCircleData.find(c => c.id === expandedId) : null,
     [expandedId, sortedCircleData]);
 
+  useEffect(() => {
+    if (layoutMode === "static" && containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [layoutMode]);
+
   if (!isMounted) return <div className="w-full h-full" />;
 
   return (
@@ -188,8 +194,9 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="absolute inset-0"
         style={{
-          overflowY: layoutMode === "olympic" ? "auto" : "hidden",
-          scrollSnapType: layoutMode === "olympic" ? "y mandatory" : "none"
+          overflowY: layoutMode === "olympic" ? "auto" : "visible",
+          scrollSnapType: layoutMode === "olympic" ? "y mandatory" : "none",
+          pointerEvents: expandedId ? 'none' : 'auto'
         }}
       >
         <div
@@ -227,7 +234,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
               onExpand={() => handleExpand(pos.id)}
               oscillationParams={oscillationParams[index]}
               variant={pos.variant}
-              borderColor={pos.color}
+              borderColor={layoutMode === "olympic" ? pos.color : undefined}
             />
           ))}
 

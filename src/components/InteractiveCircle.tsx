@@ -32,11 +32,10 @@ const InteractiveCircle = ({
   const isMobile = useIsMobile();
   const isOlympic = variant === "olympic";
 
-  // Base circle styles optimized for GPU acceleration
+  // Base circle styles optimized for GPU acceleration and strict state isolation
   const circleStyle: React.CSSProperties = {
     width: `${size}px`,
     height: `${size}px`,
-    // Remove individual CSS transitions to let Framer Motion handle them smoothly
     ...(isOlympic ? {
       border: `4px solid ${borderColor}`,
       background: '#080808',
@@ -48,6 +47,10 @@ const InteractiveCircle = ({
         0 0 50px ${borderColor}44
       `,
     } : {
+      // Explicitly reset ALL Olympic styles to ensure 100% clean state
+      border: 'none',
+      background: '', // Resets to .neu-circle styles
+      boxShadow: '',  // Resets to .neu-circle styles
       willChange: 'transform',
     })
   };
@@ -56,7 +59,12 @@ const InteractiveCircle = ({
     color: '#ffffff',
     textShadow: '0 0 8px rgba(255, 255, 255, 0.6)',
     filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.4))',
-  } : {};
+  } : {
+    // Explicitly reset glow effects
+    color: '',
+    textShadow: 'none',
+    filter: 'none',
+  };
 
   return (
     <motion.div
@@ -81,7 +89,10 @@ const InteractiveCircle = ({
               0 0 50px ${borderColor}cc,
               0 0 80px ${borderColor}66
             `
-          } : {}),
+          } : {
+            // Ensure no Olympic shadows leak into hover state of default mode
+            boxShadow: '',
+          }),
           transition: { duration: 0.15, ease: "easeOut" }
         }}
         whileTap={{
