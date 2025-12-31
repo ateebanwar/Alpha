@@ -140,7 +140,10 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
 
       const oGridTotalWidth = (3 * 2 * oGridCellSize) + (2 * oHorizontalGap);
       const oChunkStartX = (windowSize.width - oGridTotalWidth) / 2;
-      const oChunkStartY = (availableHeight - (2 * oSize - tuckAmount)) / 2 + (chunkIndex * availableHeight);
+
+      // Optical centering: shift slightly upward on mobile (availableHeight * 0.45 instead of 0.5)
+      const verticalCenterOffset = isSmall ? availableHeight * 0.45 : availableHeight * 0.5;
+      const oChunkStartY = verticalCenterOffset - ((2 * oSize - tuckAmount) / 2) + (chunkIndex * availableHeight);
 
       let ox = 0;
       let oy = 0;
@@ -212,14 +215,14 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
         className={`absolute inset-0 ${layoutMode === "olympic" ? "olympic-scrollbar" : ""}`}
         style={{
           overflowY: layoutMode === "olympic" ? "auto" : "visible",
-          scrollSnapType: layoutMode === "olympic" ? (isSmall ? "y proximity" : "y mandatory") : "none",
+          scrollSnapType: layoutMode === "olympic" ? "y proximity" : "none",
           pointerEvents: expandedId ? 'none' : 'auto'
         }}
       >
         <div
           className="relative w-full"
           style={{
-            height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * 100}vh` : "100%",
+            height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * (windowSize.height - currentHeaderHeight)}px` : "100%",
             minHeight: "100vh"
           }}
         >
