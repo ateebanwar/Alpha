@@ -1,16 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import CircleGrid from "@/components/CircleGrid";
 
 export default function HomeClient() {
-    const [layoutMode, setLayoutMode] = useState<"static" | "olympic" /* | "spatial" */>("static");
+    const [layoutMode, setLayoutMode] = useState<"static" | "olympic">("static");
 
     return (
-        <main
-            className={`fixed inset-0 flex flex-col p-0 transition-colors duration-300 ${layoutMode === "olympic" ? "bg-black" : "bg-background"
-                }`}
-        >
+        <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
+            {/* Optimized Background Layer */}
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={layoutMode}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    className="absolute inset-0 z-0"
+                    style={{
+                        backgroundColor: layoutMode === "olympic" ? "#000000" : "hsl(var(--background))",
+                    }}
+                />
+            </AnimatePresence>
+
             <header className="fixed top-[10px] left-0 right-0 z-30 flex flex-col md:flex-row items-center justify-center pointer-events-none px-4 md:px-0 gap-4 md:gap-0">
                 <h1
                     className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-center md:text-left md:mr-4 transition-colors duration-300 ${layoutMode === "olympic" ? "text-white" : "text-foreground"
@@ -34,8 +47,8 @@ export default function HomeClient() {
                 </div>
             </header>
 
-            <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden">
-                <CircleGrid layoutMode={layoutMode as any} />
+            <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
+                <CircleGrid layoutMode={layoutMode} />
             </div>
         </main>
     );

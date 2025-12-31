@@ -8,10 +8,9 @@ import { useOscillation } from "@/hooks/use-oscillation";
 interface CircleWrapperProps {
   circle: CircleData;
   index: number;
-  cols: number;
-  isStaggered: boolean;
+  x: number;
+  y: number;
   circleSize: number;
-  verticalGap: number;
   navCircleIds: string[];
   expandedId: string | null;
   onExpand: () => void;
@@ -21,7 +20,6 @@ interface CircleWrapperProps {
     phase: number;
     angle: number;
   };
-  overrideStyle?: React.CSSProperties;
   variant?: "default" | "olympic";
   borderColor?: string;
 }
@@ -29,53 +27,53 @@ interface CircleWrapperProps {
 const CircleWrapper = ({
   circle,
   index,
-  cols,
-  isStaggered,
+  x: targetX,
+  y: targetY,
   circleSize,
-  verticalGap,
   navCircleIds,
   expandedId,
   onExpand,
   oscillationParams,
-  overrideStyle,
   variant,
   borderColor,
 }: CircleWrapperProps) => {
-  const row = Math.floor(index / cols);
-  const isOddRow = isStaggered && row % 2 === 1;
-  const { x, y } = useOscillation(oscillationParams);
+  const { x: oscX, y: oscY } = useOscillation(oscillationParams);
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0, scale: 0.8, x: targetX, y: targetY }}
       animate={{
         opacity: 1,
         scale: 1,
+        x: targetX,
+        y: targetY,
       }}
       transition={{
-        opacity: { duration: 0.3, delay: index * 0.02 },
-        scale: { duration: 0.3, delay: index * 0.02 },
+        x: { type: "spring", stiffness: 300, damping: 30, restDelta: 0.001 },
+        y: { type: "spring", stiffness: 300, damping: 30, restDelta: 0.001 },
+        opacity: { duration: 0.3, delay: index * 0.01 },
+        scale: { duration: 0.3, delay: index * 0.01 },
       }}
       style={{
-        x,
-        y,
-        marginLeft: isOddRow ? `${circleSize * 0.5}px` : '0',
-        marginRight: isOddRow ? `-${circleSize * 0.5}px` : '0',
-        marginBottom: `${verticalGap}px`,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: circleSize,
+        height: circleSize,
         zIndex: navCircleIds.includes(circle.id) ? 20 : 10,
-        position: 'relative',
-        ...overrideStyle,
+        willChange: 'transform',
       }}
     >
-      <InteractiveCircle
-        circle={circle}
-        isExpanded={expandedId === circle.id}
-        onExpand={onExpand}
-        size={circleSize}
-        variant={variant}
-        borderColor={borderColor}
-      />
+      <motion.div style={{ x: oscX, y: oscY }}>
+        <InteractiveCircle
+          circle={circle}
+          isExpanded={expandedId === circle.id}
+          onExpand={onExpand}
+          size={circleSize}
+          variant={variant}
+          borderColor={borderColor}
+        />
+      </motion.div>
     </motion.div>
   );
 };
