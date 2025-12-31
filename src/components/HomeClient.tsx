@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CircleGrid from "@/components/CircleGrid";
+import Carousel3D from "@/components/Carousel3D";
 
 export default function HomeClient() {
-    const [layoutMode, setLayoutMode] = useState<"static" | "olympic">("static");
+    const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel">("static");
 
     return (
         <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
@@ -39,16 +40,32 @@ export default function HomeClient() {
                 <div className={`pointer-events-auto flex items-center backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-lg md:ml-4 gap-2 transition-colors duration-300 ${layoutMode === "olympic" ? "bg-white/5 border-white/20" : "bg-background/50 border-white/10"
                     }`}>
                     <button
-                        onClick={() => setLayoutMode(prev => prev === "static" ? "olympic" : "static")}
-                        className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all shadow-sm whitespace-nowrap"
+                        onClick={() => setLayoutMode("static")}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${layoutMode === "static" ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground hover:bg-primary/10"}`}
                     >
-                        {layoutMode === "static" ? "Olympic" : "Default"}
+                        Default
+                    </button>
+                    <button
+                        onClick={() => setLayoutMode("olympic")}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${layoutMode === "olympic" ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground hover:bg-primary/10"}`}
+                    >
+                        Olympic
+                    </button>
+                    <button
+                        onClick={() => setLayoutMode("3d-carousel")}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${layoutMode === "3d-carousel" ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground hover:bg-primary/10"}`}
+                    >
+                        3D View
                     </button>
                 </div>
             </header>
 
             <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
-                <CircleGrid layoutMode={layoutMode} />
+                {layoutMode === "3d-carousel" ? (
+                    <Carousel3D />
+                ) : (
+                    <CircleGrid layoutMode={layoutMode} />
+                )}
             </div>
         </main>
     );
