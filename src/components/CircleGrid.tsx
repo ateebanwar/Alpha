@@ -75,12 +75,17 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     const isSmall = windowSize.width < 640;
 
     // --- OLYMPIC CALCULATIONS ---
-    const oWidthConstraint = (windowSize.width - (isSmall ? 40 : 80)) / 3.2;
-    const oHeightConstraint = (windowSize.height - (isSmall ? 60 : 100)) / 2.2;
+    const mobileHeaderHeight = 140;
+    const desktopHeaderHeight = 70;
+    const currentHeaderHeight = isSmall ? mobileHeaderHeight : desktopHeaderHeight;
+    const availableHeight = windowSize.height - currentHeaderHeight;
+
+    const oWidthConstraint = (windowSize.width - (isSmall ? 20 : 80)) / 3.2;
+    const oHeightConstraint = (availableHeight - (isSmall ? 40 : 100)) / 2.2;
     const oDeterminedSize = Math.min(oWidthConstraint, oHeightConstraint);
-    const oSize = isSmall ? Math.max(oDeterminedSize, 100) : Math.max(oDeterminedSize, 80);
+    const oSize = isSmall ? Math.max(oDeterminedSize, 110) : Math.max(oDeterminedSize, 80);
     const oGridCellSize = oSize / 2;
-    const oHorizontalGap = isSmall ? 12 : 20;
+    const oHorizontalGap = isSmall ? 10 : 20;
 
     // --- STATIC CALCULATIONS ---
     let sCols = 4;
@@ -135,7 +140,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
 
       const oGridTotalWidth = (3 * 2 * oGridCellSize) + (2 * oHorizontalGap);
       const oChunkStartX = (windowSize.width - oGridTotalWidth) / 2;
-      const oChunkStartY = (windowSize.height - (2 * oSize - tuckAmount)) / 2 + (chunkIndex * windowSize.height);
+      const oChunkStartY = (availableHeight - (2 * oSize - tuckAmount)) / 2 + (chunkIndex * availableHeight);
 
       let ox = 0;
       let oy = 0;
@@ -183,6 +188,10 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
     return chunks;
   }, [circlePositions, sortedCircleData.length]);
 
+  const isSmall = windowSize.width < 640;
+  const HEADER_HEIGHTS = { mobile: 140, desktop: 70 };
+  const currentHeaderHeight = isSmall ? HEADER_HEIGHTS.mobile : HEADER_HEIGHTS.desktop;
+
   useEffect(() => {
     if (layoutMode === "static" && containerRef.current) {
       containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -203,7 +212,7 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
         className={`absolute inset-0 ${layoutMode === "olympic" ? "olympic-scrollbar" : ""}`}
         style={{
           overflowY: layoutMode === "olympic" ? "auto" : "visible",
-          scrollSnapType: layoutMode === "olympic" ? "y mandatory" : "none",
+          scrollSnapType: layoutMode === "olympic" ? (isSmall ? "y proximity" : "y mandatory") : "none",
           pointerEvents: expandedId ? 'none' : 'auto'
         }}
       >
@@ -230,41 +239,46 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
           )}
 
           {layoutMode === "olympic" ? (
-            olympicChunks.map((chunk, chunkIndex) => (
-              <div
-                key={chunkIndex}
-                style={{
-                  position: 'sticky',
-                  top: 0,
-                  height: '100vh',
-                  width: '100%',
-                  scrollSnapAlign: 'start',
-                  zIndex: chunkIndex + 10,
-                  pointerEvents: 'none',
-                }}
-              >
-                {chunk.map((pos, idxInChunk) => {
-                  const globalIndex = chunkIndex * 5 + idxInChunk;
-                  return (
-                    <div key={pos.id} style={{ pointerEvents: 'auto' }}>
-                      <CircleWrapper
-                        circle={sortedCircleData[globalIndex]}
-                        index={globalIndex}
-                        x={pos.x}
-                        y={pos.y - (chunkIndex * windowSize.height)}
-                        circleSize={pos.size}
-                        navCircleIds={navCircleIds}
-                        expandedId={expandedId}
-                        onExpand={() => handleExpand(pos.id)}
-                        oscillationParams={oscillationParams[globalIndex]}
-                        variant={pos.variant}
-                        borderColor={pos.color}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            ))
+            olympicChunks.map((chunk, chunkIndex) => {
+              const availableHeight = windowSize.height - currentHeaderHeight;
+
+              return (
+                <div
+                  key={chunkIndex}
+                  style={{
+                    position: 'sticky',
+                    top: 0,
+                    height: `${availableHeight}px`,
+                    width: '100%',
+                    scrollSnapAlign: 'start',
+                    zIndex: chunkIndex + 10,
+                    pointerEvents: 'none',
+                    willChange: 'transform',
+                  }}
+                >
+                  {chunk.map((pos, idxInChunk) => {
+                    const globalIndex = chunkIndex * 5 + idxInChunk;
+                    return (
+                      <div key={pos.id} style={{ pointerEvents: 'auto' }}>
+                        <CircleWrapper
+                          circle={sortedCircleData[globalIndex]}
+                          index={globalIndex}
+                          x={pos.x}
+                          y={pos.y - (chunkIndex * availableHeight)}
+                          circleSize={pos.size}
+                          navCircleIds={navCircleIds}
+                          expandedId={expandedId}
+                          onExpand={() => handleExpand(pos.id)}
+                          oscillationParams={oscillationParams[globalIndex]}
+                          variant={pos.variant}
+                          borderColor={pos.color}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })
           ) : (
             circlePositions.map((pos, index) => (
               <CircleWrapper
