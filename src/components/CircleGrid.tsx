@@ -204,7 +204,15 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
   if (!isMounted) return <div className="w-full h-full" />;
 
   return (
-    <div className="relative w-full h-full overflow-hidden" ref={containerRef}>
+    <div
+      className={`relative w-full h-full ${layoutMode === "olympic" ? "olympic-scrollbar" : "overflow-hidden"}`}
+      ref={containerRef}
+      style={{
+        overflowY: layoutMode === "olympic" ? "scroll" : "hidden",
+        scrollSnapType: layoutMode === "olympic" ? "y proximity" : "none",
+        overscrollBehavior: "contain"
+      }}
+    >
       <motion.div
         animate={expandedId ? "expanded" : "normal"}
         variants={{
@@ -212,11 +220,10 @@ const CircleGrid = ({ layoutMode = "static" }: { layoutMode?: "static" | "olympi
           expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`absolute inset-0 ${layoutMode === "olympic" ? "olympic-scrollbar" : ""}`}
+        className="absolute inset-0"
         style={{
-          overflowY: layoutMode === "olympic" ? "auto" : "visible",
-          scrollSnapType: layoutMode === "olympic" ? "y proximity" : "none",
-          pointerEvents: expandedId ? 'none' : 'auto'
+          pointerEvents: expandedId ? 'none' : 'auto',
+          transformStyle: 'preserve-3d'
         }}
       >
         <div
