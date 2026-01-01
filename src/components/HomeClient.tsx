@@ -4,9 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CircleGrid from "@/components/CircleGrid";
 import Carousel3D from "@/components/Carousel3D";
+import TickerWall from "@/components/TickerWall";
 
 export default function HomeClient() {
-    const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel">("static");
+    const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
 
     return (
         <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
@@ -57,15 +58,34 @@ export default function HomeClient() {
                     >
                         3D View
                     </button>
+                    <button
+                        onClick={() => setLayoutMode("ticker")}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${layoutMode === "ticker" ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground hover:bg-primary/10"}`}
+                    >
+                        Ticker
+                    </button>
                 </div>
             </header>
 
             <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
-                {layoutMode === "3d-carousel" ? (
-                    <Carousel3D />
-                ) : (
-                    <CircleGrid layoutMode={layoutMode} />
-                )}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={layoutMode}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.02 }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        className="w-full h-full"
+                    >
+                        {layoutMode === "3d-carousel" ? (
+                            <Carousel3D />
+                        ) : layoutMode === "ticker" ? (
+                            <TickerWall />
+                        ) : (
+                            <CircleGrid layoutMode={layoutMode as "static" | "olympic"} />
+                        )}
+                    </motion.div>
+                </AnimatePresence>
             </div>
         </main>
     );
