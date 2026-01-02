@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CircleGrid from "@/components/CircleGrid";
-import Carousel3D from "@/components/Carousel3D";
-import TickerWall from "@/components/TickerWall";
+import { circleData } from "@/data/circleData";
+import { LAYOUT_REGISTRY } from "@/layouts/core/LayoutRegistry";
+import CirclePopup from "@/layouts/shared/CirclePopup";
 
 export default function HomeClient() {
     const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+
+    const activeCircle = expandedId ? circleData.find(c => c.id === expandedId) : null;
+
+    // Determine which layout module to load
+    const layoutId = (layoutMode === "static" || layoutMode === "olympic") ? "honeycomb" : layoutMode;
+    const LayoutComponent = LAYOUT_REGISTRY[layoutId]?.component;
 
     return (
         <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
@@ -26,10 +33,15 @@ export default function HomeClient() {
                 />
             </AnimatePresence>
 
-            <header className="fixed top-[10px] left-0 right-0 z-30 flex flex-col md:flex-row items-center justify-center pointer-events-none px-4 md:px-0 gap-4 md:gap-0">
+            <header className={`fixed top-[10px] left-0 right-0 flex flex-col md:flex-row items-center justify-center pointer-events-none px-4 md:px-0 gap-4 md:gap-0 transition-[z-index] duration-300 ${expandedId ? 'z-[99999]' : 'z-30'
+                }`}>
                 <h1
-                    className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-center md:text-left md:mr-4 transition-colors duration-300 ${layoutMode === "olympic" ? "text-white" : "text-foreground"
-                        }`}
+                    className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-center md:text-left md:mr-4 transition-all duration-300 pointer-events-none select-none ${layoutMode === "olympic" ? "text-white" : "text-foreground"
+                        } ${expandedId ? 'opacity-100 scale-100' : ''}`}
+                    style={{
+                        opacity: 1,
+                        textShadow: layoutMode === "olympic" ? "0 0 20px rgba(255,255,255,0.3)" : "none"
+                    }}
                 >
                     Alphabet
                     <span className={`block sm:inline ml-0 sm:ml-2 transition-all duration-300 ${layoutMode === "olympic" ? "text-white bg-none [-webkit-text-fill-color:white]" : "text-gradient"
@@ -38,8 +50,8 @@ export default function HomeClient() {
                     </span>
                 </h1>
 
-                <div className={`pointer-events-auto flex items-center backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-lg md:ml-4 gap-2 transition-colors duration-300 ${layoutMode === "olympic" ? "bg-white/5 border-white/20" : "bg-background/50 border-white/10"
-                    }`}>
+                <div className={`pointer-events-auto flex items-center backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-lg md:ml-4 gap-2 transition-all duration-300 ${layoutMode === "olympic" ? "bg-white/5 border-white/20" : "bg-background/50 border-white/10"
+                    } ${expandedId ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <button
                         onClick={() => setLayoutMode("static")}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm whitespace-nowrap ${layoutMode === "static" ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground hover:bg-primary/10"}`}
@@ -77,16 +89,26 @@ export default function HomeClient() {
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         className="w-full h-full"
                     >
-                        {layoutMode === "3d-carousel" ? (
-                            <Carousel3D />
-                        ) : layoutMode === "ticker" ? (
-                            <TickerWall />
-                        ) : (
-                            <CircleGrid layoutMode={layoutMode as "static" | "olympic"} />
-                        )}
+                        {LayoutComponent ? (
+                            <LayoutComponent
+                                isActive={true}
+                                expandedId={expandedId}
+                                onExpandedChange={setExpandedId}
+                                layoutMode={layoutMode}
+                            />
+                        ) : null}
                     </motion.div>
                 </AnimatePresence>
             </div>
+            <AnimatePresence>
+                {activeCircle && (
+                    <CirclePopup
+                        circle={activeCircle}
+                        onClose={() => setExpandedId(null)}
+                        isOlympic={layoutMode === "olympic"}
+                    />
+                )}
+            </AnimatePresence>
         </main>
     );
 }

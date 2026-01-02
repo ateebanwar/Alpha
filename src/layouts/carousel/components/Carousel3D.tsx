@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { circleData } from "@/data/circleData";
 import { useIsMobile } from "@/hooks/use-mobile";
 import CircleWrapper from "./CircleWrapper";
 
-const Carousel3D = () => {
+const Carousel3D = ({
+    expandedId,
+    onExpandedChange
+}: {
+    expandedId: string | null,
+    onExpandedChange: (id: string | null) => void
+}) => {
     const isMobile = useIsMobile();
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -27,8 +33,6 @@ const Carousel3D = () => {
     const cRadius = isMobile ? 400 : 800;
     const cSize = isMobile ? 180 : 250;
     const cAngleStep = 360 / circleData.length;
-
-    const [expandedId, setExpandedId] = useState<string | null>(null);
 
     const oscillationParams = useMemo(() => {
         return circleData.map(() => ({
@@ -62,14 +66,11 @@ const Carousel3D = () => {
                                 key={circle.id}
                                 circle={circle}
                                 index={index}
-                                x={0}
-                                y={0}
                                 circleSize={cSize}
                                 navCircleIds={["about", "web-dev", "process", "contact"]}
                                 expandedId={expandedId}
-                                onExpand={() => setExpandedId(circle.id)}
+                                onExpand={() => onExpandedChange(circle.id)}
                                 oscillationParams={oscillationParams[index]}
-                                layoutMode="3d-carousel"
                                 carouselAngle={angle}
                                 carouselRadius={cRadius}
                                 parentRotationY={rotationY}

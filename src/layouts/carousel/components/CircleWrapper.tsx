@@ -2,14 +2,12 @@
 
 import { motion, MotionValue, useTransform, useMotionValue } from "framer-motion";
 import { CircleData } from "@/data/circleData";
-import InteractiveCircle from "./InteractiveCircle";
+import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
 import { useOscillation } from "@/hooks/use-oscillation";
 
-interface CircleWrapperProps {
+interface CarouselCircleWrapperProps {
     circle: CircleData;
     index: number;
-    x: number;
-    y: number;
     circleSize: number;
     navCircleIds: string[];
     expandedId: string | null;
@@ -20,42 +18,31 @@ interface CircleWrapperProps {
         phase: number;
         angle: number;
     };
-    variant?: "default" | "olympic";
-    borderColor?: string;
-    // Carousel props
-    layoutMode?: string;
-    carouselAngle?: number;
-    carouselRadius?: number;
-    parentRotationY?: MotionValue<number>;
+    carouselAngle: number;
+    carouselRadius: number;
+    parentRotationY: MotionValue<number>;
 }
 
-const CircleWrapper = ({
+const CarouselCircleWrapper = ({
     circle,
     index,
-    x: targetX,
-    y: targetY,
     circleSize,
     navCircleIds,
     expandedId,
     onExpand,
     oscillationParams,
-    variant,
-    borderColor,
-    layoutMode,
-    carouselAngle = 0,
-    carouselRadius = 800,
+    carouselAngle,
+    carouselRadius,
     parentRotationY,
-}: CircleWrapperProps) => {
+}: CarouselCircleWrapperProps) => {
     const { x: oscX, y: oscY } = useOscillation(oscillationParams);
-    const isCarousel = layoutMode === "3d-carousel" || layoutMode === "carousel";
-
     const fallbackValue = useMotionValue(0);
+    const rotationValue = parentRotationY || fallbackValue;
 
     // Depth-based Opacity
     const opacity = useTransform(
-        parentRotationY || fallbackValue,
+        rotationValue,
         (latestRotation) => {
-            if (!isCarousel) return 1;
             const relAngle = (carouselAngle + latestRotation) % 360;
             const normalizedAngle = ((relAngle + 180 + 360) % 360) - 180;
             const absAngle = Math.abs(normalizedAngle);
@@ -65,9 +52,8 @@ const CircleWrapper = ({
 
     // Depth-based Scale
     const scale = useTransform(
-        parentRotationY || fallbackValue,
+        rotationValue,
         (latestRotation) => {
-            if (!isCarousel) return 1;
             const relAngle = (carouselAngle + latestRotation) % 360;
             const normalizedAngle = ((relAngle + 180 + 360) % 360) - 180;
             const absAngle = Math.abs(normalizedAngle);
@@ -77,9 +63,9 @@ const CircleWrapper = ({
 
     // Z-Index management
     const zIndexVal = useTransform(
-        parentRotationY || fallbackValue,
+        rotationValue,
         (latestRotation) => {
-            if (!isCarousel) return navCircleIds.includes(circle.id) ? 20 : 10;
+            if (navCircleIds.includes(circle.id)) return 20;
             const relAngle = (carouselAngle + latestRotation) % 360;
             const normalizedAngle = ((relAngle + 180 + 360) % 360) - 180;
             return Math.round(200 - Math.abs(normalizedAngle));
@@ -88,9 +74,8 @@ const CircleWrapper = ({
 
     // Depth-based Filters
     const filter = useTransform(
-        parentRotationY || fallbackValue,
+        rotationValue,
         (latestRotation) => {
-            if (!isCarousel) return "blur(0px) brightness(1)";
             const relAngle = (carouselAngle + latestRotation) % 360;
             const normalizedAngle = ((relAngle + 180 + 360) % 360) - 180;
             const absAngle = Math.abs(normalizedAngle);
@@ -104,17 +89,14 @@ const CircleWrapper = ({
 
     return (
         <motion.div
-            layoutId={`circle-${circle.id}`}
+            layoutId={`circle-container-${circle.id}`}
+            layout
             initial={false}
             animate={{
-                x: targetX,
-                y: targetY,
-                rotateY: isCarousel ? carouselAngle : 0,
-                z: isCarousel ? carouselRadius : 0,
+                rotateY: carouselAngle,
+                z: carouselRadius,
             }}
             transition={{
-                x: { type: "spring", stiffness: 300, damping: 30, restDelta: 0.001 },
-                y: { type: "spring", stiffness: 300, damping: 30, restDelta: 0.001 },
                 rotateY: { type: "spring", stiffness: 300, damping: 30 },
                 z: { type: "spring", stiffness: 300, damping: 30 },
             }}
@@ -125,24 +107,23 @@ const CircleWrapper = ({
                 width: circleSize,
                 height: circleSize,
                 zIndex: zIndexVal as any,
-                opacity: isCarousel ? opacity : 1,
-                scale: isCarousel ? scale : 1,
+                opacity: opacity,
+                scale: scale,
                 willChange: 'transform',
                 transformStyle: 'preserve-3d',
             }}
         >
-            <motion.div style={{ x: oscX, y: oscY, filter: isCarousel ? filter : "none", transformStyle: 'preserve-3d' }}>
+            <motion.div style={{ x: oscX, y: oscY, filter: filter, transformStyle: 'preserve-3d' }}>
                 <InteractiveCircle
                     circle={circle}
                     isExpanded={expandedId === circle.id}
                     onExpand={onExpand}
                     size={circleSize}
-                    variant={variant}
-                    borderColor={borderColor}
+                    variant="default" // Carousel uses default style
                 />
             </motion.div>
         </motion.div>
     );
 };
 
-export default CircleWrapper;
+export default CarouselCircleWrapper;
