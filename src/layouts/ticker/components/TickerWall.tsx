@@ -2,8 +2,10 @@
 
 import { useMemo, useRef, useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { circleData } from "@/data/circleData";
-import TickerCard from "./TickerCard";
+import tickerDataRaw from "@/data/tickerData.json";
+import TickerCard, { TickerItem } from "./TickerCard";
+
+const tickerData = tickerDataRaw as TickerItem[];
 
 const TickerWall = ({
     expandedId,
@@ -64,10 +66,10 @@ const TickerWall = ({
         };
     }, [scrollY, expandedId]);
 
-    // Distribute circleData into 4 columns (or 2 on mobile)
+    // Distribute tickerData into 4 columns (or 2 on mobile)
     const columns = useMemo(() => {
         const count = 4;
-        const result = Array.from({ length: count }, () => [...circleData]);
+        const result = Array.from({ length: count }, () => [...tickerData]);
 
         // Shuffle each column a bit so they aren't identical
         return result.map((col, i) => {
@@ -93,7 +95,7 @@ const TickerWall = ({
     return (
         <div
             id="ticker-container"
-            className={`w-full h-full overflow-hidden bg-background px-4 md:px-8 ${expandedId ? 'pointer-events-none' : ''}`}
+            className={`relative w-full h-full overflow-hidden bg-background px-4 md:px-8 ${expandedId ? 'pointer-events-none' : ''}`}
         >
             <div className="flex gap-4 md:gap-8 h-full max-w-[1600px] mx-auto">
                 {columns.map((col, colIndex) => {
@@ -119,11 +121,11 @@ const TickerWall = ({
                                 style={{ y }}
                                 className="flex flex-col gap-4 md:gap-8"
                             >
-                                {col.map((circle, itemIndex) => (
+                                {col.map((item, itemIndex) => (
                                     <TickerCard
-                                        key={`${colIndex}-${circle.id}-${itemIndex}`}
-                                        circle={circle}
-                                        onClick={() => onExpandedChange(circle.id)}
+                                        key={`${colIndex}-${item.id}-${itemIndex}`}
+                                        item={item}
+                                        onClick={() => onExpandedChange(item.id)}
                                     />
                                 ))}
                             </motion.div>

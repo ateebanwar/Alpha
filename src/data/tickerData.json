@@ -1,0 +1,170 @@
+[
+    {
+        "id": "about",
+        "title": "About Us",
+        "category": "about",
+        "icon": "Users",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "experience",
+        "title": "Experience",
+        "category": "about",
+        "icon": "Award",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "web-dev",
+        "title": "Web Application",
+        "category": "service",
+        "icon": "Globe",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "mobile-dev",
+        "title": "Mobile Apps",
+        "category": "service",
+        "icon": "Smartphone",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "backend",
+        "title": "MicroServices",
+        "category": "service",
+        "icon": "Server",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "database",
+        "title": "Database",
+        "category": "service",
+        "icon": "Database",
+        "color": "muted",
+        "backgroundImage": ""
+    },
+    {
+        "id": "cloud",
+        "title": "Azure",
+        "category": "tech",
+        "icon": "Cloud",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "security",
+        "title": "AWS",
+        "category": "tech",
+        "icon": "CloudCogIcon",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "frontend-tech",
+        "title": "UI/UX",
+        "category": "tech",
+        "icon": "Palette",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "devops",
+        "title": "CI/CD",
+        "category": "tech",
+        "icon": "Settings",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "process",
+        "title": "Our Process",
+        "category": "process",
+        "icon": "Layers",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "support",
+        "title": "Support",
+        "category": "process",
+        "icon": "HeartHandshake",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "contact",
+        "title": "Contact",
+        "category": "contact",
+        "icon": "Mail",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "location",
+        "title": "Location",
+        "category": "contact",
+        "icon": "MapPin",
+        "color": "muted",
+        "backgroundImage": ""
+    },
+    {
+        "id": "performance",
+        "title": "Performance",
+        "category": "service",
+        "icon": "Zap",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "consulting",
+        "title": "Consulting",
+        "category": "service",
+        "icon": "Briefcase",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "ai-ml",
+        "title": "AI & ML",
+        "category": "tech",
+        "icon": "Cpu",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "automation",
+        "title": "Automation",
+        "category": "tech",
+        "icon": "Settings",
+        "color": "accent",
+        "backgroundImage": ""
+    },
+    {
+        "id": "data",
+        "title": "Amazon/Fkart",
+        "category": "tech",
+        "icon": "ShoppingCart",
+        "color": "muted",
+        "backgroundImage": ""
+    },
+    {
+        "id": "integration",
+        "title": "Integration",
+        "category": "service",
+        "icon": "GitBranch",
+        "color": "primary",
+        "backgroundImage": ""
+    },
+    {
+        "id": "training",
+        "title": "Training",
+        "category": "process",
+        "icon": "Award",
+        "color": "accent",
+        "backgroundImage": ""
+    }
+]

@@ -1,17 +1,26 @@
-"use client";
-
 import { motion } from "framer-motion";
-import { CircleData } from "@/data/circleData";
+import { getIcon } from "@/utils/iconRegistry";
+
+export interface TickerItem {
+    id: string;
+    title: string;
+    category: string;
+    icon: string;
+    color: string;
+    backgroundImage: string;
+}
 
 interface TickerCardProps {
-    circle: CircleData;
+    item: TickerItem;
     onClick?: () => void;
 }
 
-const TickerCard = ({ circle, onClick }: TickerCardProps) => {
-    // Determine a subtle background gradient or color based on the circle's data
-    const bgColor = circle.color === "primary" ? "bg-primary/10" : circle.color === "accent" ? "bg-accent/10" : "bg-muted/10";
-    const borderColor = circle.color === "primary" ? "border-primary/20" : circle.color === "accent" ? "border-accent/20" : "border-muted/20";
+const TickerCard = ({ item, onClick }: TickerCardProps) => {
+    const Icon = getIcon(item.icon);
+
+    // Determine a subtle background gradient or color based on the item's data
+    const bgColor = item.color === "primary" ? "bg-primary/10" : item.color === "accent" ? "bg-accent/10" : "bg-muted/10";
+    const borderColor = item.color === "primary" ? "border-primary/20" : item.color === "accent" ? "border-accent/20" : "border-muted/20";
 
     return (
         <motion.div
@@ -26,18 +35,32 @@ const TickerCard = ({ circle, onClick }: TickerCardProps) => {
                 cursor-pointer group overflow-hidden
             `}
         >
-            {/* Future image placeholder */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-white/5 pointer-events-none" />
+            {/* Background Image Layer */}
+            {item.backgroundImage && (
+                <div className="absolute inset-0 z-0 flex items-center justify-center p-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={item.backgroundImage}
+                        alt=""
+                        className="w-full h-full object-contain opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+                    />
+                </div>
+            )}
+
+            {/* Future image placeholder overlay if valid image not present, keeping original effect for fallback */}
+            {!item.backgroundImage && (
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-white/5 pointer-events-none" />
+            )}
 
             <div className="relative z-10 flex flex-col items-center gap-4">
                 <div className={`p-4 rounded-3xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform duration-300`}>
-                    <circle.icon className="w-8 h-8 text-foreground" />
+                    <Icon className="w-8 h-8 text-foreground" />
                 </div>
                 <h3 className="text-lg font-bold tracking-tight text-foreground/90 group-hover:text-foreground transition-colors">
-                    {circle.label}
+                    {item.title}
                 </h3>
                 <p className="text-xs text-foreground/40 font-medium uppercase tracking-[0.2em]">
-                    {circle.category}
+                    {item.category}
                 </p>
             </div>
 

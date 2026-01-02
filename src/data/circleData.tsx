@@ -144,11 +144,11 @@ export const circleData: CircleData[] = [
         { label: "Python & Django", icon: Code2 },
         { label: "RESTful APIs", icon: GitBranch },
         { label: "GraphQL", icon: Layers },
-        { label: "REST APIs", icon : AppleIcon},
-        { label: "GraphQL" , icon : GitGraph},
-        { label: "Webhooks", icon : Webhook },
+        { label: "REST APIs", icon: AppleIcon },
+        { label: "GraphQL", icon: GitGraph },
+        { label: "Webhooks", icon: Webhook },
         { label: "SOAP Api", icon: SoapDispenserDropletIcon },
-        { label: "WSDL APi", icon : WandSparkles}
+        { label: "WSDL APi", icon: WandSparkles }
 
       ]
     }
@@ -172,7 +172,7 @@ export const circleData: CircleData[] = [
         { label: "SQL Server", icon: Database },
         { label: "Oracle", icon: Database },
         { label: "MySql", icon: Database },
-        
+
       ]
     }
   },
@@ -237,7 +237,7 @@ export const circleData: CircleData[] = [
         { label: "Tailwind CSS" },
         { label: "Html5" },
         { label: "JavaScript" },
-         { label: "User Research" },
+        { label: "User Research" },
         { label: "Wireframing & Prototyping" },
         { label: "Visual Design" },
         { label: "Usability Testing" }
