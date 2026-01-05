@@ -97,16 +97,30 @@ const CircleGrid = ({
         let sIsStaggered = false;
 
         if (windowSize.width >= 1024 || (windowSize.width > 768 && windowSize.width < 1024)) {
+            // Standard Desktop & Large Screens
             sCols = 6;
-            const sPadding = 20;
-            const sSafetyBuffer = 60;
-            const availableWidth = Math.min(windowSize.width, 1400) - (sPadding * 2);
-            const sizeByWidth = (availableWidth / sCols) - 15;
-            const availableHeight = windowSize.height - (sPadding * 2) - sSafetyBuffer;
-            sSize = Math.min(Math.max(Math.min(sizeByWidth, availableHeight / 3.5), 50), 130);
-            sVerticalGap = -(sSize * 0.25);
-            sHorizontalGap = sSize * 0.2;
-            sWrapperPadding = 20;
+            const sPadding = 30; // More padding on large screens
+            const sSafetyBuffer = 80;
+
+            // Allow grid to go wider on ultra-wide screens, but keep reasonable bounds
+            const maxGridWidth = Math.min(windowSize.width * 0.9, 1800);
+            const availableWidth = maxGridWidth - (sPadding * 2);
+
+            const sizeByWidth = (availableWidth / sCols) - 20; // width based size
+
+            const availableHeight = windowSize.height - (windowSize.width < 640 ? 140 : 70) - sSafetyBuffer;
+            const maxRows = Math.ceil(sortedCircleData.length / sCols);
+
+            // Height based size: try to fill ~85% of vertical space if possible
+            const sizeByHeight = (availableHeight / (maxRows * 0.85)) - 15;
+
+            // Aggressive sizing: take the smaller of width/height constraints, but cap higher
+            // Min size 60, Max size 160 (increased from 130)
+            sSize = Math.min(Math.max(Math.min(sizeByWidth, sizeByHeight), 60), 160);
+
+            sVerticalGap = -(sSize * 0.05);
+            sHorizontalGap = sSize * 0.05;
+            sWrapperPadding = 30;
             sIsStaggered = true;
         } else if (windowSize.width <= 768) {
             sCols = 4;
@@ -118,6 +132,19 @@ const CircleGrid = ({
             sWrapperPadding = sPadding;
             sIsStaggered = false;
         }
+
+        // Calculate Vertical Centering
+        const numRows = Math.ceil(sortedCircleData.length / sCols);
+        // Note: Vertical gap is negative for staggered, so total height calculation needs care
+        // Staggered height approx: (rows * size) + ((rows-1) * verticalGap)
+        // Actually for hexagons/staggered circles:
+        // Height = size + (rows - 1) * (size + verticalGap) ??
+        // Let's use simple stack approximation:
+        const sGridTotalHeight = numRows * sSize + (numRows - 1) * sVerticalGap;
+
+        const containerHeight = windowSize.height - (windowSize.width < 640 ? 140 : 70); // Subtract header
+        // Centering offset (ensure at least padding)
+        const sGridStartY = Math.max(sWrapperPadding, (containerHeight - sGridTotalHeight) / 2);
 
         // Process each circle
         sortedCircleData.forEach((circle, index) => {
@@ -132,7 +159,8 @@ const CircleGrid = ({
             let sx = sGridStartX + sCol * (sSize + sHorizontalGap);
             if (isOddRow) sx += sSize * 0.5;
 
-            const sy = sRow * (sSize + sVerticalGap) + sWrapperPadding;
+            // Apply calculated vertical centering
+            const sy = sGridStartY + sRow * (sSize + sVerticalGap);
 
             // 2. Olympic Position
             const chunkIndex = Math.floor(index / 5);
@@ -214,7 +242,9 @@ const CircleGrid = ({
                 animate={expandedId ? "expanded" : "normal"}
                 variants={{
                     normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
-                    expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
+                    expanded: layoutMode === "olympic"
+                        ? { translateZ: -50, scale: 1, y: 0, opacity: 0.5 } // No scale/move for Olympic to prevent scroll jump
+                        : { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
                 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="absolute inset-0"
@@ -227,7 +257,7 @@ const CircleGrid = ({
                     className="relative w-full"
                     style={{
                         height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * (windowSize.height - currentHeaderHeight)}px` : "100%",
-                        minHeight: "100vh"
+                        minHeight: "100dvh"
                     }}
                 >
                     {layoutMode === "static" && (

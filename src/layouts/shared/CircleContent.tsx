@@ -22,7 +22,7 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
                 duration: isMobile ? 0.25 : 0.3,
                 ease: [0.4, 0.0, 0.2, 1]
             }}
-            className="relative w-full flex flex-col items-center justify-start p-6 md:p-12 pb-20"
+            className="relative w-full flex flex-col items-center justify-start p-6 md:p-0.5 pb-15"
             style={{
                 willChange: 'opacity, transform',
                 WebkitTransform: 'translate3d(0, 0, 0)'

@@ -1,6 +1,6 @@
 /* Custom Styles from index.html */
 /* Add active state for overlays */
-.carousel_overlay {
+.carousel_component .carousel_overlay {
     opacity: 0;
     transform: translate(-50%, -50%) translateY(20px);
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -14,24 +14,24 @@
     /* Ensure text is above image */
 }
 
-.carousel_item.active .carousel_overlay {
+.carousel_component .carousel_item.active .carousel_overlay {
     opacity: 1;
     transform: translate(-50%, -50%) translateY(0);
     pointer-events: auto;
 }
 
 /* Ensure images have a visually active state if needed */
-.carousel_item {
+.carousel_component .carousel_item {
     transition: opacity 0.3s ease;
 }
 
-.carousel_item:not(.active) {
+.carousel_component .carousel_item:not(.active) {
     opacity: 0.5;
     /* Dim non-active items */
 }
 
 /* Ensure wrapper respects JS rotation */
-[data-carousel="wrap"] {
+.carousel_component [data-carousel="wrap"] {
     will-change: contents;
     --3d-carousel-item-width: 25vw;
     --3d-carousel-gap: 1.5vw;
@@ -41,26 +41,26 @@
 
 /* tablet */
 @media screen and (max-width: 991px) {
-    [data-carousel="wrap"] {
+    .carousel_component [data-carousel="wrap"] {
         --3d-carousel-item-width: 70vw;
         --3d-carousel-gap: 40vw;
     }
 }
 
-[data-carousel="wrap"]>div {
+.carousel_component [data-carousel="wrap"]>div {
     transform-style: preserve-3d;
     transform: translate3d(0px, 0px, var(--3d-carousel-z)) rotateX(0deg) rotateY(var(--3d-carousel-rotate));
 }
 
-[data-carousel="wrap"]>div>div {
+.carousel_component [data-carousel="wrap"]>div>div {
     width: var(--3d-carousel-item-width);
 }
 
-.is-disabled {
+.carousel_component .is-disabled {
     opacity: 0.4;
 }
 
-.carousel_arrow_wrap {
+.carousel_component .carousel_arrow_wrap {
     position: absolute;
     bottom: 5vh;
     /* Reduced from default or auto */
@@ -75,7 +75,7 @@
     /* Ensure clickable */
 }
 
-.carousel_arrow_link {
+.carousel_component .carousel_arrow_link {
     cursor: pointer;
     pointer-events: auto;
 }

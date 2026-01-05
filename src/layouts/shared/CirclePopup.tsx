@@ -59,7 +59,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={backdropTransition}
-                className={`absolute inset-0 bg-background/95 md:bg-background/80 pointer-events-auto ${isMobile ? 'backdrop-blur-none' : 'backdrop-blur-md'
+                className={`absolute inset-0 pointer-events-auto ${isOlympic ? 'bg-black/90' : 'bg-background/95 md:bg-background/80'} ${isMobile ? 'backdrop-blur-none' : 'backdrop-blur-md'
                     }`}
                 onClick={onClose}
                 style={{
@@ -73,10 +73,10 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
             {/* 2. Ultra-fast Expanding Card - Fullscreen behavior on mobile (60px offset), Panel behavior on desktop (100px offset) */}
             <motion.div
                 layoutId={`circle-container-${circle.id}`}
-                className={`relative w-full md:max-w-4xl h-full rounded-none md:rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border-x-0 md:border border-white/10 ${isOlympic ? 'bg-[#080808]' : 'bg-card'
-                    }`}
+                className={`relative w-full md:max-w-4xl h-full rounded-none md:rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border-x-0 md:border border-white/10`}
                 transition={cardTransition}
                 style={{
+                    backgroundColor: isOlympic ? '#000000' : 'hsl(var(--card))',
                     marginTop: '30px',
                     height: isMobile ? 'calc(100dvh - 60px)' : 'calc(100vh - 60px)',
                     willChange: 'transform, height',
@@ -88,7 +88,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 }}
             >
                 {/* Background decorative elements */}
-                <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />
+                {!isOlympic && <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />}
 
                 {/* Header - Instant animation for ultra-smooth feel */}
                 <motion.div
@@ -98,7 +98,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                         duration: isMobile ? 0.12 : 0.16,
                         ease: [0.25, 0.46, 0.45, 0.94]
                     }}
-                    className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-black/50 backdrop-blur-md' : 'border-white/5 bg-card/50 backdrop-blur-sm'
+                    className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-white/5 bg-card/50 backdrop-blur-sm'
                         }`}
                     style={{
                         willChange: 'opacity, transform',
@@ -143,7 +143,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                     <CircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} />
                 </motion.div>
             </motion.div>
-        </div>
+        </div >
     );
 };
 

@@ -11,65 +11,100 @@ export default function HomeClient() {
     const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
     const [displayMode, setDisplayMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
     const [expandedId, setExpandedId] = useState<string | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Refs for the two layers
+    const targetLayerRef = useRef<HTMLDivElement>(null);
+    const exitingLayerRef = useRef<HTMLDivElement>(null);
     const bgRef = useRef<HTMLDivElement>(null);
+
     const ctx = useRef<gsap.Context | null>(null);
 
     const circleData = getDataForHoneycomb();
     const activeCircle = expandedId ? circleData.find(c => c.id === expandedId) : null;
 
-    // Determine which layout module to load based on DISPLAY mode (which lags behind layoutMode during transitions)
-    const layoutId = (displayMode === "static" || displayMode === "olympic") ? "honeycomb" : displayMode;
-    const LayoutComponent = LAYOUT_REGISTRY[layoutId]?.component;
+    // Helper to resolve layout component
+    const getLayoutConfig = (mode: string) => {
+        const id = (mode === "static" || mode === "olympic") ? "honeycomb" : mode;
+        return LAYOUT_REGISTRY[id]?.component;
+    };
+
+    const TargetLayout = getLayoutConfig(layoutMode);
+    const ExitingLayout = getLayoutConfig(displayMode);
+
+    // If the component implementation is the same (e.g. Honeycomb used for both Static and Olympic),
+    // we do NOT want to trigger a full mount/unmount transition. We want to update props in place.
+    const isSameLayoutModule = TargetLayout === ExitingLayout;
+
+    // Transition only if modules differ AND we aren't already aligned
+    const isTransitioning = !isSameLayoutModule && layoutMode !== displayMode;
 
     // Handle Layout Transitions
     useLayoutEffect(() => {
-        if (!containerRef.current || !bgRef.current) return;
+        // Immediate update for same-module transitions (Static <-> Olympic)
+        if (isSameLayoutModule && layoutMode !== displayMode) {
+            setDisplayMode(layoutMode);
+            return;
+        }
+
+        // If we are not transitioning, reset styles just in case
+        if (!isTransitioning) {
+            if (targetLayerRef.current) {
+                gsap.set(targetLayerRef.current, { opacity: 1, scale: 1 });
+            }
+            return;
+        }
+
+        if (!targetLayerRef.current || !exitingLayerRef.current) return;
 
         ctx.current = gsap.context(() => {
-            // If the requested mode is different from what's displayed, animate OUT
-            if (layoutMode !== displayMode) {
-                // Animate OUT
-                gsap.to(containerRef.current, {
-                    opacity: 0,
-                    scale: 1.02,
-                    duration: 0.3,
-                    ease: "power2.in",
-                    onComplete: () => {
-                        setDisplayMode(layoutMode);
-                        // The effect will run again when displayMode changes
-                    }
-                });
+            // Initial state for entering layer
+            gsap.set(targetLayerRef.current, {
+                opacity: 0,
+                scale: 0.95,
+                zIndex: 20
+            });
 
-                // BG Transition is handled by CSS or separate tween, 
-                // but we need to wait for content to exit.
-                // Actually, let's just animate the BG color purely via state/style and let CSS transition handle it?
-                // The original had AnimatePresence for BG.
-                // We'll trust the CSS transition on the BG element for color, 
-                // but if we need a fade, we can do it.
-                // Let's keep it simple: CSS transition for BG color, GSAP for content.
-            } else {
-                // Animate IN
-                // We are now rendering the NEW mode (because setDisplayMode(layoutMode) happened)
-                gsap.fromTo(containerRef.current,
-                    { opacity: 0, scale: 0.98 },
-                    { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }
-                );
-            }
+            // Initial state for exiting layer
+            gsap.set(exitingLayerRef.current, {
+                opacity: 1,
+                scale: 1,
+                zIndex: 10
+            });
+
+            // Cross-fade Animation
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    setDisplayMode(layoutMode); // Commit the transition
+                }
+            });
+
+            tl.to(exitingLayerRef.current, {
+                opacity: 0,
+                scale: 1.05,
+                duration: 0.4,
+                ease: "power2.inOut"
+            }, 0);
+
+            tl.to(targetLayerRef.current, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.4,
+                ease: "power2.inOut"
+            }, 0); // Start at same time
         });
 
         return () => ctx.current?.revert();
-    }, [layoutMode, displayMode]);
+    }, [layoutMode, isTransitioning]); // Only re-run when transition state changes
 
     // Derived styles
-    const isDark = displayMode === "olympic" || displayMode === "3d-carousel";
+    const isDark = (isTransitioning ? layoutMode : displayMode) === "olympic" || (isTransitioning ? layoutMode : displayMode) === "3d-carousel";
 
     return (
         <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
             {/* Optimized Background Layer */}
             <div
                 ref={bgRef}
-                className="absolute inset-0 z-0 transition-colors duration-500 ease-in-out"
+                className={`absolute inset-0 z-0 transition-colors ease-in-out ${isSameLayoutModule && layoutMode !== displayMode ? 'duration-0' : 'duration-500'}`}
                 style={{
                     backgroundColor: isDark ? "#000000" : "hsl(var(--background))",
                 }}
@@ -122,22 +157,38 @@ export default function HomeClient() {
             </header>
 
             <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
-                <div
-                    ref={containerRef}
-                    className="w-full h-full will-change-transform"
-                >
-                    {LayoutComponent ? (
-                        <LayoutComponent
+                {/* Exiting Layer - Render only during transition */}
+                {isTransitioning && ExitingLayout && (
+                    <div
+                        ref={exitingLayerRef}
+                        className="absolute inset-0 w-full h-full will-change-transform isolate"
+                    >
+                        <ExitingLayout
+                            isActive={false} // Maybe false? or true? It's exiting. Keep it active visually.
+                            expandedId={expandedId}
+                            onExpandedChange={setExpandedId}
+                            layoutMode={displayMode} // Pass its own mode
+                        />
+                    </div>
+                )}
+
+                {/* Target/Current Layout - Always Render */}
+                {TargetLayout && (
+                    <div
+                        ref={targetLayerRef}
+                        className="absolute inset-0 w-full h-full will-change-transform isolate"
+                    >
+                        <TargetLayout
                             isActive={true}
                             expandedId={expandedId}
                             onExpandedChange={setExpandedId}
-                            layoutMode={layoutMode}
+                            layoutMode={layoutMode} // Pass target mode
                         />
-                    ) : null}
-                </div>
+                    </div>
+                )}
             </div>
 
-            {/* Popup Container - Using pure CSS/GSAP for transition could be done inside CirclePopup, keeping standard conditional render here */}
+            {/* Popup Container */}
             {activeCircle && (
                 <div id={layoutMode === "olympic" ? "olympic-layout-container" : (layoutMode === "ticker" ? "ticker-layout-container" : undefined)} style={{ position: 'absolute', zIndex: 99999 }}>
                     <CirclePopup

@@ -276,7 +276,7 @@ html {
   line-height: 20px;
 } */
 
-img {
+.carousel_component img {
   max-width: 100%;
   vertical-align: middle;
   display: inline-block;
@@ -418,58 +418,58 @@ html[data-w-dynpage] [data-w-cloak] {
   display: inline-block !important;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+.carousel_component h1,
+.carousel_component h2,
+.carousel_component h3,
+.carousel_component h4,
+.carousel_component h5,
+.carousel_component h6 {
   margin-bottom: 10px;
   font-weight: bold;
 }
 
-h1 {
+.carousel_component h1 {
   margin-top: 20px;
   font-size: 38px;
   line-height: 44px;
 }
 
-h2 {
+.carousel_component h2 {
   margin-top: 20px;
   font-size: 32px;
   line-height: 36px;
 }
 
-h3 {
+.carousel_component h3 {
   margin-top: 20px;
   font-size: 24px;
   line-height: 30px;
 }
 
-h4 {
+.carousel_component h4 {
   margin-top: 10px;
   font-size: 18px;
   line-height: 24px;
 }
 
-h5 {
+.carousel_component h5 {
   margin-top: 10px;
   font-size: 14px;
   line-height: 20px;
 }
 
-h6 {
+.carousel_component h6 {
   margin-top: 10px;
   font-size: 12px;
   line-height: 18px;
 }
 
-p {
+.carousel_component p {
   margin-top: 0;
   margin-bottom: 10px;
 }
 
-blockquote {
+.carousel_component blockquote {
   border-left: 5px solid #e2e2e2;
   margin: 0 0 10px;
   padding: 10px 20px;
@@ -477,17 +477,17 @@ blockquote {
   line-height: 22px;
 }
 
-figure {
+.carousel_component figure {
   margin: 0 0 10px;
 }
 
-figcaption {
+.carousel_component figcaption {
   text-align: center;
   margin-top: 5px;
 }
 
-ul,
-ol {
+.carousel_component ul,
+.carousel_component ol {
   margin-top: 0;
   margin-bottom: 10px;
   padding-left: 40px;
@@ -532,9 +532,9 @@ fieldset {
   padding: 0;
 }
 
-button,
-[type="button"],
-[type="reset"] {
+.carousel_component button,
+.carousel_component [type="button"],
+.carousel_component [type="reset"] {
   cursor: pointer;
   -webkit-appearance: button;
   border: 0;
@@ -558,7 +558,7 @@ button,
   display: none;
 }
 
-label {
+.carousel_component label {
   margin-bottom: 5px;
   font-weight: bold;
   display: block;
@@ -2226,6 +2226,7 @@ h1 {
 
 }
 
+/* 
 h2 {
   max-width: 16ch;
   letter-spacing: -.03em;
@@ -2235,7 +2236,7 @@ h2 {
   font-size: 8vw;
   font-weight: 700;
   line-height: 1;
-}
+} */
 
 .carousel_sticky {
   width: 100%;
