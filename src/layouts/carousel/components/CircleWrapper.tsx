@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, MotionValue, useTransform, useMotionValue } from "framer-motion";
 import { CircleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
@@ -35,7 +36,9 @@ const CarouselCircleWrapper = ({
     carouselRadius,
     parentRotationY,
 }: CarouselCircleWrapperProps) => {
-    const { x: oscX, y: oscY } = useOscillation(oscillationParams);
+    const oscRef = useRef<HTMLDivElement>(null);
+    useOscillation(oscRef, oscillationParams);
+
     const fallbackValue = useMotionValue(0);
     const rotationValue = parentRotationY || fallbackValue;
 
@@ -113,7 +116,7 @@ const CarouselCircleWrapper = ({
                 transformStyle: 'preserve-3d',
             }}
         >
-            <motion.div style={{ x: oscX, y: oscY, filter: filter, transformStyle: 'preserve-3d' }}>
+            <motion.div ref={oscRef} style={{ filter: filter, transformStyle: 'preserve-3d' }}>
                 <InteractiveCircle
                     circle={circle}
                     isExpanded={expandedId === circle.id}

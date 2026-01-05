@@ -3,9 +3,6 @@ import { LayoutProps } from '../core/Layout.types';
 
 export const CarouselLayout = ({ isActive, expandedId, onExpandedChange }: LayoutProps) => {
     return (
-        <Carousel3D
-            expandedId={expandedId}
-            onExpandedChange={onExpandedChange}
-        />
+        <Carousel3D />
     );
 };

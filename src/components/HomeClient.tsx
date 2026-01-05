@@ -13,7 +13,7 @@ export default function HomeClient() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const bgRef = useRef<HTMLDivElement>(null);
-    const ctx = useRef<gsap.Context>();
+    const ctx = useRef<gsap.Context | null>(null);
 
     const circleData = getDataForHoneycomb();
     const activeCircle = expandedId ? circleData.find(c => c.id === expandedId) : null;

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
-import Observer from "gsap/Observer";
+import { Observer } from "gsap/all";
 import "@/app/3Dflow.css";
 import "@/app/webflow.css";
 
