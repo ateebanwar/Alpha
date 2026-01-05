@@ -188,7 +188,7 @@
 
   /* Floating Animation */
   .floating {
-    animation: floating 6s ease-in-out infinite;
+    animation: floating 3s ease-in-out infinite;
   }
 
   .floating-slow {

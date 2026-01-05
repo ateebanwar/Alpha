@@ -1,11 +1,51 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { circleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
 import CircleWrapper from "./CircleWrapper";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+
+const OlympicChunk = ({
+    children,
+    index,
+    scrollY,
+    height
+}: {
+    children: React.ReactNode;
+    index: number;
+    scrollY: any;
+    height: number;
+}) => {
+    const hideStart = (index + 1) * height - 50; // Visual buffer
+    const hideEnd = (index + 1) * height; // Full hide
+
+    const opacity = useTransform(
+        scrollY,
+        [hideStart, hideEnd],
+        [1, 0]
+    );
+
+    return (
+        <motion.div
+            style={{
+                position: 'sticky',
+                top: 0,
+                height: `${height}px`,
+                width: '100%',
+                scrollSnapAlign: 'start',
+                zIndex: index + 10,
+                pointerEvents: 'none',
+                opacity: opacity,
+                willChange: 'opacity, transform',
+            }}
+        >
+            {children}
+        </motion.div>
+    );
+};
 
 const CircleGrid = ({
     layoutMode = "static",
@@ -19,6 +59,7 @@ const CircleGrid = ({
     const [isMounted, setIsMounted] = useState(false);
     const isMobile = useIsMobile();
     const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollY } = useScroll({ container: containerRef });
 
     useEffect(() => {
         setIsMounted(true);
@@ -226,7 +267,9 @@ const CircleGrid = ({
         }
     }, [layoutMode]);
 
-    if (!isMounted) return <div className="w-full h-full" />;
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // Remove early return to ensure ref is always attached
+    // if (!isMounted) return <div className="w-full h-full" />;
 
     return (
         <div
@@ -234,108 +277,103 @@ const CircleGrid = ({
             ref={containerRef}
             style={{
                 overflowY: layoutMode === "olympic" ? "scroll" : "hidden",
-                scrollSnapType: layoutMode === "olympic" ? "y proximity" : "none",
-                overscrollBehavior: "contain"
+                WebkitOverflowScrolling: "touch" // Smooth iOS scroll
             }}
         >
-            <motion.div
-                animate={expandedId ? "expanded" : "normal"}
-                variants={{
-                    normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
-                    expanded: layoutMode === "olympic"
-                        ? { translateZ: -50, scale: 1, y: 0, opacity: 0.5 } // No scale/move for Olympic to prevent scroll jump
-                        : { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
-                }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="absolute inset-0"
-                style={{
-                    pointerEvents: expandedId ? 'none' : 'auto',
-                    transformStyle: 'preserve-3d'
-                }}
-            >
-                <div
-                    className="relative w-full"
+            {isMounted && (
+                <motion.div
+                    animate={layoutMode === "olympic"
+                        ? { opacity: expandedId ? 0.5 : 1 }
+                        : (expandedId ? "expanded" : "normal")
+                    }
+                    variants={layoutMode === "olympic" ? undefined : {
+                        normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
+                        expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className={layoutMode === "olympic" ? "relative w-full min-h-full" : "absolute inset-0"}
                     style={{
-                        height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * (windowSize.height - currentHeaderHeight)}px` : "100%",
-                        minHeight: "100dvh"
+                        pointerEvents: expandedId ? 'none' : 'auto',
+                        transformStyle: layoutMode === "olympic" ? undefined : 'preserve-3d'
                     }}
                 >
-                    {layoutMode === "static" && (
-                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                            <motion.div
-                                className="absolute w-[500px] h-[500px] rounded-full opacity-20"
-                                style={{
-                                    background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
-                                    top: "10%",
-                                    left: "5%",
-                                }}
-                                animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.2, 0.15] }}
-                                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                            />
-                        </div>
-                    )}
-
-                    {layoutMode === "olympic" ? (
-                        olympicChunks.map((chunk, chunkIndex) => {
-                            const availableHeight = windowSize.height - currentHeaderHeight;
-
-                            return (
-                                <div
-                                    key={chunkIndex}
+                    <div
+                        className="relative w-full"
+                        style={{
+                            height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * (windowSize.height - currentHeaderHeight)}px` : "100%",
+                            minHeight: "100dvh"
+                        }}
+                    >
+                        {layoutMode === "static" && (
+                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                <motion.div
+                                    className="absolute w-[500px] h-[500px] rounded-full opacity-20"
                                     style={{
-                                        position: 'sticky',
-                                        top: 0,
-                                        height: `${availableHeight}px`,
-                                        width: '100%',
-                                        scrollSnapAlign: 'start',
-                                        zIndex: chunkIndex + 10,
-                                        pointerEvents: 'none',
-                                        willChange: 'transform',
+                                        background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
+                                        top: "10%",
+                                        left: "5%",
                                     }}
-                                >
-                                    {chunk.map((pos, idxInChunk) => {
-                                        const globalIndex = chunkIndex * 5 + idxInChunk;
-                                        return (
-                                            <div key={pos.id} style={{ pointerEvents: 'auto' }}>
-                                                <CircleWrapper
-                                                    circle={sortedCircleData[globalIndex]}
-                                                    index={globalIndex}
-                                                    x={pos.x}
-                                                    y={pos.y - (chunkIndex * availableHeight)}
-                                                    circleSize={pos.size}
-                                                    navCircleIds={navCircleIds}
-                                                    expandedId={expandedId}
-                                                    onExpand={() => handleExpand(pos.id)}
-                                                    oscillationParams={oscillationParams[globalIndex]}
-                                                    variant={pos.variant}
-                                                    borderColor={pos.color}
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            );
-                        })
-                    ) : (
-                        circlePositions.map((pos, index) => (
-                            <CircleWrapper
-                                key={pos.id}
-                                circle={sortedCircleData[index]}
-                                index={index}
-                                x={pos.x}
-                                y={pos.y}
-                                circleSize={pos.size}
-                                navCircleIds={navCircleIds}
-                                expandedId={expandedId}
-                                onExpand={() => handleExpand(pos.id)}
-                                oscillationParams={oscillationParams[index]}
-                                variant={pos.variant}
-                                borderColor={undefined}
-                            />
-                        ))
-                    )}
-                </div>
-            </motion.div>
+                                    animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.2, 0.15] }}
+                                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                                />
+                            </div>
+                        )}
+
+                        {layoutMode === "olympic" ? (
+                            olympicChunks.map((chunk, chunkIndex) => {
+                                const availableHeight = windowSize.height - currentHeaderHeight;
+
+                                return (
+                                    <OlympicChunk
+                                        key={chunkIndex}
+                                        index={chunkIndex}
+                                        scrollY={scrollY}
+                                        height={availableHeight}
+                                    >
+                                        {chunk.map((pos, idxInChunk) => {
+                                            const globalIndex = chunkIndex * 5 + idxInChunk;
+                                            return (
+                                                <div key={pos.id} style={{ pointerEvents: 'auto' }}>
+                                                    <CircleWrapper
+                                                        circle={sortedCircleData[globalIndex]}
+                                                        index={globalIndex}
+                                                        x={pos.x}
+                                                        y={pos.y - (chunkIndex * availableHeight)}
+                                                        circleSize={pos.size}
+                                                        navCircleIds={navCircleIds}
+                                                        expandedId={expandedId}
+                                                        onExpand={() => handleExpand(pos.id)}
+                                                        oscillationParams={oscillationParams[globalIndex]}
+                                                        variant={pos.variant}
+                                                        borderColor={pos.color}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </OlympicChunk>
+                                );
+                            })
+                        ) : (
+                            circlePositions.map((pos, index) => (
+                                <CircleWrapper
+                                    key={pos.id}
+                                    circle={sortedCircleData[index]}
+                                    index={index}
+                                    x={pos.x}
+                                    y={pos.y}
+                                    circleSize={pos.size}
+                                    navCircleIds={navCircleIds}
+                                    expandedId={expandedId}
+                                    onExpand={() => handleExpand(pos.id)}
+                                    oscillationParams={oscillationParams[index]}
+                                    variant={pos.variant}
+                                    borderColor={undefined}
+                                />
+                            ))
+                        )}
+                    </div>
+                </motion.div>
+            )}
         </div>
     );
 };
