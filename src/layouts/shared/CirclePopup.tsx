@@ -6,7 +6,6 @@ import { CircleData } from "@/data/circleData";
 import CircleContent from "./CircleContent"; // Same directory
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 
 interface CirclePopupProps {
     circle: CircleData;
@@ -52,8 +51,8 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
     };
     if (!mounted) return null;
 
-    return createPortal(
-        <div className="fixed inset-0 z-[99990] flex items-end md:items-start justify-center pointer-events-none">
+    return (
+        <div className="fixed inset-0 z-[99990] flex items-end md:items-start justify-center pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             {/* 1. Ultra-fast Backdrop Layer - Almost opaque on mobile but ensures header title above it is clear */}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -144,8 +143,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                     <CircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} />
                 </motion.div>
             </motion.div>
-        </div>,
-        document.body
+        </div>
     );
 };
 

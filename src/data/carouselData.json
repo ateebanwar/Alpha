@@ -1,0 +1,104 @@
+[
+    {
+        "id": "1",
+        "title": "NeoTech",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f7b018a099ba4379f97a_pexels-google-deepmind-17485819.jpg",
+        "link": "#"
+    },
+    {
+        "id": "2",
+        "title": "Innovate",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f7fb20f5b628629cc9ec_pexels-google-deepmind-17485846.jpg",
+        "link": "#"
+    },
+    {
+        "id": "3",
+        "title": "Catalyst",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f806b3031780c259653c_pexels-google-deepmind-17485868.jpg",
+        "link": "#"
+    },
+    {
+        "id": "4",
+        "title": "Quantum",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f811ca6e2359d30fd05e_pexels-google-deepmind-18069081.jpg",
+        "link": "#"
+    },
+    {
+        "id": "5",
+        "title": "Fusion",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d858f8ce955ef721bf77_pexels-anni-roenkae-2156881.jpg",
+        "link": "#"
+    },
+    {
+        "id": "6",
+        "title": "Apex",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f9c9373b1a8794c2eb59_google-deepmind-2EpKCoEgKZo-unsplash.jpg",
+        "link": "#"
+    },
+    {
+        "id": "7",
+        "title": "Evolve",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f9f6a2334ccaea030e8c_google-deepmind-QEA9JMqOuVc-unsplash.jpg",
+        "link": "#"
+    },
+    {
+        "id": "8",
+        "title": "Synergy",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fa0e188b34c32bda621c_google-deepmind-NMjrovXT_UY-unsplash.jpg",
+        "link": "#"
+    },
+    {
+        "id": "9",
+        "title": "Lumina",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbb718a099ba437ed848_pexels-bruno-thethe-1910230.jpg",
+        "link": "#"
+    },
+    {
+        "id": "10",
+        "title": "Pinnacle",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbe3b3031780c25e573e_pexels-scott-webb-1544947.jpg",
+        "link": "#"
+    },
+    {
+        "id": "11",
+        "title": "Odyssey",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbf4b3031780c25e6ac2_pexels-timea-kadar-2215609.jpg",
+        "link": "#"
+    },
+    {
+        "id": "12",
+        "title": "Zenith",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fc0618a099ba437f318c_pexels-vladimir-gladkov-10084175.jpg",
+        "link": "#"
+    },
+    {
+        "id": "13",
+        "title": "Elysium",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d77f2a57a5107633ab78_pexels-lucky-5374862.jpg",
+        "link": "#"
+    },
+    {
+        "id": "14",
+        "title": "Nexus",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d7ae3bd0625450389fdd_pexels-natalie-bond-3371103.jpg",
+        "link": "#"
+    },
+    {
+        "id": "15",
+        "title": "Stellar",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d92ae71db04ed5c9f2ad_pexels-mikhail-nilov-7827905%20(1).jpg",
+        "link": "#"
+    },
+    {
+        "id": "9",
+        "title": "Lumina",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbb718a099ba437ed848_pexels-bruno-thethe-1910230.jpg",
+        "link": "#"
+    },
+    {
+        "id": "10",
+        "title": "Pinnacle",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbe3b3031780c25e573e_pexels-scott-webb-1544947.jpg",
+        "link": "#"
+    }
+]

@@ -1,56 +1,98 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { circleData } from "@/data/circleData";
+import { useRef, useLayoutEffect } from "react";
+import gsap from "gsap";
+import { getDataForHoneycomb } from "@/data/dataAdapter";
 import { LAYOUT_REGISTRY } from "@/layouts/core/LayoutRegistry";
 import CirclePopup from "@/layouts/shared/CirclePopup";
 
 export default function HomeClient() {
     const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
+    const [displayMode, setDisplayMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const bgRef = useRef<HTMLDivElement>(null);
+    const ctx = useRef<gsap.Context>();
 
+    const circleData = getDataForHoneycomb();
     const activeCircle = expandedId ? circleData.find(c => c.id === expandedId) : null;
 
-    // Determine which layout module to load
-    const layoutId = (layoutMode === "static" || layoutMode === "olympic") ? "honeycomb" : layoutMode;
+    // Determine which layout module to load based on DISPLAY mode (which lags behind layoutMode during transitions)
+    const layoutId = (displayMode === "static" || displayMode === "olympic") ? "honeycomb" : displayMode;
     const LayoutComponent = LAYOUT_REGISTRY[layoutId]?.component;
+
+    // Handle Layout Transitions
+    useLayoutEffect(() => {
+        if (!containerRef.current || !bgRef.current) return;
+
+        ctx.current = gsap.context(() => {
+            // If the requested mode is different from what's displayed, animate OUT
+            if (layoutMode !== displayMode) {
+                // Animate OUT
+                gsap.to(containerRef.current, {
+                    opacity: 0,
+                    scale: 1.02,
+                    duration: 0.3,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        setDisplayMode(layoutMode);
+                        // The effect will run again when displayMode changes
+                    }
+                });
+
+                // BG Transition is handled by CSS or separate tween, 
+                // but we need to wait for content to exit.
+                // Actually, let's just animate the BG color purely via state/style and let CSS transition handle it?
+                // The original had AnimatePresence for BG.
+                // We'll trust the CSS transition on the BG element for color, 
+                // but if we need a fade, we can do it.
+                // Let's keep it simple: CSS transition for BG color, GSAP for content.
+            } else {
+                // Animate IN
+                // We are now rendering the NEW mode (because setDisplayMode(layoutMode) happened)
+                gsap.fromTo(containerRef.current,
+                    { opacity: 0, scale: 0.98 },
+                    { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }
+                );
+            }
+        });
+
+        return () => ctx.current?.revert();
+    }, [layoutMode, displayMode]);
+
+    // Derived styles
+    const isDark = displayMode === "olympic" || displayMode === "3d-carousel";
 
     return (
         <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
             {/* Optimized Background Layer */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={layoutMode}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
-                    className="absolute inset-0 z-0"
-                    style={{
-                        backgroundColor: layoutMode === "olympic" ? "#000000" : "hsl(var(--background))",
-                    }}
-                />
-            </AnimatePresence>
+            <div
+                ref={bgRef}
+                className="absolute inset-0 z-0 transition-colors duration-500 ease-in-out"
+                style={{
+                    backgroundColor: isDark ? "#000000" : "hsl(var(--background))",
+                }}
+            />
 
             <header className={`fixed top-[10px] left-0 right-0 flex flex-col md:flex-row items-center justify-center pointer-events-none px-4 md:px-0 gap-4 md:gap-0 transition-[z-index] duration-300 ${expandedId ? 'z-[99999]' : 'z-30'
                 }`}>
                 <h1
-                    className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-center md:text-left md:mr-4 transition-all duration-300 pointer-events-none select-none ${layoutMode === "olympic" ? "text-white" : "text-foreground"
+                    className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-center md:text-left md:mr-4 transition-all duration-300 pointer-events-none select-none ${isDark ? "text-white" : "text-foreground"
                         } ${expandedId ? 'opacity-100 scale-100' : ''}`}
                     style={{
                         opacity: 1,
-                        textShadow: layoutMode === "olympic" ? "0 0 20px rgba(255,255,255,0.3)" : "none"
+                        textShadow: isDark ? "0 0 20px rgba(255,255,255,0.3)" : "none"
                     }}
                 >
                     Alphabet
-                    <span className={`block sm:inline ml-0 sm:ml-2 transition-all duration-300 ${layoutMode === "olympic" ? "text-white bg-none [-webkit-text-fill-color:white]" : "text-gradient"
+                    <span className={`block sm:inline ml-0 sm:ml-2 transition-all duration-300 ${isDark ? "text-white bg-none [-webkit-text-fill-color:white]" : "text-gradient"
                         }`}>
                         Consultancy Services
                     </span>
                 </h1>
 
-                <div className={`pointer-events-auto flex items-center backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-lg md:ml-4 gap-2 transition-all duration-300 ${layoutMode === "olympic" ? "bg-white/5 border-white/20" : "bg-background/50 border-white/10"
+                <div className={`pointer-events-auto flex items-center backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-lg md:ml-4 gap-2 transition-all duration-300 ${isDark ? "bg-white/5 border-white/20" : "bg-background/50 border-white/10"
                     } ${expandedId ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <button
                         onClick={() => setLayoutMode("static")}
@@ -80,35 +122,31 @@ export default function HomeClient() {
             </header>
 
             <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={layoutMode}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.02 }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="w-full h-full"
-                    >
-                        {LayoutComponent ? (
-                            <LayoutComponent
-                                isActive={true}
-                                expandedId={expandedId}
-                                onExpandedChange={setExpandedId}
-                                layoutMode={layoutMode}
-                            />
-                        ) : null}
-                    </motion.div>
-                </AnimatePresence>
+                <div
+                    ref={containerRef}
+                    className="w-full h-full will-change-transform"
+                >
+                    {LayoutComponent ? (
+                        <LayoutComponent
+                            isActive={true}
+                            expandedId={expandedId}
+                            onExpandedChange={setExpandedId}
+                            layoutMode={layoutMode}
+                        />
+                    ) : null}
+                </div>
             </div>
-            <AnimatePresence>
-                {activeCircle && (
+
+            {/* Popup Container - Using pure CSS/GSAP for transition could be done inside CirclePopup, keeping standard conditional render here */}
+            {activeCircle && (
+                <div id={layoutMode === "olympic" ? "olympic-layout-container" : (layoutMode === "ticker" ? "ticker-layout-container" : undefined)} style={{ position: 'absolute', zIndex: 99999 }}>
                     <CirclePopup
                         circle={activeCircle}
                         onClose={() => setExpandedId(null)}
                         isOlympic={layoutMode === "olympic"}
                     />
-                )}
-            </AnimatePresence>
+                </div>
+            )}
         </main>
     );
 }

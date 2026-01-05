@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useRef, useEffect, useState } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import tickerDataRaw from "@/data/tickerData.json";
-import TickerCard, { TickerItem } from "./TickerCard";
+import gsap from "gsap";
+import { getDataForTicker, TickerItem } from "@/data/dataAdapter";
+import TickerCard from "./TickerCard";
 
-const tickerData = tickerDataRaw as TickerItem[];
+const tickerData = getDataForTicker();
 
 const TickerWall = ({
     expandedId,
@@ -14,46 +14,92 @@ const TickerWall = ({
     expandedId: string | null,
     onExpandedChange: (id: string | null) => void
 }) => {
-    // 1. Setup Scroll State
-    const scrollY = useMotionValue(0);
+    // 1. Setup State & Refs
     const [columnHeight, setColumnHeight] = useState(0);
     const colRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Scroll State (Refs for performance to avoid re-renders)
+    const state = useRef({
+        currentY: 0,
+        targetY: 0,
+        isDragging: false
+    });
 
     // 2. Measure Height for Infinite Loop
     useEffect(() => {
-        if (colRef.current) {
-            // The column contains 3 sets of data. We need the height of ONE set for the loop.
-            // box-border model: offsetHeight includes padding/border
-            const totalHeight = colRef.current.offsetHeight;
-            setColumnHeight(totalHeight / 3);
-        }
-
-        const handleResize = () => {
+        const measure = () => {
             if (colRef.current) {
-                setColumnHeight(colRef.current.offsetHeight / 3);
+                // The column contains 3 sets of data. We need the height of ONE set for the loop.
+                const totalHeight = colRef.current.offsetHeight;
+                setColumnHeight(totalHeight / 3);
             }
         };
 
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+        measure();
+        // Delay measurement slightly to ensure DOM is ready? 
+        // Or depend on images loading? Images are setup to maintain aspect ratio, hopefully stable.
+        const timer = setTimeout(measure, 100);
 
-    // 3. Handle Wheel Event
-    useEffect(() => {
-        const handleWheel = (e: WheelEvent) => {
-            if (expandedId) return; // Disable scroll when expanded
-            e.preventDefault();
-            // Standardize scroll speed
-            const delta = e.deltaY;
-            const current = scrollY.get();
-            scrollY.set(current - delta);
+        const handleResize = () => {
+            measure();
         };
 
-        // Attach to window or a specific container?
-        // The user wants "The main viewport (screen) must remain fully locked".
-        // Attaching to window ensures no escape, but component level is cleaner if full screen.
-        // Given HomeClient has fixed inset-0, we can attach to the document or the container ref if it covers screen.
-        // Let's attach to the container ref for better isolation, but ensure it captures everything.
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            clearTimeout(timer);
+        };
+    }, []);
+
+    // 3. Animation Loop (GSAP Ticker)
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const update = () => {
+                if (!columnHeight) return;
+
+                // Lerp smoothing
+                state.current.currentY += (state.current.targetY - state.current.currentY) * 0.08;
+
+                const y = state.current.currentY;
+
+                // Apply to columns
+                const cols = containerRef.current?.querySelectorAll(".ticker-col-inner");
+                if (cols) {
+                    cols.forEach((col, i) => {
+                        const isEven = i % 2 === 0;
+                        const direction = isEven ? 1 : -1;
+                        const val = y * direction;
+
+                        // Use GSAP's utility for perfect wrapping
+                        // Range [-columnHeight, 0]
+                        gsap.set(col, { y: gsap.utils.wrap(-columnHeight, 0, val) });
+                    });
+                }
+            };
+
+            gsap.ticker.add(update);
+
+            // Return cleanup function which GSAP context will call on revert()
+            return () => gsap.ticker.remove(update);
+        }, containerRef);
+
+        return () => {
+            ctx.revert();
+        };
+    }, [columnHeight]);
+
+    // 4. Handle Wheel Event
+    useEffect(() => {
+        const handleWheel = (e: WheelEvent) => {
+            if (expandedId) return;
+            e.preventDefault();
+
+            // Adjust sensitivity
+            const delta = e.deltaY * 0.8;
+            state.current.targetY -= delta;
+        };
+
         const container = document.getElementById("ticker-container");
         if (container) {
             container.addEventListener("wheel", handleWheel, { passive: false });
@@ -64,7 +110,7 @@ const TickerWall = ({
                 container.removeEventListener("wheel", handleWheel);
             }
         };
-    }, [scrollY, expandedId]);
+    }, [expandedId]);
 
     // Distribute tickerData into 4 columns (or 2 on mobile)
     const columns = useMemo(() => {
@@ -79,36 +125,19 @@ const TickerWall = ({
         });
     }, []);
 
-    // 4. Transform Logic (Moved outside map)
-    const yEven = useTransform(scrollY, (value) => {
-        if (!columnHeight) return 0;
-        const directionValue = value;
-        return ((directionValue % columnHeight) - columnHeight) % columnHeight;
-    });
-
-    const yOdd = useTransform(scrollY, (value) => {
-        if (!columnHeight) return 0;
-        const directionValue = value * -1;
-        return ((directionValue % columnHeight) - columnHeight) % columnHeight;
-    });
-
     return (
         <div
             id="ticker-container"
+            ref={containerRef}
             className={`relative w-full h-full overflow-hidden bg-background px-4 md:px-8 ${expandedId ? 'pointer-events-none' : ''}`}
         >
             <div className="flex gap-4 md:gap-8 h-full max-w-[1600px] mx-auto">
                 {columns.map((col, colIndex) => {
-                    const isEven = colIndex % 2 === 0;
-
-                    const y = isEven ? yEven : yOdd;
-
                     return (
                         <div
                             key={`ticker-col-${colIndex}`}
-                            className={`flex-1 flex flex-col gap-4 md:gap-8 h-full relative`} // Added relative
+                            className={`flex-1 flex flex-col gap-4 md:gap-8 h-full relative`}
                             style={{
-                                // Hide columns on mobile via CSS as before
                                 display: (colIndex === 0 || colIndex === 3) ? 'var(--mobile-display, flex)' : 'flex'
                             }}
                         >
@@ -116,10 +145,9 @@ const TickerWall = ({
                             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
                             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
 
-                            <motion.div
+                            <div
                                 ref={colIndex === 0 ? colRef : null} // Measure first column
-                                style={{ y }}
-                                className="flex flex-col gap-4 md:gap-8"
+                                className="flex flex-col gap-4 md:gap-8 ticker-col-inner will-change-transform"
                             >
                                 {col.map((item, itemIndex) => (
                                     <TickerCard
@@ -128,7 +156,7 @@ const TickerWall = ({
                                         onClick={() => onExpandedChange(item.id)}
                                     />
                                 ))}
-                            </motion.div>
+                            </div>
                         </div>
                     );
                 })}

@@ -1,0 +1,935 @@
+[
+    {
+        "id": "about",
+        "label": "About Us",
+        "title": "About Alphabet Consultancy",
+        "description": "Transforming businesses through innovative technology solutions since 2016.",
+        "icon": "Users",
+        "size": "xl",
+        "color": "primary",
+        "category": "about",
+        "delay": 0,
+        "content": {
+            "title": "About Alphabet Consultancy",
+            "description": "Transforming businesses through innovative technology solutions since 2016.",
+            "items": [
+                {
+                    "label": "8+ Years Experience",
+                    "description": "Delivering excellence in IT consulting",
+                    "icon": "Clock"
+                },
+                {
+                    "label": "Global Reach",
+                    "description": "Serving international clients",
+                    "icon": "Globe"
+                },
+                {
+                    "label": "Expert Team",
+                    "description": "Skilled professionals across all domains",
+                    "icon": "Users"
+                },
+                {
+                    "label": "Trusted Partner",
+                    "description": "Building lasting client relationships",
+                    "icon": "HeartHandshake"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "experience",
+        "label": "Experience",
+        "title": "Our Experience",
+        "description": "Years of expertise across diverse industries and technologies.",
+        "icon": "Award",
+        "size": "lg",
+        "color": "accent",
+        "category": "about",
+        "delay": 0.1,
+        "content": {
+            "title": "Our Experience",
+            "description": "Years of expertise across diverse industries and technologies.",
+            "items": [
+                {
+                    "label": "150+ Projects",
+                    "description": "Successfully delivered"
+                },
+                {
+                    "label": "50+ Clients",
+                    "description": "Worldwide partnerships"
+                },
+                {
+                    "label": "24/7 Support",
+                    "description": "Always available"
+                },
+                {
+                    "label": "99.9% Uptime",
+                    "description": "Reliability guaranteed"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "web-dev",
+        "label": "Web Application",
+        "title": "Web Application",
+        "description": "Modern, responsive web applications built with cutting-edge technologies.",
+        "icon": "Globe",
+        "size": "lg",
+        "color": "primary",
+        "category": "service",
+        "delay": 0.2,
+        "content": {
+            "title": "Web Application",
+            "description": "Modern, responsive web applications built with cutting-edge technologies.",
+            "items": [
+                {
+                    "label": ".NET",
+                    "icon": "Code2"
+                },
+                {
+                    "label": ".NET core",
+                    "icon": "MonitorSmartphone"
+                },
+                {
+                    "label": "MVC",
+                    "icon": "Briefcase"
+                },
+                {
+                    "label": "Python & Django",
+                    "icon": "Layers"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "mobile-dev",
+        "label": "Mobile Apps",
+        "title": "Mobile Apps",
+        "description": "Native and cross-platform mobile applications for iOS and Android.",
+        "icon": "Smartphone",
+        "size": "md",
+        "color": "accent",
+        "category": "service",
+        "delay": 0.3,
+        "content": {
+            "title": "Mobile Development",
+            "description": "Native and cross-platform mobile applications for iOS and Android.",
+            "items": [
+                {
+                    "label": "React Native",
+                    "icon": "Smartphone"
+                },
+                {
+                    "label": "iOS Development",
+                    "icon": "Cpu"
+                },
+                {
+                    "label": "Android Apps",
+                    "icon": "Smartphone"
+                },
+                {
+                    "label": "Flutter",
+                    "icon": "Palette"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "backend",
+        "label": "MicroServices",
+        "title": "MicroServices",
+        "description": "Robust, scalable server-side solutions and APIs.",
+        "icon": "Server",
+        "size": "lg",
+        "color": "primary",
+        "category": "service",
+        "delay": 0.15,
+        "content": {
+            "title": "MicroServices",
+            "description": "Robust, scalable server-side solutions and APIs.",
+            "items": [
+                {
+                    "label": "Node.js & Express",
+                    "icon": "Terminal"
+                },
+                {
+                    "label": "Python & Django",
+                    "icon": "Code2"
+                },
+                {
+                    "label": "RESTful APIs",
+                    "icon": "GitBranch"
+                },
+                {
+                    "label": "GraphQL",
+                    "icon": "Layers"
+                },
+                {
+                    "label": "REST APIs",
+                    "icon": "AppleIcon"
+                },
+                {
+                    "label": "GraphQL",
+                    "icon": "GitGraph"
+                },
+                {
+                    "label": "Webhooks",
+                    "icon": "Webhook"
+                },
+                {
+                    "label": "SOAP Api",
+                    "icon": "SoapDispenserDropletIcon"
+                },
+                {
+                    "label": "WSDL APi",
+                    "icon": "WandSparkles"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "database",
+        "label": "Database",
+        "title": "Database",
+        "description": "Efficient data storage, optimization, and management solutions.",
+        "icon": "Database",
+        "size": "md",
+        "color": "muted",
+        "category": "service",
+        "delay": 0.25,
+        "content": {
+            "title": "Database Management",
+            "description": "Efficient data storage, optimization, and management solutions.",
+            "items": [
+                {
+                    "label": "PostgreSQL",
+                    "icon": "Database"
+                },
+                {
+                    "label": "MongoDB",
+                    "icon": "Database"
+                },
+                {
+                    "label": "Redis Caching",
+                    "icon": "Database"
+                },
+                {
+                    "label": "Cosmos Db",
+                    "icon": "Database"
+                },
+                {
+                    "label": "SQL Server",
+                    "icon": "Database"
+                },
+                {
+                    "label": "Oracle",
+                    "icon": "Database"
+                },
+                {
+                    "label": "MySql",
+                    "icon": "Database"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "cloud",
+        "label": "Azure",
+        "title": "Azure",
+        "description": "Cloud infrastructure setup, migration, and management.",
+        "icon": "Cloud",
+        "size": "lg",
+        "color": "accent",
+        "category": "tech",
+        "delay": 0.35,
+        "content": {
+            "title": "Azure",
+            "description": "Cloud infrastructure setup, migration, and management.",
+            "items": [
+                {
+                    "label": "Web Apps",
+                    "icon": "Cloud"
+                },
+                {
+                    "label": "Azure Services",
+                    "icon": "Cloud"
+                },
+                {
+                    "label": "ILB (Internet Load Balancer)",
+                    "icon": "Cloud"
+                },
+                {
+                    "label": "Networking",
+                    "icon": "Cloud"
+                },
+                {
+                    "label": "CDN",
+                    "icon": "Cloud"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "security",
+        "label": "AWS",
+        "title": "AWS",
+        "description": "Protecting your digital assets with enterprise-grade security.",
+        "icon": "CloudCogIcon",
+        "size": "md",
+        "color": "primary",
+        "category": "tech",
+        "delay": 0.4,
+        "content": {
+            "title": "AWS",
+            "description": "Protecting your digital assets with enterprise-grade security.",
+            "items": [
+                {
+                    "label": "Networking & Content Delivery",
+                    "icon": "Shield"
+                },
+                {
+                    "label": "Machine Learning & AI",
+                    "icon": "Terminal"
+                },
+                {
+                    "label": "Analytics",
+                    "icon": "Shield"
+                },
+                {
+                    "label": "Security, Identity & Compliance",
+                    "icon": "Award"
+                },
+                {
+                    "label": "Application Integration",
+                    "icon": "Award"
+                },
+                {
+                    "label": "Management & Governance",
+                    "icon": "Award"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "frontend-tech",
+        "label": "UI/UX",
+        "title": "UI/UX",
+        "description": "Modern UI frameworks and libraries we excel in.",
+        "icon": "Palette",
+        "size": "md",
+        "color": "accent",
+        "category": "tech",
+        "delay": 0.45,
+        "content": {
+            "title": "UI/UX",
+            "description": "Modern UI frameworks and libraries we excel in.",
+            "items": [
+                {
+                    "label": "React.js"
+                },
+                {
+                    "label": "Vue.js"
+                },
+                {
+                    "label": "TypeScript"
+                },
+                {
+                    "label": "Tailwind CSS"
+                },
+                {
+                    "label": "Html5"
+                },
+                {
+                    "label": "JavaScript"
+                },
+                {
+                    "label": "User Research"
+                },
+                {
+                    "label": "Wireframing & Prototyping"
+                },
+                {
+                    "label": "Visual Design"
+                },
+                {
+                    "label": "Usability Testing"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "devops",
+        "label": "CI/CD",
+        "title": "CI/CD",
+        "description": "Streamline your development and deployment processes.",
+        "icon": "Settings",
+        "size": "sm",
+        "color": "primary",
+        "category": "tech",
+        "delay": 0.55,
+        "content": {
+            "title": "CI/CD",
+            "description": "Streamline your development and deployment processes.",
+            "items": [
+                {
+                    "label": "DevOps"
+                },
+                {
+                    "label": "BitBucket"
+                },
+                {
+                    "label": "Jenkins"
+                },
+                {
+                    "label": "GitHub Actions"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "process",
+        "label": "Our Process",
+        "title": "Our Process",
+        "description": "A streamlined approach to delivering exceptional results.",
+        "icon": "Layers",
+        "size": "lg",
+        "color": "primary",
+        "category": "process",
+        "delay": 0.6,
+        "content": {
+            "title": "Our Development Process",
+            "description": "A streamlined approach to delivering exceptional results.",
+            "items": [
+                {
+                    "label": "Discovery",
+                    "description": "Understanding your needs"
+                },
+                {
+                    "label": "Planning",
+                    "description": "Strategic roadmap creation"
+                },
+                {
+                    "label": "Development",
+                    "description": "Agile implementation"
+                },
+                {
+                    "label": "Delivery",
+                    "description": "Launch & ongoing support"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "support",
+        "label": "Support",
+        "title": "Support",
+        "description": "We're with you every step of the way, even after launch.",
+        "icon": "HeartHandshake",
+        "size": "md",
+        "color": "accent",
+        "category": "process",
+        "delay": 0.65,
+        "content": {
+            "title": "Ongoing Support",
+            "description": "We're with you every step of the way, even after launch.",
+            "items": [
+                {
+                    "label": "24/7 Monitoring"
+                },
+                {
+                    "label": "Regular Updates"
+                },
+                {
+                    "label": "Performance Optimization"
+                },
+                {
+                    "label": "Dedicated Account Manager"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "contact",
+        "label": "Contact",
+        "title": "Contact",
+        "description": "Ready to transform your business? Let's talk.",
+        "icon": "Mail",
+        "size": "lg",
+        "color": "primary",
+        "category": "contact",
+        "delay": 0.7,
+        "content": {
+            "title": "Get In Touch",
+            "description": "Ready to transform your business? Let's talk.",
+            "items": [
+                {
+                    "label": "hello@alphabetconsultancy.com",
+                    "icon": "Mail"
+                },
+                {
+                    "label": "Kalyan (Mumbai)",
+                    "icon": "MapPin"
+                },
+                {
+                    "label": "Schedule a Call",
+                    "icon": "Clock"
+                },
+                {
+                    "label": "Start a Project",
+                    "icon": "Briefcase"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "location",
+        "label": "Location",
+        "title": "Location",
+        "description": "serving clients globally.",
+        "icon": "MapPin",
+        "size": "sm",
+        "color": "muted",
+        "category": "contact",
+        "delay": 0.75,
+        "content": {
+            "title": "Our Location",
+            "description": "serving clients globally.",
+            "items": [
+                {
+                    "label": "London, UK",
+                    "description": "Headquarters"
+                },
+                {
+                    "label": "Remote-First",
+                    "description": "Global team"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "performance",
+        "label": "Performance",
+        "title": "Performance",
+        "description": "Make your applications lightning fast.",
+        "icon": "Zap",
+        "size": "sm",
+        "color": "primary",
+        "category": "service",
+        "delay": 0.85,
+        "content": {
+            "title": "Performance Optimization",
+            "description": "Make your applications lightning fast.",
+            "items": [
+                {
+                    "label": "Load Time Optimization"
+                },
+                {
+                    "label": "Caching Strategies"
+                },
+                {
+                    "label": "CDN Setup"
+                },
+                {
+                    "label": "Code Optimization"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "consulting",
+        "label": "Consulting",
+        "title": "Consulting",
+        "description": "Strategic technology guidance for your business.",
+        "icon": "Briefcase",
+        "size": "md",
+        "color": "primary",
+        "category": "service",
+        "delay": 0.9,
+        "content": {
+            "title": "IT Consulting",
+            "description": "Strategic technology guidance for your business.",
+            "items": [
+                {
+                    "label": "Technology Assessment"
+                },
+                {
+                    "label": "Digital Strategy"
+                },
+                {
+                    "label": "Architecture Design"
+                },
+                {
+                    "label": "Team Augmentation"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "ai-ml",
+        "label": "AI & ML",
+        "title": "AI & ML",
+        "description": "Intelligent solutions powered by cutting-edge AI.",
+        "icon": "Cpu",
+        "size": "md",
+        "color": "accent",
+        "category": "tech",
+        "delay": 0.95,
+        "content": {
+            "title": "AI & Machine Learning",
+            "description": "Intelligent solutions powered by cutting-edge AI.",
+            "items": [
+                {
+                    "label": "Machine Learning Models"
+                },
+                {
+                    "label": "Natural Language Processing"
+                },
+                {
+                    "label": "Computer Vision"
+                },
+                {
+                    "label": "Predictive Analytics"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "automation",
+        "label": "Automation",
+        "title": "Automation",
+        "description": "Streamline workflows and reduce manual effort.",
+        "icon": "Settings",
+        "size": "sm",
+        "color": "accent",
+        "category": "tech",
+        "delay": 1.05,
+        "content": {
+            "title": "Process Automation",
+            "description": "Streamline workflows and reduce manual effort.",
+            "items": [
+                {
+                    "label": "Workflow Automation"
+                },
+                {
+                    "label": "CI/CD Pipelines"
+                },
+                {
+                    "label": "Testing Automation"
+                },
+                {
+                    "label": "Infrastructure as Code"
+                },
+                {
+                    "label": "n8n"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "data",
+        "label": "Amazon/Fkart (E-Comm)",
+        "title": "Amazon/Fkart",
+        "description": "Turn your data into actionable insights.",
+        "icon": "ShoppingCart",
+        "size": "sm",
+        "color": "muted",
+        "category": "tech",
+        "delay": 1.1,
+        "content": {
+            "title": "Data Solutions",
+            "description": "Turn your data into actionable insights.",
+            "items": [
+                {
+                    "label": "Product Listing"
+                },
+                {
+                    "label": "Price Listing Optimization"
+                },
+                {
+                    "label": "Catalog Management"
+                },
+                {
+                    "label": "Marketplace Management"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "integration",
+        "label": "Integration",
+        "title": "Integration",
+        "description": "Connect your systems for seamless data flow.",
+        "icon": "GitBranch",
+        "size": "sm",
+        "color": "primary",
+        "category": "service",
+        "delay": 1.15,
+        "content": {
+            "title": "System Integration",
+            "description": "Connect your systems for seamless data flow.",
+            "items": [
+                {
+                    "label": "API Integration"
+                },
+                {
+                    "label": "Legacy Modernization"
+                },
+                {
+                    "label": "Third-party Connectors"
+                },
+                {
+                    "label": "Enterprise Systems"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "training",
+        "label": "Training",
+        "title": "Training",
+        "description": "Empower your team with expert knowledge.",
+        "icon": "Award",
+        "size": "sm",
+        "color": "accent",
+        "category": "process",
+        "delay": 1.2,
+        "content": {
+            "title": "Training & Workshops",
+            "description": "Empower your team with expert knowledge.",
+            "items": [
+                {
+                    "label": "Technical Workshops"
+                },
+                {
+                    "label": "Team Upskilling"
+                },
+                {
+                    "label": "Best Practices"
+                },
+                {
+                    "label": "Documentation"
+                }
+            ]
+        },
+        "layouts": {
+            "honeycomb": true,
+            "ticker": true
+        }
+    },
+    {
+        "id": "c1",
+        "title": "NeoTech",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f7b018a099ba4379f97a_pexels-google-deepmind-17485819.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c2",
+        "title": "Innovate",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f7fb20f5b628629cc9ec_pexels-google-deepmind-17485846.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c3",
+        "title": "Catalyst",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f806b3031780c259653c_pexels-google-deepmind-17485868.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c4",
+        "title": "Quantum",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f811ca6e2359d30fd05e_pexels-google-deepmind-18069081.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c5",
+        "title": "Fusion",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d858f8ce955ef721bf77_pexels-anni-roenkae-2156881.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c6",
+        "title": "Apex",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f9c9373b1a8794c2eb59_google-deepmind-2EpKCoEgKZo-unsplash.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c7",
+        "title": "Evolve",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8f9f6a2334ccaea030e8c_google-deepmind-QEA9JMqOuVc-unsplash.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c8",
+        "title": "Synergy",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fa0e188b34c32bda621c_google-deepmind-NMjrovXT_UY-unsplash.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c9",
+        "title": "Lumina",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbb718a099ba437ed848_pexels-bruno-thethe-1910230.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c10",
+        "title": "Pinnacle",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbe3b3031780c25e573e_pexels-scott-webb-1544947.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c11",
+        "title": "Odyssey",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fbf4b3031780c25e6ac2_pexels-timea-kadar-2215609.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c12",
+        "title": "Zenith",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f8fc0618a099ba437f318c_pexels-vladimir-gladkov-10084175.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c13",
+        "title": "Elysium",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d77f2a57a5107633ab78_pexels-lucky-5374862.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c14",
+        "title": "Nexus",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d7ae3bd0625450389fdd_pexels-natalie-bond-3371103.jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    },
+    {
+        "id": "c15",
+        "title": "Stellar",
+        "img": "https://cdn.prod.website-files.com/64f8947801a76f7e31f7a7e8/64f9d92ae71db04ed5c9f2ad_pexels-mikhail-nilov-7827905%20(1).jpg",
+        "link": "#",
+        "layouts": {
+            "carousel": true
+        }
+    }
+]
