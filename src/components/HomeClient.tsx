@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useLayoutEffect } from "react";
-import gsap from "gsap";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { getDataForHoneycomb } from "@/data/dataAdapter";
 import { LAYOUT_REGISTRY } from "@/layouts/core/LayoutRegistry";
 import CirclePopup from "@/layouts/shared/CirclePopup";
@@ -23,28 +22,27 @@ const preloadTicker = async () => {
 
 export default function HomeClient() {
     const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
-    const [displayMode, setDisplayMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
     const [isTickerReady, setIsTickerReady] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
-    // Refs for the two layers
-    const targetLayerRef = useRef<HTMLDivElement>(null);
-    const exitingLayerRef = useRef<HTMLDivElement>(null);
+    // Refs for background
     const bgRef = useRef<HTMLDivElement>(null);
 
-    const ctx = useRef<gsap.Context | null>(null);
-
-    const circleData = getDataForHoneycomb();
-    const activeCircle = expandedId ? circleData.find(c => c.id === expandedId) : null;
+    // Memoize circle data since it's static
+    const circleData = useMemo(() => getDataForHoneycomb(), []);
+    const activeCircle = useMemo(() =>
+        expandedId ? circleData.find(c => c.id === expandedId) : null,
+        [expandedId, circleData]
+    );
 
     // Helper to resolve layout component
-    const getLayoutConfig = (mode: string) => {
+    const getLayoutConfig = useCallback((mode: string) => {
         if (mode === "ticker" && TickerLayoutComponent) {
             return TickerLayoutComponent;
         }
         const id = (mode === "static" || mode === "olympic") ? "honeycomb" : mode;
         return LAYOUT_REGISTRY[id]?.component;
-    };
+    }, []);
 
     // Optimized layout switching with preloading
     const switchLayout = useCallback(async (newMode: "static" | "olympic" | "3d-carousel" | "ticker") => {
@@ -61,33 +59,28 @@ export default function HomeClient() {
             }
         }
 
-        // Atomic switch - update both states simultaneously
+        // Update layout mode
         setLayoutMode(newMode);
-        setDisplayMode(newMode);
     }, [layoutMode, isTickerReady]);
 
-    const TargetLayout = getLayoutConfig(layoutMode);
-    const ExitingLayout = getLayoutConfig(displayMode);
+    const TargetLayout = useMemo(() => getLayoutConfig(layoutMode), [layoutMode, getLayoutConfig]);
 
-    // If the component implementation is the same (e.g. Honeycomb used for both Static and Olympic),
-    // we do NOT want to trigger a full mount/unmount transition. We want to update props in place.
-    const isSameLayoutModule = TargetLayout === ExitingLayout;
+    // Memoize dark mode calculation
+    const isDark = useMemo(() =>
+        layoutMode === "olympic" || layoutMode === "3d-carousel",
+        [layoutMode]
+    );
 
-    // Transition only if modules differ AND we aren't already aligned
-    const isTransitioning = !isSameLayoutModule && layoutMode !== displayMode;
+    // Memoize button class generator
+    const getButtonClassName = useCallback((mode: string) => {
+        const isActive = layoutMode === mode;
+        const baseClasses = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2";
 
-    // Handle Layout Transitions
-    useLayoutEffect(() => {
-        // Skip all animations for instant rendering
-        if (targetLayerRef.current) {
-            gsap.set(targetLayerRef.current, { opacity: 1, scale: 1 });
+        if (isActive) {
+            return `${baseClasses} ${isDark ? "bg-white text-black hover:bg-white/90" : "bg-primary text-primary-foreground hover:bg-primary/90"}`;
         }
-        setDisplayMode(layoutMode);
-        return;
-    }, [layoutMode]); // Only re-run when layout mode changes
-
-    // Derived styles
-    const isDark = (isTransitioning ? layoutMode : displayMode) === "olympic" || (isTransitioning ? layoutMode : displayMode) === "3d-carousel";
+        return `${baseClasses} ${isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`;
+    }, [layoutMode, isDark]);
 
     return (
         <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
@@ -120,41 +113,25 @@ export default function HomeClient() {
                     } ${expandedId ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <button
                         onClick={() => switchLayout("static")}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${
-                            layoutMode === "static" 
-                                ? (isDark ? "bg-white text-black hover:bg-white/90" : "bg-primary text-primary-foreground hover:bg-primary/90")
-                                : (isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
-                        }`}
+                        className={getButtonClassName("static")}
                     >
                         Default
                     </button>
                     <button
                         onClick={() => switchLayout("olympic")}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${
-                            layoutMode === "olympic" 
-                                ? (isDark ? "bg-white text-black hover:bg-white/90" : "bg-primary text-primary-foreground hover:bg-primary/90")
-                                : (isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
-                        }`}
+                        className={getButtonClassName("olympic")}
                     >
                         Olympic
                     </button>
                     <button
                         onClick={() => switchLayout("3d-carousel")}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${
-                            layoutMode === "3d-carousel" 
-                                ? (isDark ? "bg-white text-black hover:bg-white/90" : "bg-primary text-primary-foreground hover:bg-primary/90")
-                                : (isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
-                        }`}
+                        className={getButtonClassName("3d-carousel")}
                     >
                         3D View
                     </button>
                     <button
                         onClick={() => switchLayout("ticker")}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${
-                            layoutMode === "ticker" 
-                                ? (isDark ? "bg-white text-black hover:bg-white/90" : "bg-primary text-primary-foreground hover:bg-primary/90")
-                                : (isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
-                        }`}
+                        className={getButtonClassName("ticker")}
                     >
                         Ticker
                     </button>
@@ -162,32 +139,14 @@ export default function HomeClient() {
             </header>
 
             <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
-                {/* Exiting Layer - Render only during transition */}
-                {isTransitioning && ExitingLayout && (
-                    <div
-                        ref={exitingLayerRef}
-                        className="absolute inset-0 w-full h-full will-change-transform isolate"
-                    >
-                        <ExitingLayout
-                            isActive={false} // Maybe false? or true? It's exiting. Keep it active visually.
-                            expandedId={expandedId}
-                            onExpandedChange={setExpandedId}
-                            layoutMode={displayMode} // Pass its own mode
-                        />
-                    </div>
-                )}
-
-                {/* Target/Current Layout - Always Render */}
+                {/* Current Layout - Always Render */}
                 {TargetLayout && (
-                    <div
-                        ref={targetLayerRef}
-                        className="absolute inset-0 w-full h-full will-change-transform isolate"
-                    >
+                    <div className="absolute inset-0 w-full h-full will-change-transform isolate">
                         <TargetLayout
                             isActive={true}
                             expandedId={expandedId}
                             onExpandedChange={setExpandedId}
-                            layoutMode={layoutMode} // Pass target mode
+                            layoutMode={layoutMode}
                         />
                     </div>
                 )}

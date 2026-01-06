@@ -1,11 +1,11 @@
 "use client";
 
+import { memo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { CircleData } from "@/data/circleData";
-import CircleContent from "./CircleContent"; // Same directory
+import CircleContent from "./CircleContent";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useEffect, useState } from "react";
 
 interface CirclePopupProps {
     circle: CircleData;
@@ -15,25 +15,24 @@ interface CirclePopupProps {
 
 const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) => {
     const isMobile = useIsMobile();
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        // High-performance scroll lock
-        const originalStyle = window.getComputedStyle(document.body).overflow;
+        // Optimized scroll lock
+        const originalOverflow = document.body.style.overflow;
+        const originalTouchAction = document.body.style.touchAction;
+
         document.body.style.overflow = 'hidden';
-        document.body.style.touchAction = 'none'; // Prevent palm/touch gestures
+        document.body.style.touchAction = 'none';
 
         return () => {
-            document.body.style.overflow = originalStyle;
-            document.body.style.touchAction = '';
+            document.body.style.overflow = originalOverflow;
+            document.body.style.touchAction = originalTouchAction;
         };
     }, []);
 
     // Instant rendering - no animations
     const backdropTransition = { duration: 0 };
     const cardTransition = { duration: 0 };
-    if (!mounted) return null;
 
     return (
         <div className="fixed inset-0 z-[99990] flex items-end md:items-start justify-center pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
@@ -90,11 +89,10 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 >
                     <button
                         onClick={onClose}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${
-                            isOlympic 
-                                ? "bg-white text-black hover:bg-white/90" 
-                                : "bg-primary text-primary-foreground hover:bg-primary/90"
-                        }`}
+                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${isOlympic
+                            ? "bg-white text-black hover:bg-white/90"
+                            : "bg-primary text-primary-foreground hover:bg-primary/90"
+                            }`}
                         style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.4)' } : {}}
                     >
                         <ArrowLeft className="w-4 h-4" />
@@ -123,11 +121,20 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                         backfaceVisibility: 'hidden'
                     }}
                 >
-                    <CircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} />
+                    <MemoizedCircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} />
                 </motion.div>
             </motion.div>
         </div >
     );
 };
+
+// Memoize CircleContent to prevent re-renders
+const MemoizedCircleContent = memo(CircleContent, (prevProps, nextProps) => {
+    return (
+        prevProps.circle.id === nextProps.circle.id &&
+        prevProps.isMobile === nextProps.isMobile &&
+        prevProps.isOlympic === nextProps.isOlympic
+    );
+});
 
 export default CirclePopup;

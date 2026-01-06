@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect } from "react";
+import { useRef, useLayoutEffect, memo } from "react";
 import gsap from "gsap";
 import { CircleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
@@ -39,17 +39,18 @@ const CircleWrapper = ({
     const outerRef = useRef<HTMLDivElement>(null);
     const innerRef = useRef<HTMLDivElement>(null);
     const hasEntered = useRef(false);
-    const prevVariantRef = useRef(variant);
 
-    // Apply oscillation to inner ref - Disabled for instant rendering
+    // Apply oscillation to inner ref (currently disabled for performance)
     useOscillation(innerRef, oscillationParams, false);
 
-    // Handle Position & State Changes
+    // Optimized GSAP animations with consolidated operations
     useLayoutEffect(() => {
         if (!outerRef.current) return;
 
         const ctx = gsap.context(() => {
-            // Instant rendering - no entrance animations
+            const zIndex = navCircleIds.includes(circle.id) ? 20 : 10;
+
+            // Initial entrance - instant rendering
             if (!hasEntered.current) {
                 hasEntered.current = true;
                 gsap.set(outerRef.current, {
@@ -61,57 +62,47 @@ const CircleWrapper = ({
                     filter: "blur(0px)",
                     width: circleSize,
                     height: circleSize,
-                    zIndex: navCircleIds.includes(circle.id) ? 20 : 10
+                    zIndex
+                });
+                return;
+            }
+
+            // State updates - instant transitions
+            if (expandedId) {
+                // All circles get same treatment when any is expanded
+                gsap.set(outerRef.current, {
+                    opacity: 0.5,
+                    scale: 0.9,
+                    z: -50,
+                    y: targetY + 50,
+                    x: targetX,
+                    zIndex
                 });
             } else {
-                // Instant state changes
-                if (expandedId) {
-                    if (expandedId === circle.id) {
-                        gsap.set(outerRef.current, {
-                            opacity: 0.5,
-                            scale: 0.9,
-                            z: -50,
-                            y: targetY + 50,
-                            x: targetX,
-                            zIndex: navCircleIds.includes(circle.id) ? 20 : 10
-                        });
-                    } else {
-                        gsap.set(outerRef.current, {
-                            opacity: 0.5,
-                            scale: 0.9,
-                            z: -50,
-                            y: targetY + 50,
-                            x: targetX,
-                            zIndex: navCircleIds.includes(circle.id) ? 20 : 10
-                        });
-                    }
-                } else {
-                    gsap.set(outerRef.current, {
-                        x: targetX,
-                        y: targetY,
-                        width: circleSize,
-                        height: circleSize,
-                        opacity: 1,
-                        scale: 1,
-                        z: 0,
-                        rotation: 0,
-                        filter: "blur(0px)",
-                        zIndex: navCircleIds.includes(circle.id) ? 20 : 10
-                    });
-                }
+                // Normal state
+                gsap.set(outerRef.current, {
+                    x: targetX,
+                    y: targetY,
+                    width: circleSize,
+                    height: circleSize,
+                    opacity: 1,
+                    scale: 1,
+                    z: 0,
+                    rotation: 0,
+                    filter: "blur(0px)",
+                    zIndex
+                });
             }
         });
 
         return () => ctx.revert();
-    }, [targetX, targetY, circleSize, expandedId, circle.id, navCircleIds, index]);
+    }, [targetX, targetY, circleSize, expandedId, circle.id, navCircleIds]);
 
     return (
         <div
             ref={outerRef}
             className="opacity-0 absolute top-0 left-0 will-change-transform"
             style={{
-                // Styles that don't animate or are set by GSAP
-                // width/height set by GSAP
                 width: circleSize,
                 height: circleSize,
             }}
@@ -130,4 +121,15 @@ const CircleWrapper = ({
     );
 };
 
-export default CircleWrapper;
+// Memoize to prevent re-renders when props haven't changed
+export default memo(CircleWrapper, (prevProps, nextProps) => {
+    return (
+        prevProps.circle.id === nextProps.circle.id &&
+        prevProps.x === nextProps.x &&
+        prevProps.y === nextProps.y &&
+        prevProps.circleSize === nextProps.circleSize &&
+        prevProps.expandedId === nextProps.expandedId &&
+        prevProps.variant === nextProps.variant &&
+        prevProps.borderColor === nextProps.borderColor
+    );
+});

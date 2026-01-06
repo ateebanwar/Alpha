@@ -1,5 +1,4 @@
-import { useEffect, RefObject } from "react";
-import gsap from "gsap";
+import { RefObject } from "react";
 
 interface OscillationParams {
   amplitude: number;
@@ -8,12 +7,19 @@ interface OscillationParams {
   angle: number;
 }
 
+/**
+ * Oscillation hook - Currently disabled for performance optimization
+ * This hook is kept for future use if oscillation animations are re-enabled
+ * 
+ * @param ref - Reference to the element to animate
+ * @param params - Oscillation parameters
+ * @param isActive - Whether oscillation should be active
+ */
 export const useOscillation = <T extends HTMLElement>(
   ref: RefObject<T | null>,
   params: OscillationParams,
   isActive: boolean = true
 ) => {
-  useEffect(() => {
-    // Disabled for instant rendering - no oscillation animations
-  }, [params.amplitude, params.frequency, params.phase, params.angle, isActive, ref]);
+  // No-op: Oscillation disabled for instant rendering and performance
+  // This eliminates unnecessary effect overhead
 };

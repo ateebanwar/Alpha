@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { circleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
 import CircleWrapper from "./CircleWrapper";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useDebouncedWindowSize } from "@/hooks/use-debounced-window-size";
 
 
 const OlympicChunk = ({
@@ -56,13 +57,15 @@ const CircleGrid = ({
     expandedId: string | null,
     onExpandedChange: (id: string | null) => void
 }) => {
-    const [isMounted, setIsMounted] = useState(false);
     const isMobile = useIsMobile();
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollY } = useScroll({ container: containerRef });
 
+    // Prevent hydration mismatch by only rendering after client mount
+    const [isClient, setIsClient] = useState(false);
+
     useEffect(() => {
-        setIsMounted(true);
+        setIsClient(true);
     }, []);
 
     const OLYMPIC_COLORS = [
@@ -73,12 +76,12 @@ const CircleGrid = ({
         "#00A651", // Green
     ];
 
-    // Sorted and filtered data
+    // Optimized: Sorted and filtered data - memoized once since circleData is static
     const sortedCircleData = useMemo(() => {
         const priorityLabels = [
             "About Us", "Contact", "Location", "Consulting", "Experience", "Our Process"
         ];
-        return [...circleData].sort((a, b) => {
+        return circleData.slice().sort((a, b) => {
             const indexA = priorityLabels.indexOf(a.label);
             const indexB = priorityLabels.indexOf(b.label);
             if (indexA !== -1 && indexB !== -1) return indexA - indexB;
@@ -86,28 +89,17 @@ const CircleGrid = ({
             if (indexB !== -1) return 1;
             return 0;
         });
-    }, []);
+    }, []); // Empty deps since circleData is static
 
-    const navCircleIds = ["about", "web-dev", "process", "contact"];
+    const navCircleIds = useMemo(() => ["about", "web-dev", "process", "contact"], []);
 
-    const handleExpand = (circleId: string) => {
+    // Memoized callback to prevent re-renders
+    const handleExpand = useCallback((circleId: string) => {
         onExpandedChange(circleId);
-    };
+    }, [onExpandedChange]);
 
-    // Responsive Grid Layout
-    const [windowSize, setWindowSize] = useState({
-        width: typeof window !== "undefined" ? window.innerWidth : 1200,
-        height: typeof window !== "undefined" ? window.innerHeight : 800
-    });
-
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-        };
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    // Optimized: Use debounced window size to prevent excessive re-renders
+    const windowSize = useDebouncedWindowSize(150);
 
     // Calculate coordinates for all circles
     const circlePositions = useMemo(() => {
@@ -240,6 +232,7 @@ const CircleGrid = ({
         return positions;
     }, [windowSize, layoutMode, sortedCircleData]);
 
+    // Optimized: Generate oscillation params once since they don't need to change
     const oscillationParams = useMemo(() => {
         return sortedCircleData.map(() => ({
             amplitude: Math.random() * 5,
@@ -247,7 +240,7 @@ const CircleGrid = ({
             phase: Math.random() * Math.PI * 2,
             angle: Math.random() * Math.PI * 2,
         }));
-    }, [sortedCircleData]);
+    }, []); // Empty deps - generate once
 
     const olympicChunks = useMemo(() => {
         const chunks = [];
@@ -267,10 +260,6 @@ const CircleGrid = ({
         }
     }, [layoutMode]);
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    // Remove early return to ensure ref is always attached
-    // if (!isMounted) return <div className="w-full h-full" />;
-
     return (
         <div
             className={`relative w-full h-full ${layoutMode === "olympic" ? "olympic-scrollbar" : "overflow-hidden"}`}
@@ -280,7 +269,7 @@ const CircleGrid = ({
                 WebkitOverflowScrolling: "touch" // Smooth iOS scroll
             }}
         >
-            {isMounted && (
+            {isClient && (
                 <motion.div
                     animate={expandedId ? "expanded" : "normal"}
                     variants={{
