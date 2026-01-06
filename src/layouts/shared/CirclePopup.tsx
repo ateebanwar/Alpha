@@ -30,32 +30,16 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
         };
     }, []);
 
-    // Ultra-fast animation settings for buttery-smooth performance
-    const backdropTransition = {
-        duration: isMobile ? 0.08 : 0.12,
-        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] // Custom cubic-bezier for snappy feel
-    };
-
-    const cardTransition = isMobile ? {
-        type: "spring" as const,
-        stiffness: 800,
-        damping: 35,
-        mass: 0.2,
-        velocity: 5
-    } : {
-        type: "spring" as const,
-        stiffness: 600,
-        damping: 30,
-        mass: 0.3,
-        velocity: 4
-    };
+    // Instant rendering - no animations
+    const backdropTransition = { duration: 0 };
+    const cardTransition = { duration: 0 };
     if (!mounted) return null;
 
     return (
         <div className="fixed inset-0 z-[99990] flex items-end md:items-start justify-center pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-            {/* 1. Ultra-fast Backdrop Layer - Almost opaque on mobile but ensures header title above it is clear */}
+            {/* Instant Backdrop */}
             <motion.div
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 1 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={backdropTransition}
@@ -70,9 +54,9 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 }}
             />
 
-            {/* 2. Ultra-fast Expanding Card - Fullscreen behavior on mobile (60px offset), Panel behavior on desktop (100px offset) */}
+            {/* Instant Card */}
             <motion.div
-                layoutId={`circle-container-${circle.id}`}
+                layoutId={undefined}
                 className={`relative w-full md:max-w-4xl h-full rounded-none md:rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border-x-0 md:border border-white/10`}
                 transition={cardTransition}
                 style={{
@@ -90,14 +74,11 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 {/* Background decorative elements */}
                 {!isOlympic && <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />}
 
-                {/* Header - Instant animation for ultra-smooth feel */}
+                {/* Instant Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: isMobile ? -2 : -4 }}
+                    initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        duration: isMobile ? 0.12 : 0.16,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
+                    transition={{ duration: 0 }}
                     className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-white/5 bg-card/50 backdrop-blur-sm'
                         }`}
                     style={{
@@ -109,9 +90,11 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 >
                     <button
                         onClick={onClose}
-                        className={isOlympic
-                            ? "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-150 border border-white/20 rounded-xl hover:bg-white/5"
-                            : "neu-tile flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-all duration-150 hover:scale-105 active:scale-95"}
+                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${
+                            isOlympic 
+                                ? "bg-white text-black hover:bg-white/90" 
+                                : "bg-primary text-primary-foreground hover:bg-primary/90"
+                        }`}
                         style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.4)' } : {}}
                     >
                         <ArrowLeft className="w-4 h-4" />

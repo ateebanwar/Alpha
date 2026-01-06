@@ -82,26 +82,8 @@ const InteractiveCircle = ({
                     }
         `}
                 style={circleStyle}
-                whileHover={isMobile ? {} : {
-                    scale: 1.05,
-                    ...(isOlympic ? {
-                        boxShadow: `
-              inset 4px 4px 8px #000000, 
-              inset -4px -4px 8px #1a1a1a,
-              0 0 25px ${borderColor},
-              0 0 50px ${borderColor}cc,
-              0 0 80px ${borderColor}66
-            `
-                    } : {
-                        // Ensure no Olympic shadows leak into hover state of default mode
-                        boxShadow: '',
-                    }),
-                    transition: { duration: 0.15, ease: "easeOut" }
-                }}
-                whileTap={{
-                    scale: 0.96,
-                    transition: { duration: 0.1, ease: "easeOut" }
-                }}
+                whileHover={undefined}
+                whileTap={undefined}
             >
                 <div
                     className="flex flex-col items-center justify-center gap-1 md:gap-2 p-2 md:p-4 text-center"

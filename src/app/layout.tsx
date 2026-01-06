@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="no-animations">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -49,6 +49,38 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .no-animations * {
+              animation-duration: 0s !important;
+              animation-delay: 0s !important;
+              transition-duration: 0s !important;
+              transition-delay: 0s !important;
+            }
+            .no-animations .floating,
+            .no-animations .floating-slow,
+            .no-animations .floating-fast {
+              animation: none !important;
+            }
+            .no-animations .neu-card,
+            .no-animations .neu-circle,
+            .no-animations .neu-tile {
+              transition: none !important;
+            }
+            /* Allow CSS transitions in 3D carousel for overlay effects */
+            .no-animations .carousel_component .carousel_overlay,
+            .no-animations .carousel_component .carousel_item {
+              transition-duration: 0.6s !important;
+            }
+            .no-animations .carousel_component .carousel_item {
+              transition-duration: 0.3s !important;
+            }
+            /* Allow button transitions for default hover behavior */
+            .no-animations button {
+              transition-duration: 0.15s !important;
+            }
+          `
+        }} />
       </head>
       <body className={`${outfit.variable} ${inter.variable} antialiased`} suppressHydrationWarning={true}>
         <Providers>

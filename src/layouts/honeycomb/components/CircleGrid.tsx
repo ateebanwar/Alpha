@@ -282,15 +282,12 @@ const CircleGrid = ({
         >
             {isMounted && (
                 <motion.div
-                    animate={layoutMode === "olympic"
-                        ? { opacity: expandedId ? 0.5 : 1 }
-                        : (expandedId ? "expanded" : "normal")
-                    }
-                    variants={layoutMode === "olympic" ? undefined : {
+                    animate={expandedId ? "expanded" : "normal"}
+                    variants={{
                         normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
                         expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
                     }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    transition={{ duration: 0 }}
                     className={layoutMode === "olympic" ? "relative w-full min-h-full" : "absolute inset-0"}
                     style={{
                         pointerEvents: expandedId ? 'none' : 'auto',
@@ -313,8 +310,8 @@ const CircleGrid = ({
                                         top: "10%",
                                         left: "5%",
                                     }}
-                                    animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.2, 0.15] }}
-                                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                                    animate={false}
+                                    transition={{ duration: 0 }}
                                 />
                             </div>
                         )}

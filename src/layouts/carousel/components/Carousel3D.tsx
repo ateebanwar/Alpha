@@ -80,7 +80,7 @@ export default function Carousel3D() {
         };
 
         const updateRotation = () => {
-            // Smooth damping
+            // Smooth damping for scroll-driven movement only
             currentRotation += (targetRotation - currentRotation) * 0.1;
 
             wrapEl.style.setProperty("--3d-carousel-rotate", `${currentRotation}deg`);
@@ -140,9 +140,9 @@ export default function Carousel3D() {
         };
         window.addEventListener("resize", handleResize);
 
-        gsap.to(wrapEl, { opacity: 1, duration: 1 });
+        gsap.set(wrapEl, { opacity: 1 });
 
-        // Start GSAP Ticker
+        // Enable GSAP Ticker for smooth scroll-driven animation
         gsap.ticker.add(updateRotation);
 
         return () => {
@@ -175,14 +175,6 @@ export default function Carousel3D() {
                     </div>
                 </div>
             </div>
-
-            <div className="carousel_arrow_wrap">
-                <div className="carousel_arrow_sticky">
-                    <a data-carousel="prev" href="#" className="carousel_arrow_link w-inline-block"></a>
-                    <a data-carousel="next" href="#" className="carousel_arrow_link is-right w-inline-block"></a>
-                </div>
-            </div>
-            {/* Added overlay gradient for easier reading of active content if needed */}
         </div>
     );
 }

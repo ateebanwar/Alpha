@@ -41,95 +41,52 @@ const CircleWrapper = ({
     const hasEntered = useRef(false);
     const prevVariantRef = useRef(variant);
 
-    // Apply oscillation to inner ref
-    useOscillation(innerRef, oscillationParams, !expandedId); // Disable oscillation when expanded? Maybe not strictly needed but good for focus.
+    // Apply oscillation to inner ref - Disabled for instant rendering
+    useOscillation(innerRef, oscillationParams, false);
 
     // Handle Position & State Changes
     useLayoutEffect(() => {
         if (!outerRef.current) return;
 
         const ctx = gsap.context(() => {
-            // Entrance Animation
+            // Instant rendering - no entrance animations
             if (!hasEntered.current) {
-                hasEntered.current = true; // Mark as entered so it doesn't repeat
-
-                // Calculate Uniform Speed
-                // Start just off-screen (above viewport) relative to container top?
-                // If container is at top, -circleSize is just above.
-                // Distance = targetY - (-circleSize).
-
-                const startY = -circleSize - 50; // Just above view
-                const distance = targetY - startY;
-                const speed = 1500; // px per second
-                const animDuration = Math.max(0.5, distance / speed);
-
-                // Initial State
+                hasEntered.current = true;
                 gsap.set(outerRef.current, {
-                    x: targetX,
-                    y: startY,
-                    rotation: 0,
-                    scale: 1,
-                    opacity: 0,
-                    filter: "blur(0px)",
-                    width: circleSize,
-                    height: circleSize
-                });
-
-                // Animate In
-                gsap.to(outerRef.current, {
                     x: targetX,
                     y: targetY,
+                    rotation: 0,
+                    scale: 1,
                     opacity: 1,
-                    duration: animDuration,
-                    delay: index * 0.08, // 80-120ms stagger (using 80ms)
-                    ease: "power2.inOut",
-                    overwrite: "auto"
-                });
-
-                // Set z-index immediately
-                gsap.set(outerRef.current, {
+                    filter: "blur(0px)",
+                    width: circleSize,
+                    height: circleSize,
                     zIndex: navCircleIds.includes(circle.id) ? 20 : 10
                 });
-
             } else {
-                // Standard Transition (Layout changes, Resize, Expand)
-
-                // Active/Expanded State
+                // Instant state changes
                 if (expandedId) {
                     if (expandedId === circle.id) {
-                        // Expanded circle logic
-                        gsap.to(outerRef.current, {
-                            opacity: 0.5,
-                            scale: 0.9,
-                            z: -50,
-                            y: targetY + 50,
-                            x: targetX, // Ensure X is updated
-                            duration: 0.4,
-                            ease: "power2.out"
-                        });
-                    } else {
-                        // Sibling circles logic
-                        gsap.to(outerRef.current, {
+                        gsap.set(outerRef.current, {
                             opacity: 0.5,
                             scale: 0.9,
                             z: -50,
                             y: targetY + 50,
                             x: targetX,
-                            duration: 0.4,
-                            ease: "power2.out"
+                            zIndex: navCircleIds.includes(circle.id) ? 20 : 10
+                        });
+                    } else {
+                        gsap.set(outerRef.current, {
+                            opacity: 0.5,
+                            scale: 0.9,
+                            z: -50,
+                            y: targetY + 50,
+                            x: targetX,
+                            zIndex: navCircleIds.includes(circle.id) ? 20 : 10
                         });
                     }
                 } else {
-                    // Normal State (Layout Update)
-
-                    // Track if variant (layout mode) changed to force instant switch
-                    const isLayoutSwitch = variant !== prevVariantRef.current;
-
-                    // If switching layouts, we want INSTANT snap (no animation glich)
-                    // If just resizing or data update, we want smooth
-                    const transitionDuration = isLayoutSwitch ? 0 : 0.6;
-
-                    gsap.to(outerRef.current, {
+                    gsap.set(outerRef.current, {
                         x: targetX,
                         y: targetY,
                         width: circleSize,
@@ -139,19 +96,9 @@ const CircleWrapper = ({
                         z: 0,
                         rotation: 0,
                         filter: "blur(0px)",
-                        duration: transitionDuration,
-                        ease: isLayoutSwitch ? "none" : "power3.out",
-                        overwrite: "auto"
+                        zIndex: navCircleIds.includes(circle.id) ? 20 : 10
                     });
-
-                    // Update refs after render effect
-                    prevVariantRef.current = variant;
                 }
-
-                // Z-Index Update
-                gsap.set(outerRef.current, {
-                    zIndex: navCircleIds.includes(circle.id) ? 20 : 10
-                });
             }
         });
 

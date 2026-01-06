@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useEffect, useState } from "react";
-import gsap from "gsap";
-import { getDataForTicker, TickerItem } from "@/data/dataAdapter";
+import { useMemo, useRef, useEffect, useState, useCallback } from "react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { getDataForHoneycomb, CircleData } from "@/data/dataAdapter";
 import TickerCard from "./TickerCard";
-
-const tickerData = getDataForTicker();
 
 const TickerWall = ({
     expandedId,
@@ -14,116 +12,122 @@ const TickerWall = ({
     expandedId: string | null,
     onExpandedChange: (id: string | null) => void
 }) => {
-    // 1. Setup State & Refs
+    // 1. Setup Scroll State - Restore original Framer Motion scrolling
+    const scrollY = useMotionValue(0);
+    const [circleData, setCircleData] = useState<CircleData[]>([]);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [columnHeight, setColumnHeight] = useState(0);
     const colRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Scroll State (Refs for performance to avoid re-renders)
-    const state = useRef({
-        currentY: 0,
-        targetY: 0,
-        isDragging: false
-    });
-
-    // 2. Measure Height for Infinite Loop
+    // Load data on mount to avoid blocking initial render
     useEffect(() => {
-        const measure = () => {
-            if (colRef.current) {
-                // The column contains 3 sets of data. We need the height of ONE set for the loop.
-                const totalHeight = colRef.current.offsetHeight;
-                setColumnHeight(totalHeight / 3);
+        const loadData = async () => {
+            try {
+                const data = getDataForHoneycomb();
+                setCircleData(data);
+                setIsDataLoaded(true);
+            } catch (error) {
+                console.error("Failed to load circle data:", error);
             }
         };
+        loadData();
+    }, []);
 
-        measure();
-        // Delay measurement slightly to ensure DOM is ready? 
-        // Or depend on images loading? Images are setup to maintain aspect ratio, hopefully stable.
-        const timer = setTimeout(measure, 100);
+    // 2. Optimized height measurement - only when data is loaded and DOM is ready
+    const measureHeight = useCallback(() => {
+        if (colRef.current && isDataLoaded) {
+            // Use requestAnimationFrame to avoid blocking
+            requestAnimationFrame(() => {
+                const totalHeight = colRef.current!.offsetHeight;
+                setColumnHeight(totalHeight / 3);
+            });
+        }
+    }, [isDataLoaded]);
 
+    useEffect(() => {
+        if (isDataLoaded) {
+            // Measure immediately, then again after a short delay for stability
+            measureHeight();
+            const timer = setTimeout(measureHeight, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [isDataLoaded, measureHeight]);
+
+    // Resize handler - throttled
+    useEffect(() => {
+        let resizeTimeout: NodeJS.Timeout;
         const handleResize = () => {
-            measure();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(measureHeight, 100);
         };
 
         window.addEventListener('resize', handleResize);
         return () => {
             window.removeEventListener('resize', handleResize);
-            clearTimeout(timer);
+            clearTimeout(resizeTimeout);
         };
-    }, []);
+    }, [measureHeight]);
 
-    // 3. Animation Loop (GSAP Ticker)
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            const update = () => {
-                if (!columnHeight) return;
-
-                // Lerp smoothing
-                state.current.currentY += (state.current.targetY - state.current.currentY) * 0.08;
-
-                const y = state.current.currentY;
-
-                // Apply to columns
-                const cols = containerRef.current?.querySelectorAll(".ticker-col-inner");
-                if (cols) {
-                    cols.forEach((col, i) => {
-                        const isEven = i % 2 === 0;
-                        const direction = isEven ? 1 : -1;
-                        const val = y * direction;
-
-                        // Use GSAP's utility for perfect wrapping
-                        // Range [-columnHeight, 0]
-                        gsap.set(col, { y: gsap.utils.wrap(-columnHeight, 0, val) });
-                    });
-                }
-            };
-
-            gsap.ticker.add(update);
-
-            // Return cleanup function which GSAP context will call on revert()
-            return () => gsap.ticker.remove(update);
-        }, containerRef);
-
-        return () => {
-            ctx.revert();
-        };
-    }, [columnHeight]);
-
-    // 4. Handle Wheel Event
+    // 3. Handle Wheel Event - Restore original wheel scrolling
     useEffect(() => {
         const handleWheel = (e: WheelEvent) => {
-            if (expandedId) return;
+            if (expandedId) return; // Disable scroll when expanded
             e.preventDefault();
-
-            // Adjust sensitivity
-            const delta = e.deltaY * 0.8;
-            state.current.targetY -= delta;
+            // Standardize scroll speed
+            const delta = e.deltaY;
+            const current = scrollY.get();
+            scrollY.set(current - delta);
         };
 
-        const container = document.getElementById("ticker-container");
-        if (container) {
-            container.addEventListener("wheel", handleWheel, { passive: false });
-        }
+        // Attach to window for better scroll capture
+        window.addEventListener("wheel", handleWheel, { passive: false });
 
         return () => {
-            if (container) {
-                container.removeEventListener("wheel", handleWheel);
-            }
+            window.removeEventListener("wheel", handleWheel);
         };
-    }, [expandedId]);
+    }, [scrollY, expandedId]);
 
-    // Distribute tickerData into 4 columns (or 2 on mobile)
+    // 4. Optimized columns computation - only when data is ready
     const columns = useMemo(() => {
-        const count = 4;
-        const result = Array.from({ length: count }, () => [...tickerData]);
+        if (!isDataLoaded || circleData.length === 0) return [];
 
-        // Shuffle each column a bit so they aren't identical
-        return result.map((col, i) => {
-            const shuffled = [...col].sort(() => Math.random() - 0.5);
+        const count = 4;
+        const result = Array.from({ length: count }, () => [...circleData]);
+
+        // Shuffle each column a bit so they aren't identical - but do it efficiently
+        return result.map((col) => {
+            // Simple shuffle - more efficient than sort
+            for (let i = col.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [col[i], col[j]] = [col[j], col[i]];
+            }
             // Triple the data for seamless infinite scroll
-            return [...shuffled, ...shuffled, ...shuffled];
+            return [...col, ...col, ...col];
         });
-    }, []);
+    }, [circleData, isDataLoaded]);
+
+    // 5. Transform Logic - Restore original infinite scrolling transforms
+    const yEven = useTransform(scrollY, (value) => {
+        if (!columnHeight) return 0;
+        const directionValue = value;
+        return (directionValue % columnHeight + columnHeight) % columnHeight - columnHeight;
+    });
+
+    const yOdd = useTransform(scrollY, (value) => {
+        if (!columnHeight) return 0;
+        const directionValue = value * -1;
+        return (directionValue % columnHeight + columnHeight) % columnHeight - columnHeight;
+    });
+
+    // Don't render until data is loaded to prevent layout shifts
+    if (!isDataLoaded || columns.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="text-muted-foreground">Loading ticker...</div>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -133,6 +137,9 @@ const TickerWall = ({
         >
             <div className="flex gap-4 md:gap-8 h-full max-w-[1600px] mx-auto">
                 {columns.map((col, colIndex) => {
+                    const isEven = colIndex % 2 === 0;
+                    const y = isEven ? yEven : yOdd;
+
                     return (
                         <div
                             key={`ticker-col-${colIndex}`}
@@ -145,18 +152,19 @@ const TickerWall = ({
                             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
                             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
 
-                            <div
+                            <motion.div
                                 ref={colIndex === 0 ? colRef : null} // Measure first column
-                                className="flex flex-col gap-4 md:gap-8 ticker-col-inner will-change-transform"
+                                style={{ y }}
+                                className="flex flex-col gap-4 md:gap-8"
                             >
-                                {col.map((item, itemIndex) => (
+                                {col.map((circle, itemIndex) => (
                                     <TickerCard
-                                        key={`${colIndex}-${item.id}-${itemIndex}`}
-                                        item={item}
-                                        onClick={() => onExpandedChange(item.id)}
+                                        key={`${colIndex}-${circle.id}-${itemIndex}`}
+                                        circle={circle}
+                                        onClick={() => onExpandedChange(circle.id)}
                                     />
                                 ))}
-                            </div>
+                            </motion.div>
                         </div>
                     );
                 })}
