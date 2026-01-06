@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect, memo } from "react";
+import { useRef, useLayoutEffect, useEffect, memo } from "react";
 import gsap from "gsap";
 import { CircleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
@@ -21,6 +21,7 @@ interface CircleWrapperProps {
     };
     variant?: "default" | "olympic";
     borderColor?: string;
+    animationKey?: number;
 }
 
 const CircleWrapper = ({
@@ -35,24 +36,45 @@ const CircleWrapper = ({
     oscillationParams,
     variant,
     borderColor,
+    animationKey = 0,
 }: CircleWrapperProps) => {
     const outerRef = useRef<HTMLDivElement>(null);
     const innerRef = useRef<HTMLDivElement>(null);
-    const hasEntered = useRef(false);
 
     // Apply oscillation to inner ref (currently disabled for performance)
     useOscillation(innerRef, oscillationParams, false);
 
-    // Optimized GSAP animations with consolidated operations
-    useLayoutEffect(() => {
+    // Entrance animation
+    useEffect(() => {
         if (!outerRef.current) return;
 
         const ctx = gsap.context(() => {
             const zIndex = navCircleIds.includes(circle.id) ? 20 : 10;
 
-            // Initial entrance - instant rendering
-            if (!hasEntered.current) {
-                hasEntered.current = true;
+            if (variant === "default") {
+                // Set initial state: off-screen top, invisible
+                gsap.set(outerRef.current, {
+                    x: targetX,
+                    y: -window.innerHeight, // Start from above the screen
+                    rotation: 0,
+                    scale: 1,
+                    opacity: 0,
+                    filter: "blur(0px)",
+                    width: circleSize,
+                    height: circleSize,
+                    zIndex
+                });
+
+                // Animate entrance
+                gsap.to(outerRef.current, {
+                    y: targetY,
+                    opacity: 1,
+                    duration: 0.8,
+                    delay: index * 0.1, // Stagger by index
+                    ease: "power2.out"
+                });
+            } else {
+                // For non-default variants (e.g., olympic), set to final position immediately
                 gsap.set(outerRef.current, {
                     x: targetX,
                     y: targetY,
@@ -64,23 +86,35 @@ const CircleWrapper = ({
                     height: circleSize,
                     zIndex
                 });
-                return;
             }
+        });
+
+        return () => ctx.revert();
+    }, [animationKey, targetX, targetY, circleSize, index, circle.id, navCircleIds, variant]);
+
+    // Optimized GSAP animations with consolidated operations
+    useLayoutEffect(() => {
+        if (!outerRef.current) return;
+
+        const ctx = gsap.context(() => {
+            const zIndex = navCircleIds.includes(circle.id) ? 20 : 10;
 
             // State updates - instant transitions
             if (expandedId) {
                 // All circles get same treatment when any is expanded
-                gsap.set(outerRef.current, {
+                gsap.to(outerRef.current, {
                     opacity: 0.5,
                     scale: 0.9,
                     z: -50,
                     y: targetY + 50,
                     x: targetX,
-                    zIndex
+                    zIndex,
+                    duration: 0.3,
+                    ease: "power2.out"
                 });
             } else {
                 // Normal state
-                gsap.set(outerRef.current, {
+                gsap.to(outerRef.current, {
                     x: targetX,
                     y: targetY,
                     width: circleSize,
@@ -90,7 +124,9 @@ const CircleWrapper = ({
                     z: 0,
                     rotation: 0,
                     filter: "blur(0px)",
-                    zIndex
+                    zIndex,
+                    duration: 0.3,
+                    ease: "power2.out"
                 });
             }
         });
@@ -130,6 +166,7 @@ export default memo(CircleWrapper, (prevProps, nextProps) => {
         prevProps.circleSize === nextProps.circleSize &&
         prevProps.expandedId === nextProps.expandedId &&
         prevProps.variant === nextProps.variant &&
-        prevProps.borderColor === nextProps.borderColor
+        prevProps.borderColor === nextProps.borderColor &&
+        prevProps.animationKey === nextProps.animationKey
     );
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { circleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
 import CircleWrapper from "./CircleWrapper";
@@ -20,17 +20,8 @@ const OlympicChunk = ({
     scrollY: any;
     height: number;
 }) => {
-    const hideStart = (index + 1) * height - 50; // Visual buffer
-    const hideEnd = (index + 1) * height; // Full hide
-
-    const opacity = useTransform(
-        scrollY,
-        [hideStart, hideEnd],
-        [1, 0]
-    );
-
     return (
-        <motion.div
+        <div
             style={{
                 position: 'sticky',
                 top: 0,
@@ -39,12 +30,10 @@ const OlympicChunk = ({
                 scrollSnapAlign: 'start',
                 zIndex: index + 10,
                 pointerEvents: 'none',
-                opacity: opacity,
-                willChange: 'opacity, transform',
             }}
         >
             {children}
-        </motion.div>
+        </div>
     );
 };
 
@@ -63,10 +52,19 @@ const CircleGrid = ({
 
     // Prevent hydration mismatch by only rendering after client mount
     const [isClient, setIsClient] = useState(false);
+    // Animation key to trigger entrance animation on layout changes
+    const [animationKey, setAnimationKey] = useState(0);
 
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    // Trigger entrance animation when switching to static layout
+    useEffect(() => {
+        if (layoutMode === "static") {
+            setAnimationKey(prev => prev + 1);
+        }
+    }, [layoutMode]);
 
     const OLYMPIC_COLORS = [
         "#0081C8", // Blue
@@ -270,43 +268,21 @@ const CircleGrid = ({
             }}
         >
             {isClient && (
-                <motion.div
-                    animate={expandedId ? "expanded" : "normal"}
-                    variants={{
-                        normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
-                        expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
-                    }}
-                    transition={{ duration: 0 }}
-                    className={layoutMode === "olympic" ? "relative w-full min-h-full" : "absolute inset-0"}
-                    style={{
-                        pointerEvents: expandedId ? 'none' : 'auto',
-                        transformStyle: layoutMode === "olympic" ? undefined : 'preserve-3d'
-                    }}
-                >
+                layoutMode === "olympic" ? (
                     <div
-                        className="relative w-full"
+                        className="relative w-full min-h-full"
                         style={{
-                            height: layoutMode === "olympic" ? `${Math.ceil(sortedCircleData.length / 5) * (windowSize.height - currentHeaderHeight)}px` : "100%",
-                            minHeight: "100dvh"
+                            pointerEvents: expandedId ? 'none' : 'auto',
                         }}
                     >
-                        {layoutMode === "static" && (
-                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                <motion.div
-                                    className="absolute w-[500px] h-[500px] rounded-full opacity-20"
-                                    style={{
-                                        background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
-                                        top: "10%",
-                                        left: "5%",
-                                    }}
-                                    animate={false}
-                                    transition={{ duration: 0 }}
-                                />
-                            </div>
-                        )}
-
-                        {layoutMode === "olympic" ? (
-                            olympicChunks.map((chunk, chunkIndex) => {
+                        <div
+                            className="relative w-full"
+                            style={{
+                                height: `${Math.ceil(sortedCircleData.length / 5) * (windowSize.height - currentHeaderHeight)}px`,
+                                minHeight: "100dvh"
+                            }}
+                        >
+                            {olympicChunks.map((chunk, chunkIndex) => {
                                 const availableHeight = windowSize.height - currentHeaderHeight;
 
                                 return (
@@ -332,15 +308,51 @@ const CircleGrid = ({
                                                         oscillationParams={oscillationParams[globalIndex]}
                                                         variant={pos.variant}
                                                         borderColor={pos.color}
+                                                        animationKey={animationKey}
                                                     />
                                                 </div>
                                             );
                                         })}
                                     </OlympicChunk>
                                 );
-                            })
-                        ) : (
-                            circlePositions.map((pos, index) => (
+                            })}
+                        </div>
+                    </div>
+                ) : (
+                    <motion.div
+                        animate={expandedId ? "expanded" : "normal"}
+                        variants={{
+                            normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
+                            expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
+                        }}
+                        transition={{ duration: 0 }}
+                        className="absolute inset-0"
+                        style={{
+                            pointerEvents: expandedId ? 'none' : 'auto',
+                            transformStyle: 'preserve-3d'
+                        }}
+                    >
+                        <div
+                            className="relative w-full"
+                            style={{
+                                height: "100%",
+                                minHeight: "100dvh"
+                            }}
+                        >
+                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                <motion.div
+                                    className="absolute w-[500px] h-[500px] rounded-full opacity-20"
+                                    style={{
+                                        background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
+                                        top: "10%",
+                                        left: "5%",
+                                    }}
+                                    animate={false}
+                                    transition={{ duration: 0 }}
+                                />
+                            </div>
+
+                            {circlePositions.map((pos, index) => (
                                 <CircleWrapper
                                     key={pos.id}
                                     circle={sortedCircleData[index]}
@@ -354,11 +366,12 @@ const CircleGrid = ({
                                     oscillationParams={oscillationParams[index]}
                                     variant={pos.variant}
                                     borderColor={undefined}
+                                    animationKey={animationKey}
                                 />
-                            ))
-                        )}
-                    </div>
-                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+                )
             )}
         </div>
     );
