@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useMemo } from "react";
 import { getDataForHoneycomb } from "@/data/dataAdapter";
 import { LAYOUT_REGISTRY } from "@/layouts/core/LayoutRegistry";
 import CirclePopup from "@/layouts/shared/CirclePopup";
+import { ServicesSearchLayout } from "@/layouts/servicesSearch";
 
 // Preload ticker data and component
 let tickerDataPromise: Promise<any> | null = null;
@@ -21,7 +22,7 @@ const preloadTicker = async () => {
 };
 
 export default function HomeClient() {
-    const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker">("static");
+    const [layoutMode, setLayoutMode] = useState<"static" | "olympic" | "3d-carousel" | "ticker" | "servicesSearch">("static");
     const [isTickerReady, setIsTickerReady] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -45,7 +46,7 @@ export default function HomeClient() {
     }, []);
 
     // Optimized layout switching with preloading
-    const switchLayout = useCallback(async (newMode: "static" | "olympic" | "3d-carousel" | "ticker") => {
+    const switchLayout = useCallback(async (newMode: "static" | "olympic" | "3d-carousel" | "ticker" | "servicesSearch") => {
         if (newMode === layoutMode) return;
 
         // For ticker layout, preload first
@@ -135,20 +136,33 @@ export default function HomeClient() {
                     >
                         Ticker
                     </button>
+                    <button
+                        onClick={() => switchLayout("servicesSearch")}
+                        className={getButtonClassName("servicesSearch")}
+                    >
+                        Search / Services
+                    </button>
                 </div>
             </header>
 
             <div className="flex-1 relative mt-[140px] md:mt-[70px] overflow-hidden z-10">
-                {/* Current Layout - Always Render */}
-                {TargetLayout && (
-                    <div className="absolute inset-0 w-full h-full will-change-transform isolate">
-                        <TargetLayout
-                            isActive={true}
-                            expandedId={expandedId}
-                            onExpandedChange={setExpandedId}
-                            layoutMode={layoutMode}
-                        />
+                {/* Isolated Services Search Layout */}
+                {layoutMode === "servicesSearch" ? (
+                    <div className="absolute inset-0 w-full h-full">
+                        <ServicesSearchLayout />
                     </div>
+                ) : (
+                    /* Other Layouts - Render when not in servicesSearch */
+                    TargetLayout && (
+                        <div className="absolute inset-0 w-full h-full will-change-transform isolate">
+                            <TargetLayout
+                                isActive={true}
+                                expandedId={expandedId}
+                                onExpandedChange={setExpandedId}
+                                layoutMode={layoutMode}
+                            />
+                        </div>
+                    )
                 )}
             </div>
 

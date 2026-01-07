@@ -103,3 +103,14 @@ export const getDataForCarousel = (): (CarouselSlide & { id: string, icon?: Luci
             }));
     }, Infinity); // Cache indefinitely since data is static
 };
+
+/**
+ * Optimized data getter for Services Search with caching
+ * Returns the complete services data for search functionality
+ */
+export const getDataForServicesSearch = () => {
+    return dataCache.get('servicesSearch', async () => {
+        const { SERVICES_DATA } = await import('./servicesData');
+        return SERVICES_DATA;
+    }, Infinity); // Cache indefinitely since data is static
+};
