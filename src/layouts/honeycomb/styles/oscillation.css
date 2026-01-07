@@ -1,0 +1,242 @@
+/**
+ * Circle Oscillation Styles
+ * GPU-accelerated subtle continuous animation for circles
+ * 
+ * Features:
+ * - Pure CSS animations (no JavaScript loops)
+ * - GPU-accelerated (transform: translate3d only)
+ * - Respects prefers-reduced-motion
+ * - No layout shift
+ * - Lightweight and performant
+ */
+
+/* Base oscillation keyframes - 8 variations for randomness */
+@keyframes oscillate-1 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(3px, -2px, 0);
+    }
+
+    50% {
+        transform: translate3d(-1px, 4px, 0);
+    }
+
+    75% {
+        transform: translate3d(-4px, -1px, 0);
+    }
+}
+
+@keyframes oscillate-2 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(-2px, 3px, 0);
+    }
+
+    50% {
+        transform: translate3d(4px, -1px, 0);
+    }
+
+    75% {
+        transform: translate3d(1px, -4px, 0);
+    }
+}
+
+@keyframes oscillate-3 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(2px, 4px, 0);
+    }
+
+    50% {
+        transform: translate3d(-3px, -2px, 0);
+    }
+
+    75% {
+        transform: translate3d(4px, 1px, 0);
+    }
+}
+
+@keyframes oscillate-4 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(-4px, 1px, 0);
+    }
+
+    50% {
+        transform: translate3d(2px, -3px, 0);
+    }
+
+    75% {
+        transform: translate3d(-1px, 4px, 0);
+    }
+}
+
+@keyframes oscillate-5 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(1px, -4px, 0);
+    }
+
+    50% {
+        transform: translate3d(-4px, 2px, 0);
+    }
+
+    75% {
+        transform: translate3d(3px, -1px, 0);
+    }
+}
+
+@keyframes oscillate-6 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(-3px, -3px, 0);
+    }
+
+    50% {
+        transform: translate3d(4px, 1px, 0);
+    }
+
+    75% {
+        transform: translate3d(-2px, 4px, 0);
+    }
+}
+
+@keyframes oscillate-7 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(4px, -3px, 0);
+    }
+
+    50% {
+        transform: translate3d(-2px, 1px, 0);
+    }
+
+    75% {
+        transform: translate3d(1px, 4px, 0);
+    }
+}
+
+@keyframes oscillate-8 {
+
+    0%,
+    100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    25% {
+        transform: translate3d(-1px, 2px, 0);
+    }
+
+    50% {
+        transform: translate3d(3px, -4px, 0);
+    }
+
+    75% {
+        transform: translate3d(-4px, 3px, 0);
+    }
+}
+
+/* Circle oscillation classes - apply to inner wrapper */
+.circle-oscillate {
+    will-change: transform;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+}
+
+/* 8 variations with different durations and delays */
+.circle-oscillate-1 {
+    animation-name: oscillate-1;
+    animation-duration: 8.2s;
+    animation-delay: 0s;
+}
+
+.circle-oscillate-2 {
+    animation-name: oscillate-2;
+    animation-duration: 7.5s;
+    animation-delay: 0.3s;
+}
+
+.circle-oscillate-3 {
+    animation-name: oscillate-3;
+    animation-duration: 9.1s;
+    animation-delay: 0.6s;
+}
+
+.circle-oscillate-4 {
+    animation-name: oscillate-4;
+    animation-duration: 8.7s;
+    animation-delay: 0.9s;
+}
+
+.circle-oscillate-5 {
+    animation-name: oscillate-5;
+    animation-duration: 7.8s;
+    animation-delay: 1.2s;
+}
+
+.circle-oscillate-6 {
+    animation-name: oscillate-6;
+    animation-duration: 8.4s;
+    animation-delay: 1.5s;
+}
+
+.circle-oscillate-7 {
+    animation-name: oscillate-7;
+    animation-duration: 9.3s;
+    animation-delay: 1.8s;
+}
+
+.circle-oscillate-8 {
+    animation-name: oscillate-8;
+    animation-duration: 7.9s;
+    animation-delay: 2.1s;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .circle-oscillate {
+        animation: none !important;
+        will-change: auto;
+    }
+}
+
+/* Disable oscillation when any circle is expanded */
+.circle-oscillate-disabled {
+    animation-play-state: paused !important;
+}

@@ -3,6 +3,7 @@ import CircleGrid from './components/CircleGrid';
 import { LayoutProps } from '../core/Layout.types';
 import "./styles/honeycomb-isolated.css";
 import "./styles/olympic-isolated.css";
+import "./styles/oscillation.css";
 
 const HoneycombLayoutComponent = ({ isActive, expandedId, onExpandedChange, layoutMode }: LayoutProps) => {
     // Default to static if not specified

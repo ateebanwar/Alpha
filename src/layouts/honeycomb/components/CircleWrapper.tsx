@@ -94,7 +94,7 @@ const CircleWrapper = ({
 
     // Optimized GSAP animations with consolidated operations
     useLayoutEffect(() => {
-        if (!outerRef.current) return;
+        if (!outerRef.current || !innerRef.current) return;
 
         const ctx = gsap.context(() => {
             const zIndex = navCircleIds.includes(circle.id) ? 20 : 10;
@@ -113,7 +113,7 @@ const CircleWrapper = ({
                     ease: "power2.out"
                 });
             } else {
-                // Normal state
+                // Normal state - position outer ref, let CSS handle inner oscillation
                 gsap.to(outerRef.current, {
                     x: targetX,
                     y: targetY,
@@ -126,13 +126,20 @@ const CircleWrapper = ({
                     filter: "blur(0px)",
                     zIndex,
                     duration: 0.3,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    // Don't override inner element's CSS animations
+                    onComplete: () => {
+                        if (innerRef.current && variant === 'default') {
+                            // Ensure CSS animation can run by clearing any GSAP transforms on inner
+                            gsap.set(innerRef.current, { clearProps: "transform" });
+                        }
+                    }
                 });
             }
         });
 
         return () => ctx.revert();
-    }, [targetX, targetY, circleSize, expandedId, circle.id, navCircleIds]);
+    }, [targetX, targetY, circleSize, expandedId, circle.id, navCircleIds, variant]);
 
     return (
         <div
@@ -143,7 +150,13 @@ const CircleWrapper = ({
                 height: circleSize,
             }}
         >
-            <div ref={innerRef} className="w-full h-full">
+            <div
+                ref={innerRef}
+                className={`w-full h-full ${variant === 'default' && !expandedId
+                    ? `circle-oscillate circle-oscillate-${(index % 8) + 1}`
+                    : ''
+                    }${expandedId ? ' circle-oscillate-disabled' : ''}`}
+            >
                 <InteractiveCircle
                     circle={circle}
                     isExpanded={expandedId === circle.id}
