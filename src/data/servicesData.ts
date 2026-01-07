@@ -22,6 +22,7 @@ export interface ServiceItem {
     id: string;                    // Unique, searchable identifier
     title: string;                 // Display name
     keywords: string[];            // Array of searchable terms
+    normalizedKeywords?: string[]; // Normalized keywords for fast lookup (lowercase, trimmed)
     summary: string;               // Short description for auto-generated paragraph
     projects: Project[];           // Array of real projects
 }

@@ -5,6 +5,8 @@
  * without side effects or runtime computation.
  */
 
+import React, { useState } from 'react';
+
 // ============================================
 // IMPORTING DATA (No Side Effects)
 // ============================================
@@ -102,8 +104,8 @@ export function ServicesSearchExample() {
     // Data is just a plain array
     // Search index only builds when search functions are called
 
-    const [query, setQuery] = React.useState('');
-    const [results, setResults] = React.useState<ServiceItem[]>([]);
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState<ServiceItem[]>([]);
 
     const handleSearch = (searchQuery: string) => {
         setQuery(searchQuery);
