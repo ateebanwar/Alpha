@@ -17,7 +17,7 @@ const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
 interface ServicesSearchLayoutProps {
     showText?: boolean;
-    sidebarTextRef?: RefObject<HTMLDivElement | null>;
+    sidebarTextRef?: RefObject<HTMLDivElement>;
 }
 
 export default function ServicesSearchLayout({ showText = true, sidebarTextRef }: ServicesSearchLayoutProps) {

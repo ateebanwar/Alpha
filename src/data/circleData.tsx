@@ -31,7 +31,7 @@ import {
   AppleIcon,
   ShoppingCart
 } from "lucide-react";
-import { resumeToPipeableStream } from "react-dom/server";
+
 
 export interface CircleData {
   id: string;

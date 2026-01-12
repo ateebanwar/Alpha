@@ -24,7 +24,7 @@ export default function ServicesSearchIsolatedLayout({ showText, sidebarTextRef,
 
             <div className="flex-1 relative overflow-hidden z-10 mt-0">
                 <div className="absolute inset-0 w-full h-full">
-                    <ServicesSearchLayout showText={showText} sidebarTextRef={sidebarTextRef} />
+                    <ServicesSearchLayout showText={showText} sidebarTextRef={sidebarTextRef as RefObject<HTMLDivElement>} />
                 </div>
             </div>
 

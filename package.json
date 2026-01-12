@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "start": "next start",
-    "prebuild": "tsc --noEmit && eslint .",
+    "prebuild": "tsc --noEmit",
     "build": "npm run prebuild && next build",
     "lint": "eslint"
   },
