@@ -1,521 +1,511 @@
 /**
- * ServicesSearchLayout - Completely Isolated Layout
+ * ServicesSearchLayout - Sophisticated Dark Theme Design
  * 
- * This is a standalone layout completely independent from:
- * - Honeycomb layout
- * - Olympic layout
- * - 3D Carousel layout
- * - Ticker layout
- * 
- * It has its own:
- * - Styling (isolated CSS)
- * - State management
- * - Data handling
- * - UI components
+ * Matching reference design with:
+ * - Dark sidebar with logo, navigation, and pagination
+ * - Large image/gallery area
+ * - Interactive elements and social sharing
  */
 
 "use client";
 
-import { useState, useMemo } from "react";
-import { SERVICES_DATA, type ServiceItem } from "@/data/servicesData";
-import { searchServicesOptimized, getKeywordSuggestions } from "@/data/searchIndex";
+import { useState, RefObject } from "react";
+import Link from "next/link";
+import { SERVICES_DATA } from "@/data/servicesData";
 
-export default function ServicesSearchLayout() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-    // Search results
-    const searchResults = useMemo(() => {
-        if (!searchQuery.trim()) {
-            return SERVICES_DATA;
-        }
-        return searchServicesOptimized(searchQuery);
-    }, [searchQuery]);
+interface ServicesSearchLayoutProps {
+    showText?: boolean;
+    sidebarTextRef?: RefObject<HTMLDivElement | null>;
+}
 
-    // Keyword suggestions for autocomplete
-    const suggestions = useMemo(() => {
-        if (searchQuery.length < 2) return [];
-        return getKeywordSuggestions(searchQuery, 5);
-    }, [searchQuery]);
+export default function ServicesSearchLayout({ showText = true, sidebarTextRef }: ServicesSearchLayoutProps) {
+    const [currentSlide, setCurrentSlide] = useState(1);
+    const [selectedNav, setSelectedNav] = useState(0);
+    const [hoveredNav, setHoveredNav] = useState<number | null>(null);
+    const [imageKey, setImageKey] = useState(0);
+    const totalSlides = 6;
+
+    // Navigation items
+    const navItems = [
+        "Application Development",
+        "Backend & System Architecture",
+        "Database & Performance Engineering",
+        "Cloud & DevOps Solutions",
+        "AI, Data & Analytics",
+        "Business & Automation Solutions",
+        "Consulting, Support & Training"
+    ];
+
+    // Images for each navigation item
+    const navImages = [
+        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop", // Application Development - coding
+        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop", // Backend & System Architecture - server/architecture
+        "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&h=600&fit=crop", // Database & Performance - data/analytics
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop", // Cloud & DevOps - cloud technology
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop", // AI, Data & Analytics - AI/ML
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop", // Business & Automation - business analytics
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop"  // Consulting, Support & Training - team collaboration
+    ];
+
+    // Service descriptions for each category
+    const serviceDescriptions = [
+        "Web & Mobile Apps using React, Next.js, Flutter, iOS (Swift), Android (Kotlin), .NET, Django",
+        "Scalable backend & APIs with Node.js, Express, FastAPI, Django, REST, GraphQL, Microservices",
+        "Data storage & speed optimization using PostgreSQL, MongoDB, Redis, SQL Server, CDN, Nginx",
+        "Cloud hosting & automation with AWS, Azure, Docker, Kubernetes, Terraform, CI/CD pipelines",
+        "AI models & data insights using Python, TensorFlow, GPT/LLMs, Power BI, Spark, Computer Vision",
+        "E-commerce & workflow automation with Shopify, WooCommerce, Zapier, Power Automate, RPA",
+        "Tech strategy, system design, 24/7 support, maintenance & developer training"
+    ];
 
     return (
         <div className="services-search-layout">
-            {/* Isolated container - no dependencies on other layouts */}
-            <div className="services-search-container">
-                {/* Header Section */}
-                <div className="services-search-header">
-                    <h1 className="services-search-title">Search Our Services</h1>
-                    <p className="services-search-subtitle">
-                        Find the perfect solution for your business needs
-                    </p>
+            {/* Left Sidebar */}
+            <aside className="sidebar">
+                {/* Logo - Hidden, used only for position reference */}
+                <div ref={sidebarTextRef} className="logo opacity-0">
+                    <span className="block font-bold">Alphabet</span>
+                    <span className="block font-light">Consultancy Services</span>
                 </div>
 
-                {/* Search Input Section */}
-                <div className="services-search-input-wrapper">
-                    <div className="services-search-input-container">
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search by service, technology, or keyword..."
-                            className="services-search-input"
-                            autoFocus
-                        />
-                        <svg
-                            className="services-search-icon"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                        </svg>
-                    </div>
-
-                    {/* Suggestions */}
-                    {suggestions.length > 0 && (
-                        <div className="services-search-suggestions">
-                            {suggestions.map((suggestion, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSearchQuery(suggestion)}
-                                    className="services-search-suggestion-item"
-                                >
-                                    {suggestion}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Results Count */}
-                <div className="services-search-results-count">
-                    {searchQuery ? (
-                        <p>
-                            Found <strong>{searchResults.length}</strong> service{searchResults.length !== 1 ? 's' : ''}
-                            {searchQuery && ` matching "${searchQuery}"`}
-                        </p>
-                    ) : (
-                        <p>Showing all <strong>{searchResults.length}</strong> services</p>
-                    )}
-                </div>
-
-                {/* Results Grid */}
-                <div className="services-search-results">
-                    {searchResults.map((service) => (
+                {/* Navigation */}
+                <nav className="nav-menu">
+                    {navItems.map((item, index) => (
                         <div
-                            key={service.id}
-                            className="services-search-card"
-                            onClick={() => setSelectedService(service)}
+                            key={index}
+                            className={`nav-item-wrapper ${selectedNav === index ? 'active' : ''}`}
+                            onMouseEnter={() => {
+                                setHoveredNav(index);
+                                setSelectedNav(index);
+                                setImageKey(prev => prev + 1);
+                            }}
+                            onMouseLeave={() => setHoveredNav(null)}
                         >
-                            <h3 className="services-search-card-title">{service.title}</h3>
-                            <p className="services-search-card-summary">{service.summary}</p>
-
-                            <div className="services-search-card-keywords">
-                                {service.keywords.slice(0, 5).map((keyword, idx) => (
-                                    <span key={idx} className="services-search-keyword-tag">
-                                        {keyword}
-                                    </span>
-                                ))}
-                                {service.keywords.length > 5 && (
-                                    <span className="services-search-keyword-more">
-                                        +{service.keywords.length - 5} more
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="services-search-card-footer">
-                                <span className="services-search-project-count">
-                                    {service.projects.length} project{service.projects.length !== 1 ? 's' : ''}
-                                </span>
-                                <button className="services-search-view-btn">
-                                    View Details →
-                                </button>
+                            <div className="nav-item">{item}</div>
+                            <div className="explore-wrapper">
+                                <Link
+                                    href={`/services/${slugify(item)}`}
+                                    style={{ color: '#ffffff', textDecoration: 'none' }}
+                                >
+                                    explore →
+                                </Link>
                             </div>
                         </div>
                     ))}
-                </div>
+                </nav>
 
-                {/* No Results */}
-                {searchResults.length === 0 && searchQuery && (
-                    <div className="services-search-no-results">
-                        <svg className="services-search-no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                {/* Large Faded Number */}
+                <div className="big-number">
+                    {String(selectedNav + 1).padStart(2, '0')}
+                </div>
+            </aside>
+
+            {/* Main Content Area */}
+            <main className="main-content">
+                {/* Hamburger Menu */}
+                <button className="hamburger-menu" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                {/* Image Area */}
+                <div className="image-container">
+                    <div className="image-wrapper">
+                        <img
+                            key={imageKey}
+                            src={navImages[hoveredNav !== null ? hoveredNav : selectedNav]}
+                            alt={navItems[hoveredNav !== null ? hoveredNav : selectedNav]}
+                            className="gallery-image"
+                        />
+                    </div>
+
+                    {/* Play Button */}
+                    <button className="play-button" aria-label="Play">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="11" stroke="white" strokeWidth="2" />
+                            <path d="M10 8L16 12L10 16V8Z" fill="white" />
                         </svg>
-                        <h3>No services found</h3>
-                        <p>Try searching with different keywords or technologies</p>
-                    </div>
-                )}
-            </div>
+                    </button>
 
-            {/* Service Detail Modal */}
-            {selectedService && (
-                <div className="services-search-modal-overlay" onClick={() => setSelectedService(null)}>
-                    <div className="services-search-modal" onClick={(e) => e.stopPropagation()}>
-                        <button
-                            className="services-search-modal-close"
-                            onClick={() => setSelectedService(null)}
-                        >
-                            ✕
-                        </button>
-
-                        <h2 className="services-search-modal-title">{selectedService.title}</h2>
-                        <p className="services-search-modal-summary">{selectedService.summary}</p>
-
-                        <div className="services-search-modal-section">
-                            <h3>Keywords</h3>
-                            <div className="services-search-modal-keywords">
-                                {selectedService.keywords.map((keyword, idx) => (
-                                    <span key={idx} className="services-search-keyword-tag">
-                                        {keyword}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="services-search-modal-section">
-                            <h3>Projects ({selectedService.projects.length})</h3>
-                            <div className="services-search-modal-projects">
-                                {selectedService.projects.map((project) => (
-                                    <div key={project.id} className="services-search-project-card">
-                                        <h4>{project.name}</h4>
-                                        <p className="services-search-project-type">{project.serviceType}</p>
-                                        <p className="services-search-project-desc">{project.description}</p>
-                                        <div className="services-search-project-tech">
-                                            {project.techStack.map((tech, idx) => (
-                                                <span key={idx} className="services-search-tech-tag">
-                                                    {tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                        <p className="services-search-project-year">{project.year}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                    {/* Tags */}
+                    <div className="tags">
+                        {serviceDescriptions[selectedNav]}
                     </div>
                 </div>
-            )}
 
-            {/* Isolated Styles - Scoped to this layout only */}
+                {/* Follow Us */}
+                <button className="follow-us">
+                    follow us
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13 5L8 10L3 5" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                </button>
+            </main>
+
+            {/* Isolated Styles */}
             <style jsx>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(1.02);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+
                 .services-search-layout {
                     position: absolute;
                     inset: 0;
                     width: 100%;
                     height: 100%;
-                    overflow-y: auto;
-                    background: var(--background);
-                    color: var(--foreground);
+                    display: flex;
+                    background: #1a1a1a;
+                    overflow: hidden;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                 }
 
-                .services-search-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 2rem 1.5rem;
-                }
-
-                .services-search-header {
-                    text-align: center;
-                    margin-bottom: 3rem;
-                }
-
-                .services-search-title {
-                    font-size: 3rem;
-                    font-weight: 700;
-                    margin-bottom: 0.5rem;
-                }
-
-                .services-search-subtitle {
-                    font-size: 1.25rem;
-                    color: var(--muted-foreground);
-                }
-
-                .services-search-input-wrapper {
-                    margin-bottom: 2rem;
+                /* Sidebar Styles - Fluid Responsiveness */
+                .sidebar {
+                    width: 25vw;
+                    min-width: 300px;
+                    max-width: 500px;
+                    height: 100%;
+                    background: #0a0a0a;
+                    display: flex;
+                    flex-direction: column;
+                    padding: 3vh 2.5vw;
                     position: relative;
+                    z-index: 10;
+                    transition: width 0.3s ease, padding 0.3s ease;
                 }
 
-                .services-search-input-container {
-                    position: relative;
-                }
-
-                .services-search-input {
-                    width: 100%;
-                    padding: 1rem 3rem 1rem 1.5rem;
-                    font-size: 1.125rem;
-                    border: 2px solid var(--border);
-                    border-radius: 0.75rem;
-                    background: var(--background);
-                    color: var(--foreground);
-                    transition: all 0.2s;
-                }
-
-                .services-search-input:focus {
-                    outline: none;
-                    border-color: var(--primary);
-                    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
-                }
-
-                .services-search-icon {
-                    position: absolute;
-                    right: 1rem;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    color: var(--muted-foreground);
-                    pointer-events: none;
-                }
-
-                .services-search-suggestions {
+                .logo {
+                    font-size: clamp(1.5rem, 1.8vw, 2.5rem);
+                    font-weight: 300;
+                    color: #ffffff;
+                    margin-bottom: 7vh;
+                    letter-spacing: 0.05em;
                     display: flex;
-                    gap: 0.5rem;
-                    flex-wrap: wrap;
-                    margin-top: 0.75rem;
+                    flex-direction: column;
+                    gap: 0.25rem;
+                    min-height: 60px;
                 }
 
-                .services-search-suggestion-item {
-                    padding: 0.5rem 1rem;
-                    background: var(--muted);
-                    border: 1px solid var(--border);
-                    border-radius: 0.5rem;
-                    font-size: 0.875rem;
-                    cursor: pointer;
-                    transition: all 0.2s;
+                .logo-alphabet {
+                    color: #ffffff;
+                    font-weight: 400;
                 }
 
-                .services-search-suggestion-item:hover {
-                    background: var(--accent);
-                    border-color: var(--primary);
+                .logo-consultancy {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    font-weight: 300;
                 }
 
-                .services-search-results-count {
-                    margin-bottom: 1.5rem;
-                    color: var(--muted-foreground);
+                .logo-hidden {
+                    opacity: 0;
                 }
 
-                .services-search-results {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-                    gap: 1.5rem;
+                .logo-visible {
+                    opacity: 1;
                 }
 
-                .services-search-card {
-                    padding: 1.5rem;
-                    border: 1px solid var(--border);
-                    border-radius: 0.75rem;
-                    background: var(--card);
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-
-                .services-search-card:hover {
-                    border-color: var(--primary);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                    transform: translateY(-2px);
-                }
-
-                .services-search-card-title {
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                    margin-bottom: 0.75rem;
-                }
-
-                .services-search-card-summary {
-                    font-size: 0.875rem;
-                    color: var(--muted-foreground);
-                    margin-bottom: 1rem;
-                    line-height: 1.5;
-                }
-
-                .services-search-card-keywords {
+                .nav-menu {
                     display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    margin-bottom: 1rem;
+                    flex-direction: column;
+                    gap: 2.5vh;
+                    margin-bottom: auto;
                 }
 
-                .services-search-keyword-tag {
-                    padding: 0.25rem 0.75rem;
-                    background: var(--muted);
-                    border-radius: 0.375rem;
-                    font-size: 0.75rem;
-                    color: var(--foreground);
-                }
-
-                .services-search-keyword-more {
-                    padding: 0.25rem 0.75rem;
-                    color: var(--muted-foreground);
-                    font-size: 0.75rem;
-                }
-
-                .services-search-card-footer {
+                .nav-item-wrapper {
                     display: flex;
-                    justify-content: space-between;
                     align-items: center;
-                    padding-top: 1rem;
-                    border-top: 1px solid var(--border);
-                }
-
-                .services-search-project-count {
-                    font-size: 0.875rem;
-                    color: var(--muted-foreground);
-                }
-
-                .services-search-view-btn {
-                    padding: 0.5rem 1rem;
-                    background: var(--primary);
-                    color: white;
-                    border: none;
-                    border-radius: 0.375rem;
-                    font-size: 0.875rem;
-                    font-weight: 500;
+                    justify-content: space-between;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    position: relative;
                 }
 
-                .services-search-view-btn:hover {
-                    opacity: 0.9;
-                    transform: translateX(2px);
+                .nav-item {
+                    color: #888888;
+                    font-size: clamp(1rem, 1.1vw, 1.4rem);
+                    font-weight: 300;
+                    transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                    letter-spacing: 0.02em;
                 }
 
-                .services-search-no-results {
-                    text-align: center;
-                    padding: 4rem 2rem;
+                .nav-item-wrapper:hover .nav-item {
+                    color: #ffffff;
                 }
 
-                .services-search-no-results-icon {
-                    width: 4rem;
-                    height: 4rem;
-                    margin: 0 auto 1rem;
-                    color: var(--muted-foreground);
+                .nav-item-wrapper.active .nav-item {
+                    color: #ffffff;
                 }
 
-                .services-search-modal-overlay {
-                    position: fixed;
-                    inset: 0;
-                    background: rgba(0, 0, 0, 0.5);
+                .explore-wrapper {
+                    color: #ffffff;
+                    font-size: 0.85rem;
+                    font-weight: 300;
+                    letter-spacing: 0.02em;
+                    opacity: 0;
+                    transform: translateX(-10px);
+                    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    pointer-events: none;
+                    white-space: nowrap;
+                }
+
+                .nav-item-wrapper:hover .explore-wrapper {
+                    opacity: 1;
+                    transform: translateX(0);
+                    pointer-events: auto;
+                }
+
+                .big-number {
+                    font-size: clamp(5rem, 8vw, 10rem);
+                    font-weight: 200;
+                    color: rgba(255, 255, 255, 0.15);
+                    line-height: 1;
+                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                    user-select: none;
+                }
+
+                /* Main Content Styles */
+                .main-content {
+                    flex: 1;
+                    height: 100%;
+                    position: relative;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    z-index: 1000;
-                    padding: 2rem;
+                    padding: 0;
                 }
 
-                .services-search-modal {
-                    background: var(--background);
-                    border-radius: 1rem;
-                    max-width: 800px;
+                .hamburger-menu {
+                    position: absolute;
+                    top: 3vh;
+                    right: 2vw;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0.5rem;
+                    z-index: 20;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .hamburger-menu span {
+                    width: 28px;
+                    height: 2px;
+                    background: #ffffff;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .hamburger-menu:hover span {
+                    background: #888888;
+                }
+
+                .image-container {
                     width: 100%;
-                    max-height: 90vh;
-                    overflow-y: auto;
-                    padding: 2rem;
+                    height: 100%;
                     position: relative;
                 }
 
-                .services-search-modal-close {
+                .image-wrapper {
+                    width: 100%;
+                    height: 100%;
+                    background: #1a1a1a;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 4px;
+                    overflow: hidden;
+                }
+
+                .gallery-image {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                    transform: scale(1);
+                    animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                }
+
+                .play-button {
                     position: absolute;
-                    top: 1rem;
-                    right: 1rem;
-                    width: 2rem;
-                    height: 2rem;
+                    bottom: 5vh;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: transparent;
                     border: none;
-                    background: var(--muted);
-                    border-radius: 0.375rem;
                     cursor: pointer;
-                    font-size: 1.25rem;
+                    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+                    opacity: 0.9;
                 }
 
-                .services-search-modal-title {
-                    font-size: 2rem;
-                    font-weight: 700;
-                    margin-bottom: 1rem;
+                .play-button:hover {
+                    transform: translateX(-50%) scale(1.15);
+                    opacity: 1;
                 }
 
-                .services-search-modal-summary {
-                    color: var(--muted-foreground);
-                    margin-bottom: 2rem;
-                    line-height: 1.6;
+                .tags {
+                    position: absolute;
+                    bottom: 3vh;
+                    left: 2vw;
+                    background: rgba(0, 0, 0, 0.8);
+                    color: #ffffff;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 4px;
+                    font-size: clamp(0.85rem, 0.9vw, 1.1rem);
+                    font-weight: 300;
+                    letter-spacing: 0.02em;
+                    backdrop-filter: blur(10px);
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
-                .services-search-modal-section {
-                    margin-bottom: 2rem;
-                }
-
-                .services-search-modal-section h3 {
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                    margin-bottom: 1rem;
-                }
-
-                .services-search-modal-keywords {
+                .follow-us {
+                    position: absolute;
+                    bottom: 3vh;
+                    right: 2vw;
+                    background: transparent;
+                    border: none;
+                    color: #ffffff;
+                    font-size: clamp(0.9rem, 1vw, 1.2rem);
+                    font-weight: 300;
+                    cursor: pointer;
                     display: flex;
-                    flex-wrap: wrap;
+                    align-items: center;
                     gap: 0.5rem;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    letter-spacing: 0.02em;
                 }
 
-                .services-search-modal-projects {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.5rem;
+                .follow-us:hover {
+                    opacity: 0.7;
+                    transform: translateY(-2px);
                 }
 
-                .services-search-project-card {
-                    padding: 1.5rem;
-                    border: 1px solid var(--border);
-                    border-radius: 0.75rem;
-                    background: var(--card);
+                /* Responsive Design - Breakpoints */
+                @media (min-width: 1440px) {
+                     .sidebar {
+                        width: 25vw;
+                        padding: 4vh 3vw;
+                     }
+                     .nav-menu {
+                        gap: 3vh;
+                     }
                 }
 
-                .services-search-project-card h4 {
-                    font-size: 1.125rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
+                @media (min-width: 1920px) {
+                    .sidebar {
+                        width: 28vw;
+                        max-width: 600px;
+                        padding: 5vh 4vw;
+                    }
+                    .nav-menu {
+                        gap: 4vh;
+                    }
                 }
 
-                .services-search-project-type {
-                    color: var(--primary);
-                    font-size: 0.875rem;
-                    margin-bottom: 0.75rem;
-                }
+                @media (max-width: 1024px) {
+                    .sidebar {
+                        width: 280px;
+                        min-width: 280px;
+                        padding: 2rem 1.5rem;
+                    }
 
-                .services-search-project-desc {
-                    color: var(--muted-foreground);
-                    margin-bottom: 1rem;
-                    line-height: 1.5;
-                }
-
-                .services-search-project-tech {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    margin-bottom: 0.75rem;
-                }
-
-                .services-search-tech-tag {
-                    padding: 0.25rem 0.75rem;
-                    background: var(--muted);
-                    border-radius: 0.375rem;
-                    font-size: 0.75rem;
-                }
-
-                .services-search-project-year {
-                    color: var(--muted-foreground);
-                    font-size: 0.875rem;
+                    .main-content {
+                        padding: 2rem;
+                    }
                 }
 
                 @media (max-width: 768px) {
-                    .services-search-title {
-                        font-size: 2rem;
+                    .services-search-layout {
+                        flex-direction: column;
                     }
 
-                    .services-search-results {
-                        grid-template-columns: 1fr;
+                    .sidebar {
+                        width: 100%;
+                        height: auto;
+                        padding: 1.5rem;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 2rem;
+                        min-width: 0;
+                        max-width: none;
+                    }
+
+                    .logo {
+                        margin-bottom: 0;
+                        margin-right: auto;
+                    }
+
+                    .nav-menu {
+                        display: none;
+                    }
+
+                    .big-number {
+                        font-size: 4rem;
+                    }
+
+                    .main-content {
+                        padding: 1.5rem;
+                    }
+
+                    .hamburger-menu {
+                        top: 1.5rem;
+                        right: 1.5rem;
+                    }
+
+                    .tags {
+                        font-size: 0.75rem;
+                        padding: 0.5rem 1rem;
+                        left: 1rem;
+                        bottom: 1rem;
+                    }
+
+                    .follow-us {
+                        bottom: 1.5rem;
+                        right: 1.5rem;
+                        font-size: 0.8rem;
+                    }
+
+                    .play-button {
+                        bottom: 2rem;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .sidebar {
+                        padding: 1rem;
+                    }
+
+                    .logo {
+                        font-size: 1.2rem;
+                    }
+
+                    .big-number {
+                        font-size: 3rem;
+                    }
+
+                    .main-content {
+                        padding: 1rem;
+                    }
+
+                    .placeholder-text {
+                        font-size: 1.5rem;
+                    }
+
+                    .tags {
+                        font-size: 0.7rem;
+                        padding: 0.4rem 0.8rem;
                     }
                 }
             `}</style>
