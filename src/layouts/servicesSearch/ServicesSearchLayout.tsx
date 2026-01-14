@@ -301,7 +301,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     height: 100%;
                     background: #e8ecf0;
                     border-radius: 24px;
-                    padding: 2rem;
+                    padding: 1.25rem;
                     display: flex;
                     flex-direction: column;
                     box-shadow: 
@@ -313,8 +313,8 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 .image-frame {
                     width: 100%;
                     flex: 1;
-                    background: #ffffff;
-                    border-radius: 16px;
+                    background: #f5f5f0;
+                    border-radius: 12px;
                     overflow: hidden;
                     box-shadow: 
                         inset -3px -3px 8px rgba(255, 255, 255, 0.5),
@@ -349,7 +349,8 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     flex: 1;
                     margin: 0;
                     font-size: 0.95rem;
-                    font-weight: 400;
+                    font-weight: 700;
+                    font-style: italic;
                     color: #38bdf8;
                     line-height: 1.5;
                     letter-spacing: 0.01em;
