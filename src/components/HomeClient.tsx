@@ -270,9 +270,10 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
                 className="font-bold tracking-tight pointer-events-none select-none"
                 style={{
                     position: "fixed",
-                    opacity: 0, // GSAP sets to 1
+                    opacity: layoutMode === "servicesSearch" ? 0 : 0, // GSAP sets to 1, but force 0 for servicesSearch
                     zIndex: 100000,
                     whiteSpace: "nowrap",
+                    display: layoutMode === "servicesSearch" ? "none" : "block",
                 }}
             >
                 <span

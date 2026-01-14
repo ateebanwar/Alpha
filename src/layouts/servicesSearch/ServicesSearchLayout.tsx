@@ -64,18 +64,18 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
         <div className="services-search-layout">
             {/* Left Sidebar */}
             <aside className="sidebar">
-                {/* Logo - Hidden, used only for position reference */}
-                <div ref={sidebarTextRef} className="logo opacity-0">
-                    <span className="block font-bold">Alphabet</span>
-                    <span className="block font-light">Consultancy Services</span>
+                {/* Logo - Visible */}
+                <div className="logo">
+                    <h2 className="logo-title">Alphabet Consultancy Services</h2>
                 </div>
 
-                {/* Navigation */}
-                <nav className="nav-menu">
+                {/* Navigation Cards */}
+                <nav className="nav-cards">
                     {navItems.map((item, index) => (
-                        <div
+                        <Link
                             key={index}
-                            className={`nav-item-wrapper ${selectedNav === index ? 'active' : ''}`}
+                            href={`/services/${slugify(item)}`}
+                            className="nav-card-link"
                             onMouseEnter={() => {
                                 setHoveredNav(index);
                                 setSelectedNav(index);
@@ -83,37 +83,39 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                             }}
                             onMouseLeave={() => setHoveredNav(null)}
                         >
-                            <div className="nav-item">{item}</div>
-                            <div className="explore-wrapper">
-                                <Link
-                                    href={`/services/${slugify(item)}`}
-                                    style={{ color: '#ffffff', textDecoration: 'none' }}
+                            <div className={`nav-card ${selectedNav === index ? 'active' : ''}`}>
+                                <span className="nav-card-text">{item}</span>
+                                <svg
+                                    className="nav-card-chevron"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
                                 >
-                                    explore →
-                                </Link>
+                                    <path
+                                        d="M7.5 15L12.5 10L7.5 5"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </nav>
 
-                {/* Large Faded Number */}
-                <div className="big-number">
-                    {String(selectedNav + 1).padStart(2, '0')}
-                </div>
+
+
+                {/* Hidden ref for parent component */}
+                <div ref={sidebarTextRef} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} />
             </aside>
 
             {/* Main Content Area */}
             <main className="main-content">
-                {/* Hamburger Menu */}
-                <button className="hamburger-menu" aria-label="Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-
-                {/* Image Area */}
-                <div className="image-container">
-                    <div className="image-wrapper">
+                {/* Neumorphic Image Card */}
+                <div className="image-card">
+                    <div className="image-frame">
                         <img
                             key={imageKey}
                             src={navImages[hoveredNav !== null ? hoveredNav : selectedNav]}
@@ -122,27 +124,13 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                         />
                     </div>
 
-                    {/* Play Button */}
-                    <button className="play-button" aria-label="Play">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="11" stroke="white" strokeWidth="2" />
-                            <path d="M10 8L16 12L10 16V8Z" fill="white" />
-                        </svg>
-                    </button>
-
-                    {/* Tags */}
-                    <div className="tags">
-                        {serviceDescriptions[selectedNav]}
+                    {/* Description Area */}
+                    <div className="description-area">
+                        <p className="description-text">
+                            {serviceDescriptions[selectedNav]}
+                        </p>
                     </div>
                 </div>
-
-                {/* Follow Us */}
-                <button className="follow-us">
-                    follow us
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M13 5L8 10L3 5" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                </button>
             </main>
 
             {/* Isolated Styles */}
@@ -164,117 +152,114 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     width: 100%;
                     height: 100%;
                     display: flex;
-                    background: #1a1a1a;
+                    background: #e0e5ec;
                     overflow: hidden;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                 }
 
-                /* Sidebar Styles - Fluid Responsiveness */
+                /* Sidebar Styles - Neumorphic Design */
                 .sidebar {
                     width: 25vw;
-                    min-width: 300px;
-                    max-width: 500px;
-                    height: 100%;
-                    background: #0a0a0a;
+                    min-width: 340px;
+                    max-width: 520px;
+                    height: calc(100% - 20px);
+                    margin: 10px;
+                    background: #e8ecf0;
                     display: flex;
                     flex-direction: column;
-                    padding: 3vh 2.5vw;
+                    padding: 2rem;
                     position: relative;
                     z-index: 10;
-                    transition: width 0.3s ease, padding 0.3s ease;
+                    border-radius: 24px;
+                    box-shadow: 
+                        -12px -12px 24px rgba(255, 255, 255, 0.9),
+                        12px 12px 24px rgba(163, 177, 198, 0.6);
                 }
 
+                /* Logo Styles */
                 .logo {
-                    font-size: clamp(1.5rem, 1.8vw, 2.5rem);
-                    font-weight: 300;
-                    color: #ffffff;
-                    margin-bottom: 7vh;
-                    letter-spacing: 0.05em;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.25rem;
-                    min-height: 60px;
+                    margin-bottom: 2.5rem;
                 }
 
-                .logo-alphabet {
-                    color: #ffffff;
-                    font-weight: 400;
-                }
-
-                .logo-consultancy {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                .logo-title {
+                    font-size: 1.65rem;
+                    font-weight: 600;
+                    background: linear-gradient(135deg, #9ca3af 0%, #38bdf8 100%);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                     background-clip: text;
-                    font-weight: 300;
+                    line-height: 1.3;
+                    letter-spacing: -0.02em;
+                    margin: 0;
                 }
 
-                .logo-hidden {
-                    opacity: 0;
-                }
-
-                .logo-visible {
-                    opacity: 1;
-                }
-
-                .nav-menu {
+                /* Navigation Cards */
+                .nav-cards {
                     display: flex;
                     flex-direction: column;
-                    gap: 2.5vh;
-                    margin-bottom: auto;
+                    gap: 0.5rem;
+                    flex: 1;
+                    margin-bottom: 1rem;
+                    overflow: visible;
                 }
 
-                .nav-item-wrapper {
+                .nav-card-link {
+                    text-decoration: none;
+                    display: block;
+                }
+
+                .nav-card {
+                    background: #e8ecf0;
+                    padding: 0.75rem 1.25rem;
+                    border-radius: 18px;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     cursor: pointer;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                    position: relative;
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: 
+                        -5px -5px 12px rgba(255, 255, 255, 0.8),
+                        5px 5px 12px rgba(163, 177, 198, 0.4);
                 }
 
-                .nav-item {
-                    color: #888888;
-                    font-size: clamp(1rem, 1.1vw, 1.4rem);
-                    font-weight: 300;
-                    transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-                    letter-spacing: 0.02em;
+                .nav-card:hover {
+                    box-shadow: 
+                        -6px -6px 14px rgba(255, 255, 255, 0.9),
+                        6px 6px 14px rgba(163, 177, 198, 0.5);
+                    transform: translateY(-1px);
                 }
 
-                .nav-item-wrapper:hover .nav-item {
-                    color: #ffffff;
+                .nav-card.active {
+                    box-shadow: 
+                        inset -3px -3px 8px rgba(255, 255, 255, 0.6),
+                        inset 3px 3px 8px rgba(163, 177, 198, 0.35);
                 }
 
-                .nav-item-wrapper.active .nav-item {
-                    color: #ffffff;
+                .nav-card-text {
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    color: #38bdf8;
+                    line-height: 1.3;
+                    letter-spacing: -0.01em;
                 }
 
-                .explore-wrapper {
-                    color: #ffffff;
-                    font-size: 0.85rem;
-                    font-weight: 300;
-                    letter-spacing: 0.02em;
-                    opacity: 0;
-                    transform: translateX(-10px);
-                    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                    pointer-events: none;
-                    white-space: nowrap;
+                .nav-card:hover .nav-card-text {
+                    color: #0ea5e9;
                 }
 
-                .nav-item-wrapper:hover .explore-wrapper {
+                .nav-card-chevron {
+                    color: #38bdf8;
+                    flex-shrink: 0;
+                    transition: all 0.25s ease;
+                    opacity: 0.7;
+                }
+
+                .nav-card:hover .nav-card-chevron {
                     opacity: 1;
-                    transform: translateX(0);
-                    pointer-events: auto;
+                    transform: translateX(3px);
                 }
 
-                .big-number {
-                    font-size: clamp(5rem, 8vw, 10rem);
-                    font-weight: 200;
-                    color: rgba(255, 255, 255, 0.15);
-                    line-height: 1;
-                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-                    user-select: none;
-                }
+
 
                 /* Main Content Styles */
                 .main-content {
@@ -284,7 +269,8 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    padding: 0;
+                    padding: 10px;
+                    background: #e0e5ec;
                 }
 
                 .hamburger-menu {
@@ -308,25 +294,31 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
-                .hamburger-menu:hover span {
-                    background: #888888;
-                }
 
-                .image-container {
+                /* Neumorphic Image Card */
+                .image-card {
                     width: 100%;
                     height: 100%;
-                    position: relative;
-                }
-
-                .image-wrapper {
-                    width: 100%;
-                    height: 100%;
-                    background: #1a1a1a;
+                    background: #e8ecf0;
+                    border-radius: 24px;
+                    padding: 2rem;
                     display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 4px;
+                    flex-direction: column;
+                    box-shadow: 
+                        -12px -12px 24px rgba(255, 255, 255, 0.9),
+                        12px 12px 24px rgba(163, 177, 198, 0.6);
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .image-frame {
+                    width: 100%;
+                    flex: 1;
+                    background: #ffffff;
+                    border-radius: 16px;
                     overflow: hidden;
+                    box-shadow: 
+                        inset -3px -3px 8px rgba(255, 255, 255, 0.5),
+                        inset 3px 3px 8px rgba(163, 177, 198, 0.3);
                 }
 
                 .gallery-image {
@@ -338,87 +330,99 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
                 }
 
-                .play-button {
-                    position: absolute;
-                    bottom: 5vh;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: transparent;
+                /* Description Area */
+                .description-area {
+                    margin-top: 1rem;
+                    background: #e8ecf0;
+                    padding: 1rem 1.5rem;
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 1.5rem;
+                    box-shadow: 
+                        inset -2px -2px 6px rgba(255, 255, 255, 0.6),
+                        inset 2px 2px 6px rgba(163, 177, 198, 0.25);
+                }
+
+                .description-text {
+                    flex: 1;
+                    margin: 0;
+                    font-size: 0.95rem;
+                    font-weight: 400;
+                    color: #38bdf8;
+                    line-height: 1.5;
+                    letter-spacing: 0.01em;
+                }
+
+                .chevron-button {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background: #e8ecf0;
                     border: none;
-                    cursor: pointer;
-                    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-                    opacity: 0.9;
-                }
-
-                .play-button:hover {
-                    transform: translateX(-50%) scale(1.15);
-                    opacity: 1;
-                }
-
-                .tags {
-                    position: absolute;
-                    bottom: 3vh;
-                    left: 2vw;
-                    background: rgba(0, 0, 0, 0.8);
-                    color: #ffffff;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 4px;
-                    font-size: clamp(0.85rem, 0.9vw, 1.1rem);
-                    font-weight: 300;
-                    letter-spacing: 0.02em;
-                    backdrop-filter: blur(10px);
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-
-                .follow-us {
-                    position: absolute;
-                    bottom: 3vh;
-                    right: 2vw;
-                    background: transparent;
-                    border: none;
-                    color: #ffffff;
-                    font-size: clamp(0.9rem, 1vw, 1.2rem);
-                    font-weight: 300;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                    letter-spacing: 0.02em;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    color: #9ca3af;
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: 
+                        -4px -4px 10px rgba(255, 255, 255, 0.8),
+                        4px 4px 10px rgba(163, 177, 198, 0.4);
                 }
 
-                .follow-us:hover {
-                    opacity: 0.7;
-                    transform: translateY(-2px);
+                .chevron-button:hover {
+                    box-shadow: 
+                        -5px -5px 12px rgba(255, 255, 255, 0.9),
+                        5px 5px 12px rgba(163, 177, 198, 0.5);
+                    transform: translateY(1px);
                 }
+
+                .chevron-button:active {
+                    box-shadow: 
+                        inset -2px -2px 6px rgba(255, 255, 255, 0.6),
+                        inset 2px 2px 6px rgba(163, 177, 198, 0.3);
+                }
+
 
                 /* Responsive Design - Breakpoints */
                 @media (min-width: 1440px) {
                      .sidebar {
-                        width: 25vw;
-                        padding: 4vh 3vw;
+                        padding: 3rem 2.5rem;
                      }
-                     .nav-menu {
-                        gap: 3vh;
+                     .nav-cards {
+                        gap: 1.25rem;
                      }
                 }
 
                 @media (min-width: 1920px) {
                     .sidebar {
-                        width: 28vw;
-                        max-width: 600px;
-                        padding: 5vh 4vw;
+                        max-width: 580px;
+                        padding: 3.5rem 3rem;
                     }
-                    .nav-menu {
-                        gap: 4vh;
+                    .nav-cards {
+                        gap: 1.5rem;
                     }
                 }
 
                 @media (max-width: 1024px) {
                     .sidebar {
-                        width: 280px;
-                        min-width: 280px;
+                        min-width: 300px;
                         padding: 2rem 1.5rem;
+                    }
+
+                    .logo-title {
+                        font-size: 1.5rem;
+                    }
+
+                    .nav-card {
+                        padding: 1rem 1.25rem;
+                    }
+
+                    .nav-card-text {
+                        font-size: 0.95rem;
                     }
 
                     .main-content {
@@ -434,28 +438,36 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     .sidebar {
                         width: 100%;
                         height: auto;
+                        max-height: 60vh;
+                        overflow-y: auto;
                         padding: 1.5rem;
-                        flex-direction: row;
-                        align-items: center;
-                        gap: 2rem;
                         min-width: 0;
                         max-width: none;
                     }
 
                     .logo {
-                        margin-bottom: 0;
-                        margin-right: auto;
+                        margin-bottom: 1.5rem;
                     }
 
-                    .nav-menu {
-                        display: none;
+                    .logo-title {
+                        font-size: 1.3rem;
                     }
 
-                    .big-number {
-                        font-size: 4rem;
+                    .nav-cards {
+                        gap: 0.75rem;
+                        margin-bottom: 1.5rem;
+                    }
+
+                    .nav-card {
+                        padding: 0.9rem 1.2rem;
+                    }
+
+                    .menu-section {
+                        padding-top: 1rem;
                     }
 
                     .main-content {
+                        flex: 1;
                         padding: 1.5rem;
                     }
 
@@ -485,14 +497,29 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 @media (max-width: 480px) {
                     .sidebar {
                         padding: 1rem;
+                        max-height: 55vh;
                     }
 
-                    .logo {
-                        font-size: 1.2rem;
+                    .logo-title {
+                        font-size: 1.1rem;
                     }
 
-                    .big-number {
-                        font-size: 3rem;
+                    .nav-cards {
+                        gap: 0.6rem;
+                    }
+
+                    .nav-card {
+                        padding: 0.8rem 1rem;
+                        border-radius: 16px;
+                    }
+
+                    .nav-card-text {
+                        font-size: 0.85rem;
+                    }
+
+                    .menu-icon {
+                        width: 48px;
+                        height: 48px;
                     }
 
                     .main-content {
