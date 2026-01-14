@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
@@ -501,6 +502,37 @@ const recentWorks = [
     }
 ];
 
+const recognitions = [
+    {
+        logo: "N",
+        title: "NIVA INTRO",
+        award: "Winner - Best Signature",
+        year: "2024",
+        highlight: false
+    },
+    {
+        logo: "O",
+        title: "OGLIVY",
+        award: "Winner - US Portfolio",
+        year: "2024",
+        highlight: false
+    },
+    {
+        logo: "W",
+        title: "CSS AWARDS",
+        award: "Top 5 Best eCommerce",
+        year: "2023",
+        highlight: true
+    },
+    {
+        logo: "S",
+        title: "SOTY 2024",
+        award: "Top 5 Best Design",
+        year: "2024",
+        highlight: false
+    }
+];
+
 export default function HorizontalServicesClient({ slug }: { slug: string }) {
     const cards = serviceDetailCards[slug] || serviceDetailCards["application-development"];
     const categoryName = serviceCategories.find(cat => slugify(cat) === slug) || "Application Development";
@@ -580,6 +612,57 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* RECOGNITIONS Section */}
+                <div className="recognitions-section">
+                    <div className="recognitions-header">
+                        <span className="recognitions-badge">ACCOLADES</span>
+                        <h2 className="recognitions-title">RECOGNITIONS</h2>
+                    </div>
+
+                    <div className="awards-grid">
+                        {recognitions.map((item, idx) => (
+                            <motion.div
+                                key={idx}
+                                className={`award-card ${item.highlight ? 'highlight' : ''}`}
+                                initial={{ opacity: 0, y: 50 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: idx * 0.1 }}
+                                whileHover={{
+                                    y: -40,
+                                    rotateY: 0,
+                                    rotateZ: 0,
+                                    scale: 1.05,
+                                    zIndex: 100,
+                                    backgroundColor: "#ef441f",
+                                    boxShadow: "0 30px 100px rgba(239, 68, 31, 0.4)",
+                                    transition: { duration: 0.4, ease: "easeOut" }
+                                }}
+                                style={{
+                                    zIndex: idx + 10,
+                                    borderRadius: "24px",
+                                    overflow: "hidden",
+                                    height: "350px",
+                                    width: "280px"
+                                }}
+                            >
+                                <div className="award-logo-box">
+                                    {item.logo === "N" && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4.5l7.5 10V4h4v16h-4.5L8 10v10H4z" /></svg>}
+                                    {item.logo === "O" && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" /></svg>}
+                                    {item.logo === "W" && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.2 7L18.6 15L15.4 7H12.6L9.4 15L7.8 7H4.2L7 19H10.2L13.4 11L16.6 19H19.8L22.6 7H20.2Z" /></svg>}
+                                    {item.logo === "S" && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" /></svg>}
+                                </div>
+                                <div className="award-info">
+                                    <h3 className="award-name">{item.title}</h3>
+                                    <div className="award-divider"></div>
+                                    <p className="award-text">{item.award}</p>
+                                    <p className="award-year">{item.year}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -808,6 +891,169 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     font-weight: 800;
                     color: #ffffff;
                     margin: 0;
+                }
+
+                /* Recognitions Section Styles */
+                .recognitions-section {
+                    background: #000000;
+                    padding: 8rem 2rem;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    overflow: hidden;
+                    perspective: 1500px;
+                    border-top: 1px solid rgba(255, 255, 255, 0.05);
+                }
+
+                .recognitions-header {
+                    text-align: center;
+                    margin-bottom: 5rem;
+                }
+
+                .recognitions-badge {
+                    color: #ff6b35;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    letter-spacing: 0.4rem;
+                    margin-bottom: 1rem;
+                    display: block;
+                }
+
+                .recognitions-title {
+                    font-size: 4rem;
+                    font-weight: 900;
+                    color: #ffffff;
+                    letter-spacing: -0.02em;
+                }
+
+                .awards-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 280px);
+                    grid-auto-rows: 500px;
+                    justify-content: center;
+                    gap: 30px;
+                    max-width: 1400px;
+                    width: fit-content;
+                    margin: 0 auto;
+                    padding: 4rem 0;
+                }
+
+                .award-card {
+                    width: 280px !important;
+                    height: 500px !important;
+                    min-width: 280px !important;
+                    max-width: 280px !important;
+                    min-height: 500px !important;
+                    max-height: 500px !important;
+                    flex: 0 0 280px !important;
+                    background: #111111;
+                    border-radius: 24px !important;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                    padding: 3rem 2rem;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    position: relative;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
+                    isolation: isolate;
+                    -webkit-mask-image: -webkit-radial-gradient(white, black); /* Force Safari clipping */
+                    transform-style: preserve-3d;
+                    transform: rotateY(-12deg) rotateX(4deg) skewX(-1deg);
+                    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s ease;
+                    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+                    cursor: pointer;
+                }
+
+
+
+                /* Removed overlap adjustment */
+
+                .award-card.highlight {
+                    /* Default state is dark now, hover handles highlight */
+                    background: #111111; 
+                }
+
+                .award-logo-box {
+                    width: 80px;
+                    height: 80px;
+                    margin-bottom: 4rem;
+                    color: #ffffff;
+                }
+
+                .award-info {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1rem;
+                }
+
+                .award-name {
+                    font-size: 1.25rem;
+                    font-weight: 800;
+                    color: #ffffff;
+                    margin: 0;
+                    letter-spacing: 0.1em;
+                }
+
+                .award-divider {
+                    width: 40px;
+                    height: 2px;
+                    background: rgba(255, 255, 255, 0.2);
+                    margin: 0.5rem 0;
+                }
+
+                .award-text {
+                    font-size: 1rem;
+                    color: rgba(255, 255, 255, 0.8);
+                    margin: 0;
+                    font-weight: 500;
+                    line-height: 1.4;
+                }
+
+                .award-year {
+                    font-size: 0.9rem;
+                    color: rgba(255, 255, 255, 0.5);
+                    margin: 0;
+                    font-family: monospace;
+                }
+
+                .highlight .award-text,
+                .highlight .award-year {
+                    color: rgba(255, 255, 255, 0.9);
+                }
+
+                @media (max-width: 1100px) {
+                    .awards-grid {
+                        flex-wrap: wrap;
+                        gap: 2rem;
+                        justify-content: center;
+                    }
+                    .award-card {
+                        width: 280px !important;
+                        height: 500px !important;
+                        min-width: 280px !important;
+                        max-width: 280px !important;
+                        min-height: 500px !important;
+                        max-height: 500px !important;
+                        flex: 0 0 280px !important;
+                        margin-left: 0;
+                        transform: none !important;
+                    }
+                }
+
+                @media (max-width: 600px) {
+                    .award-card {
+                        width: 100%;
+                        height: auto;
+                        min-height: 380px;
+                    }
+                    .recognitions-title {
+                        font-size: 2.5rem;
+                    }
                 }
 
                 .works-item-desc {
