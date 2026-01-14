@@ -586,32 +586,37 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
             <style jsx>{`
                 .service-detail-page {
                     min-height: 100vh;
-                    background: #000000;
+                    background: #e0e5ec;
                     padding: 10px;
                     overflow-x: hidden;
                     user-select: none; /* Completely disable text selection */
                 }
 
                 .title-box {
-                    background: linear-gradient(145deg, #222222, #181818);
-                    padding: 0.6rem 2rem;
+                    background: #e0e5ec;
+                    padding: 0.8rem 2.5rem;
                     border-radius: 50px;
-                    margin-top: 13px;
-                    margin-bottom: 10px;
-                    width: 100%;
+                    margin-top: 15px;
+                    margin-bottom: 15px;
+                    width: fit-content;
+                    margin-left: auto;
+                    margin-right: auto;
                     box-shadow: 
-                        8px 8px 20px rgba(0, 0, 0, 0.9),
-                        -5px -5px 15px rgba(255, 255, 255, 0.1);
-                    border: 1px solid rgba(255, 255, 255, 0.05);
+                        8px 8px 16px rgba(163, 177, 198, 0.6),
+                        -8px -8px 16px rgba(255, 255, 255, 0.8);
                 }
 
                 .page-title {
-                    font-size: 1.5rem;
-                    font-weight: 500;
-                    color: #ffffff;
+                    font-size: 1rem;
+                    font-weight: 700;
+                    color: #444444;
                     margin: 0;
-                    letter-spacing: 0.1rem;
-                    opacity: 0.9;
+                    letter-spacing: 0.3rem;
+                    text-align: center;
+                    text-shadow: 
+                        1px 1px 1px rgba(255, 255, 255, 0.5),
+                        -1px -1px 1px rgba(0, 0, 0, 0.2);
+                    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
                 }
 
                 .cards-grid {
