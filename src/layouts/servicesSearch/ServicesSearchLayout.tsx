@@ -152,7 +152,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     width: 100%;
                     height: 100%;
                     display: flex;
-                    background: #e0e5ec;
+                    background: #000000;
                     overflow: hidden;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                 }
@@ -164,7 +164,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     max-width: 520px;
                     height: calc(100% - 20px);
                     margin: 10px;
-                    background: #e8ecf0;
+                    background: #1c1c1c;
                     display: flex;
                     flex-direction: column;
                     padding: 2rem;
@@ -172,8 +172,8 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     z-index: 10;
                     border-radius: 24px;
                     box-shadow: 
-                        -12px -12px 24px rgba(255, 255, 255, 0.9),
-                        12px 12px 24px rgba(163, 177, 198, 0.6);
+                        -6px -6px 15px rgba(255, 255, 255, 0.05),
+                        12px 12px 30px rgba(0, 0, 0, 0.9);
                 }
 
                 /* Logo Styles */
@@ -209,7 +209,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 }
 
                 .nav-card {
-                    background: #e8ecf0;
+                    background: #1c1c1c;
                     padding: 0.75rem 1.25rem;
                     border-radius: 18px;
                     display: flex;
@@ -218,21 +218,21 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     cursor: pointer;
                     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
                     box-shadow: 
-                        -5px -5px 12px rgba(255, 255, 255, 0.8),
-                        5px 5px 12px rgba(163, 177, 198, 0.4);
+                        -4px -4px 10px rgba(255, 255, 255, 0.04),
+                        6px 6px 15px rgba(0, 0, 0, 0.8);
                 }
 
                 .nav-card:hover {
                     box-shadow: 
-                        -6px -6px 14px rgba(255, 255, 255, 0.9),
-                        6px 6px 14px rgba(163, 177, 198, 0.5);
+                        -6px -6px 15px rgba(255, 255, 255, 0.06),
+                        10px 10px 20px rgba(0, 0, 0, 0.9);
                     transform: translateY(-1px);
                 }
 
                 .nav-card.active {
                     box-shadow: 
-                        inset -3px -3px 8px rgba(255, 255, 255, 0.6),
-                        inset 3px 3px 8px rgba(163, 177, 198, 0.35);
+                        inset -2px -2px 6px rgba(255, 255, 255, 0.03),
+                        inset 4px 4px 12px rgba(0, 0, 0, 0.7);
                 }
 
                 .nav-card-text {
@@ -270,7 +270,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     align-items: center;
                     justify-content: center;
                     padding: 10px;
-                    background: #e0e5ec;
+                    background: #000000;
                 }
 
                 .hamburger-menu {
@@ -299,26 +299,26 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 .image-card {
                     width: 100%;
                     height: 100%;
-                    background: #e8ecf0;
+                    background: #1c1c1c;
                     border-radius: 24px;
                     padding: 1.25rem;
                     display: flex;
                     flex-direction: column;
                     box-shadow: 
-                        -12px -12px 24px rgba(255, 255, 255, 0.9),
-                        12px 12px 24px rgba(163, 177, 198, 0.6);
+                        -8px -8px 25px rgba(255, 255, 255, 0.05),
+                        18px 18px 40px rgba(0, 0, 0, 0.95);
                     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
                 .image-frame {
                     width: 100%;
                     flex: 1;
-                    background: #f5f5f0;
+                    background: #000000;
                     border-radius: 12px;
                     overflow: hidden;
                     box-shadow: 
-                        inset -3px -3px 8px rgba(255, 255, 255, 0.5),
-                        inset 3px 3px 8px rgba(163, 177, 198, 0.3);
+                        inset -5px -5px 15px rgba(255, 255, 255, 0.03),
+                        inset 6px 6px 20px rgba(0, 0, 0, 1);
                 }
 
                 .gallery-image {
@@ -333,7 +333,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 /* Description Area */
                 .description-area {
                     margin-top: 1rem;
-                    background: #e8ecf0;
+                    background: #1c1c1c;
                     padding: 1rem 1.5rem;
                     border-radius: 16px;
                     display: flex;
@@ -341,8 +341,8 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     justify-content: space-between;
                     gap: 1.5rem;
                     box-shadow: 
-                        inset -2px -2px 6px rgba(255, 255, 255, 0.6),
-                        inset 2px 2px 6px rgba(163, 177, 198, 0.25);
+                        inset -4px -4px 10px rgba(255, 255, 255, 0.04),
+                        inset 4px 4px 15px rgba(0, 0, 0, 0.6);
                 }
 
                 .description-text {
