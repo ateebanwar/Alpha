@@ -106,13 +106,13 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
 
                 {/* Scrollable Content - Ultra-fast animation */}
                 <motion.div
-                    initial={{ opacity: 0, y: isMobile ? 4 : 6 }}
+                    initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                         duration: isMobile ? 0.14 : 0.18,
                         ease: [0.25, 0.46, 0.45, 0.94]
                     }}
-                    className={`relative flex-1 overflow-y-auto z-10 overscroll-contain p-4 md:p-8 pb-10 ${isOlympic ? 'olympic-scrollbar' : 'custom-scrollbar'
+                    className={`relative flex-1 overflow-y-auto z-10 overscroll-contain p-4 pt-1 md:p-8 md:pt-1 pb-10 ${isOlympic ? 'olympic-scrollbar' : 'custom-scrollbar'
                         }`}
                     style={{
                         willChange: 'opacity, transform',

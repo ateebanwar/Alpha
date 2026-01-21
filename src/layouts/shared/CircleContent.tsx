@@ -16,13 +16,13 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: isMobile ? 8 : 12 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
                 duration: isMobile ? 0.25 : 0.3,
                 ease: [0.4, 0.0, 0.2, 1]
             }}
-            className="relative w-full flex flex-col items-center justify-start p-6 md:p-0.5 pb-15"
+            className="relative w-full flex flex-col items-center justify-start p-6 pt-0 md:p-0.5 md:pt-0 pb-15"
             style={{
                 willChange: 'opacity, transform',
                 WebkitTransform: 'translate3d(0, 0, 0)'
@@ -37,7 +37,7 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
                     duration: isMobile ? 0.2 : 0.25,
                     ease: [0.4, 0.0, 0.2, 1]
                 }}
-                className="text-center mt-12 md:mt-8 mb-6"
+                className="text-center mt-0 mb-6"
                 style={{
                     willChange: 'opacity, transform',
                     WebkitTransform: 'translate3d(0, 0, 0)'
@@ -73,7 +73,7 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
             {/* Content Grid */}
             {circle.content.items && (
                 <motion.div
-                    initial={{ opacity: 0, y: isMobile ? 12 : 16 }}
+                    initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                         delay: isMobile ? 0.15 : 0.2,
