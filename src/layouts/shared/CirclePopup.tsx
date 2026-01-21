@@ -35,7 +35,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
     const cardTransition = { duration: 0 };
 
     return (
-        <div className="fixed inset-0 z-[99990] flex items-end md:items-start justify-center pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+        <div className="fixed inset-0 z-[99990] flex items-start justify-center pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             {/* Instant Backdrop */}
             <motion.div
                 initial={{ opacity: 1 }}
@@ -56,12 +56,12 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
             {/* Instant Card */}
             <motion.div
                 layoutId={undefined}
-                className={`relative w-full md:max-w-4xl h-full rounded-none md:rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border-x-0 md:border border-white/10`}
+                className={`relative w-full md:max-w-4xl h-full rounded-2xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border-x-0 md:border border-white/10`}
                 transition={cardTransition}
                 style={{
                     backgroundColor: isOlympic ? '#000000' : 'hsl(var(--card))',
-                    marginTop: '30px',
-                    height: isMobile ? 'calc(100dvh - 60px)' : 'calc(100vh - 60px)',
+                    marginTop: isMobile ? '145px' : '75px',
+                    height: isMobile ? 'calc(100dvh - 175px)' : 'calc(100vh - 105px)',
                     willChange: 'transform, height',
                     transform: 'translate3d(0, 0, 0)',
                     WebkitTransform: 'translate3d(0, 0, 0)',
@@ -78,7 +78,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                     initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0 }}
-                    className={`relative z-50 flex items-center p-4 md:p-6 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-white/5 bg-card/50 backdrop-blur-sm'
+                    className={`relative z-50 flex items-center py-2 px-4 md:py-3 md:px-6 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-white/5 bg-card/50 backdrop-blur-sm'
                         }`}
                     style={{
                         willChange: 'opacity, transform',
@@ -89,7 +89,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 >
                     <button
                         onClick={onClose}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${isOlympic
+                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 px-3 ${isOlympic
                             ? "bg-white text-black hover:bg-white/90"
                             : "bg-primary text-primary-foreground hover:bg-primary/90"
                             }`}
@@ -98,7 +98,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                         <ArrowLeft className="w-4 h-4" />
                         Back
                     </button>
-                    <div className={`ml-4 font-semibold text-lg ${isOlympic ? 'text-white' : 'text-primary/80'}`}
+                    <div className={`ml-4 font-semibold text-base ${isOlympic ? 'text-white' : 'text-primary/80'}`}
                         style={isOlympic ? { textShadow: '0 0 10px rgba(255, 255, 255, 0.5)' } : {}}>
                         {circle.label}
                     </div>
