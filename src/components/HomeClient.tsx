@@ -191,12 +191,38 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
         return LAYOUT_REGISTRY[id]?.component;
     }, []);
 
+    // Sync layout mode with URL on back/forward and initial load
+    useEffect(() => {
+        const syncLayoutFromUrl = () => {
+            const path = window.location.pathname;
+            if (path === "/") {
+                setLayoutMode("static");
+            } else if (path === "/olympic") {
+                setLayoutMode("olympic");
+            } else if (path === "/3d-carousel") {
+                setLayoutMode("3d-carousel");
+            } else if (path === "/ticker") {
+                setLayoutMode("ticker");
+            } else if (path === "/services") {
+                setLayoutMode("servicesSearch");
+            }
+        };
+
+        window.addEventListener("popstate", syncLayoutFromUrl);
+        // Initial sync to handle direct loads if not matching prop
+        syncLayoutFromUrl();
+
+        return () => window.removeEventListener("popstate", syncLayoutFromUrl);
+    }, []);
+
     // Optimized layout switching with preloading
     const switchLayout = useCallback(async (newMode: "static" | "olympic" | "3d-carousel" | "ticker" | "servicesSearch") => {
         if (newMode === layoutMode) return;
 
         // Update URL to match layout mode (shallow routing)
         const path = newMode === "static" ? "/" : `/${newMode === "3d-carousel" ? "3d-carousel" : newMode === "servicesSearch" ? "services" : newMode}`;
+
+        // Use pushState (popstate will not fire for pushState, but our manual update below handles it)
         window.history.pushState(null, "", path);
 
         // For ticker layout, preload first

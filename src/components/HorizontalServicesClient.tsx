@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
 
 const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
@@ -536,13 +542,60 @@ const recognitions = [
 export default function HorizontalServicesClient({ slug }: { slug: string }) {
     const cards = serviceDetailCards[slug] || serviceDetailCards["application-development"];
     const categoryName = serviceCategories.find(cat => slugify(cat) === slug) || "Application Development";
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            // Header animation
+            gsap.from(".works-header > *", {
+                scrollTrigger: {
+                    trigger: ".works-header",
+                    start: "top 85%",
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power3.out"
+            });
+
+            // Works cards animation
+            gsap.from(".works-card", {
+                scrollTrigger: {
+                    trigger: ".works-content",
+                    start: "top 80%",
+                },
+                y: 60,
+                opacity: 0,
+                duration: 1.2,
+                stagger: 0.3,
+                ease: "power3.out",
+                clearProps: "all"
+            });
+
+            // Award cards animation
+            gsap.from(".award-card", {
+                scrollTrigger: {
+                    trigger: ".awards-grid",
+                    start: "top 85%",
+                },
+                y: 80,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.15,
+                ease: "back.out(1.7)",
+                clearProps: "transform, opacity"
+            });
+        }, containerRef);
+
+        return () => ctx.revert();
+    }, [slug]);
 
     // Calculate animation duration based on number of cards to keep speed consistent
-    // 4 seconds per card is a good baseline
     const animationDuration = cards.length * 4;
 
     return (
-        <div className="service-detail-page">
+        <div className="service-detail-page" ref={containerRef}>
             {/* Category Title in Neumorphic Box */}
             <div className="title-box">
                 <h1 className="page-title">{categoryName.toUpperCase()}</h1>
@@ -626,10 +679,9 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                             <motion.div
                                 key={idx}
                                 className={`award-card ${item.highlight ? 'highlight' : ''}`}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.8, delay: idx * 0.1 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.4 }}
                                 whileHover={{
                                     y: -40,
                                     rotateY: 0,
@@ -672,7 +724,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     background: #e0e5ec;
                     padding: 10px;
                     overflow-x: hidden;
-                    user-select: none; /* Completely disable text selection */
+                    user-select: none;
                 }
 
                 .title-box {
@@ -716,8 +768,6 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     animation: marquee var(--marquee-duration, 40s) linear infinite;
                     user-select: none;
                 }
-
-
 
                 @keyframes marquee {
                     0% { transform: translateX(0); }
@@ -840,7 +890,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     margin-top: 2rem;
                     display: flex;
                     flex-direction: column;
-                    gap: 3rem; /* Spacing between cards */
+                    gap: 3rem;
                 }
 
                 .works-card {
@@ -893,7 +943,6 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     margin: 0;
                 }
 
-                /* Recognitions Section Styles */
                 .recognitions-section {
                     background: #000000;
                     padding: 8rem 2rem;
@@ -941,11 +990,6 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 .award-card {
                     width: 280px !important;
                     height: 500px !important;
-                    min-width: 280px !important;
-                    max-width: 280px !important;
-                    min-height: 500px !important;
-                    max-height: 500px !important;
-                    flex: 0 0 280px !important;
                     background: #111111;
                     border-radius: 24px !important;
                     box-sizing: border-box;
@@ -958,23 +1002,9 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     position: relative;
                     border: 1px solid rgba(255, 255, 255, 0.1);
                     backface-visibility: hidden;
-                    -webkit-backface-visibility: hidden;
-                    isolation: isolate;
-                    -webkit-mask-image: -webkit-radial-gradient(white, black); /* Force Safari clipping */
-                    transform-style: preserve-3d;
-                    transform: rotateY(-12deg) rotateX(4deg) skewX(-1deg);
-                    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s ease;
                     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
                     cursor: pointer;
-                }
-
-
-
-                /* Removed overlap adjustment */
-
-                .award-card.highlight {
-                    /* Default state is dark now, hover handles highlight */
-                    background: #111111; 
+                    transform: rotateY(-12deg) rotateX(4deg) skewX(-1deg);
                 }
 
                 .award-logo-box {
@@ -1021,38 +1051,23 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     font-family: monospace;
                 }
 
-                .highlight .award-text,
-                .highlight .award-year {
-                    color: rgba(255, 255, 255, 0.9);
-                }
-
                 @media (max-width: 1100px) {
                     .awards-grid {
-                        flex-wrap: wrap;
-                        gap: 2rem;
-                        justify-content: center;
+                        grid-template-columns: repeat(2, 280px);
                     }
                     .award-card {
-                        width: 280px !important;
-                        height: 500px !important;
-                        min-width: 280px !important;
-                        max-width: 280px !important;
-                        min-height: 500px !important;
-                        max-height: 500px !important;
-                        flex: 0 0 280px !important;
-                        margin-left: 0;
                         transform: none !important;
                     }
                 }
 
                 @media (max-width: 600px) {
-                    .award-card {
-                        width: 100%;
-                        height: auto;
-                        min-height: 380px;
+                    .awards-grid {
+                        grid-template-columns: 1fr;
                     }
-                    .recognitions-title {
-                        font-size: 2.5rem;
+                    .award-card {
+                        width: 100% !important;
+                        height: auto !important;
+                        min-height: 400px !important;
                     }
                 }
 
@@ -1090,20 +1105,17 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
 
                 @media (max-width: 1200px) {
                     .works-title { font-size: 6rem; }
-                    .service-card {
-                        flex: 0 0 300px;
-                    }
                 }
 
                 @media (max-width: 768px) {
                     .works-title { font-size: 4rem; }
                     .works-subtitle { font-size: 1rem; }
-                    .service-card {
-                        flex: 0 0 280px;
-                    }
-                    
                     .service-detail-page {
                         padding: 2rem 1rem;
+                    }
+                    .works-card-inner.flex-layout {
+                        flex-direction: column;
+                        gap: 2rem;
                     }
                 }
             `}</style>
