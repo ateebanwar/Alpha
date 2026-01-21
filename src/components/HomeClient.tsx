@@ -71,7 +71,8 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
                     opacity: 1, // Always visible
                     zIndex: 100000,
                     fontSize: getComputedStyle(target).fontSize,
-                    whiteSpace: layoutMode === "servicesSearch" ? "normal" : "nowrap"
+                    whiteSpace: layoutMode === "servicesSearch" ? "normal" : "normal", // Always allow normal wrapping
+                    textAlign: "center"
                 });
             }
         };
@@ -267,22 +268,21 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
             {/* GLOBAL TEXT - Persistent Single Instance */}
             <div
                 ref={travelingTextRef}
-                className="font-bold tracking-tight pointer-events-none select-none"
+                className="font-bold tracking-tight pointer-events-none select-none text-center"
                 style={{
                     position: "fixed",
-                    opacity: layoutMode === "servicesSearch" ? 0 : 0, // GSAP sets to 1, but force 0 for servicesSearch
+                    opacity: 0,
                     zIndex: 100000,
-                    whiteSpace: "nowrap",
                     display: layoutMode === "servicesSearch" ? "none" : "block",
                 }}
             >
                 <span
-                    className={layoutMode === "servicesSearch" ? "text-transparent bg-clip-text bg-gradient-to-r from-[#FFB347] to-[#E5E4E2]" : (["ticker", "static"].includes(layoutMode) ? "text-black" : "text-white")}
+                    className={["ticker", "static"].includes(layoutMode) ? "text-black" : "text-white"}
                 >
                     Alphabet
                 </span>
                 <span
-                    className={`ml-2 ${layoutMode === "servicesSearch" ? "text-transparent bg-clip-text bg-gradient-to-r from-[#FFB347] to-[#E5E4E2]" : "text-gradient"}`}
+                    className={`block sm:inline ml-0 sm:ml-2 text-gradient`}
                 >
                     Consultancy Services
                 </span>

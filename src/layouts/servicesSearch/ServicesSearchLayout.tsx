@@ -191,6 +191,8 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     line-height: 1.3;
                     letter-spacing: -0.02em;
                     margin: 0;
+                    text-align: center;
+                    width: 100%;
                 }
 
                 /* Navigation Cards */

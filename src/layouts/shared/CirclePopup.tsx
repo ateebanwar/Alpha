@@ -60,8 +60,8 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 transition={cardTransition}
                 style={{
                     backgroundColor: isOlympic ? '#000000' : 'hsl(var(--card))',
-                    marginTop: isMobile ? '145px' : '75px',
-                    height: isMobile ? 'calc(100dvh - 175px)' : 'calc(100vh - 105px)',
+                    marginTop: isMobile ? '130px' : '90px',
+                    height: isMobile ? 'calc(100dvh - 160px)' : 'calc(100vh - 120px)',
                     willChange: 'transform, height',
                     transform: 'translate3d(0, 0, 0)',
                     WebkitTransform: 'translate3d(0, 0, 0)',

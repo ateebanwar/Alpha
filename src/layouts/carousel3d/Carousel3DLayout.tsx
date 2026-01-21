@@ -21,7 +21,7 @@ export default function Carousel3DLayout({ navbarTextRef, onSwitchLayout }: Caro
     // Helper for button styles (simplified for 3D Layout context)
     const getButtonClassName = (mode: string) => {
         const isActive = mode === "3d-carousel";
-        const baseClasses = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2";
+        const baseClasses = "inline-flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap rounded-md text-[10px] xs:text-xs sm:text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 sm:h-10 px-2 sm:px-4 py-2";
 
         if (isActive) {
             return `${baseClasses} bg-white text-black hover:bg-white/90`;
@@ -37,10 +37,10 @@ export default function Carousel3DLayout({ navbarTextRef, onSwitchLayout }: Caro
                 style={{ backgroundColor: "#000000" }}
             />
 
-            <header className="fixed left-0 right-0 flex flex-col md:flex-row items-center pointer-events-none px-4 md:px-0 gap-4 md:gap-0 z-30 top-[10px] justify-center">
+            <header className="fixed left-0 right-0 flex flex-col sm:flex-row items-center pointer-events-none px-4 md:px-8 gap-3 sm:gap-6 z-30 top-[10px] sm:top-[20px] justify-center">
                 <h1
                     ref={navbarTextRef}
-                    className="font-bold tracking-tight pointer-events-none select-none text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center md:text-left md:mr-4 invisible"
+                    className="font-bold tracking-tight pointer-events-none select-none text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center invisible"
                     style={{ textShadow: "0 0 20px rgba(255,255,255,0.3)" }}
                 >
                     <span className="text-white">Alphabet</span>
@@ -49,7 +49,7 @@ export default function Carousel3DLayout({ navbarTextRef, onSwitchLayout }: Caro
                     </span>
                 </h1>
 
-                <div className="pointer-events-auto flex items-center backdrop-blur-sm p-1 rounded-full border border-white/20 shadow-lg md:ml-4 gap-2 transition-all duration-500 ease-in-out bg-white/5 opacity-100 scale-100">
+                <div className="pointer-events-auto flex items-center backdrop-blur-sm p-1 sm:p-1.5 rounded-full border border-white/20 shadow-lg sm:ml-4 gap-0.5 sm:gap-2 transition-all duration-500 ease-in-out bg-white/5 max-w-full">
                     <button onClick={() => onSwitchLayout("static")} className={getButtonClassName("static")}>Default</button>
                     <button onClick={() => onSwitchLayout("olympic")} className={getButtonClassName("olympic")}>Olympic</button>
                     <button onClick={() => onSwitchLayout("3d-carousel")} className={getButtonClassName("3d-carousel")}>3D View</button>
@@ -58,7 +58,7 @@ export default function Carousel3DLayout({ navbarTextRef, onSwitchLayout }: Caro
                 </div>
             </header>
 
-            <div className="flex-1 relative overflow-hidden z-10 mt-[140px] md:mt-[70px]">
+            <div className="flex-1 relative overflow-hidden z-10 mt-[120px] sm:mt-[80px]">
                 {CarouselComponent && (
                     <div className="absolute inset-0 w-full h-full will-change-transform isolate">
                         <CarouselComponent
