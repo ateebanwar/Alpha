@@ -77,7 +77,7 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
             }
         };
 
-        // Handle Transitions
+        // Handle 
         const prevMode = prevModeRef.current;
         const currentMode = layoutMode;
 

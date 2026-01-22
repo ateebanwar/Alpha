@@ -782,6 +782,14 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     box-shadow: 
                         -5px -5px 15px rgba(255, 255, 255, 0.06),
                         10px 10px 20px rgba(0, 0, 0, 0.85);
+                    transition: transform 0.3s ease;
+                }
+
+                @media (max-width: 768px) {
+                    .service-card {
+                        flex: 0 0 260px;
+                        padding: 12px;
+                    }
                 }
 
                 .card-image-wrapper {
@@ -823,7 +831,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .card-title {
-                    font-size: 2rem;
+                    font-size: clamp(1.2rem, 4vw, 2rem);
                     font-weight: 700;
                     color: #ffffff;
                     margin: 0;
@@ -831,7 +839,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .card-description {
-                    font-size: 0.9rem;
+                    font-size: clamp(0.75rem, 2vw, 0.9rem);
                     color: #ffffff;
                     line-height: 1.5;
                     margin: 0;
@@ -863,7 +871,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .works-title {
-                    font-size: 6.5rem;
+                    font-size: clamp(3rem, 10vw, 6.5rem);
                     font-weight: 900;
                     margin: 0;
                     line-height: 1;
@@ -874,9 +882,9 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .works-subtitle {
-                    font-size: 1.2rem;
+                    font-size: clamp(0.9rem, 2vw, 1.2rem);
                     color: #888888;
-                    margin-top: 2rem;
+                    margin-top: 1.5rem;
                     max-width: 600px;
                     margin-left: auto;
                     margin-right: auto;
@@ -895,8 +903,8 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
 
                 .works-card {
                     background: #0a0a0a;
-                    border-radius: 40px;
-                    padding: 2rem;
+                    border-radius: clamp(20px, 5vw, 40px);
+                    padding: clamp(1rem, 3vw, 2rem);
                     position: relative;
                     border: 1px solid rgba(255, 255, 255, 0.05);
                     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
@@ -905,12 +913,19 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 .works-card-inner.flex-layout {
                     display: flex;
                     align-items: center;
-                    gap: 4rem;
-                    min-height: 400px;
-                    padding: 2rem;
+                    gap: clamp(1.5rem, 5vw, 4rem);
+                    min-height: auto;
+                    padding: clamp(1rem, 3vw, 2.5rem);
                     background: #111111;
-                    border-radius: 30px;
+                    border-radius: clamp(15px, 4vw, 30px);
                     overflow: hidden;
+                }
+
+                @media (max-width: 1024px) {
+                    .works-card-inner.flex-layout {
+                        flex-direction: column;
+                        text-align: center;
+                    }
                 }
 
                 .works-image-side {
@@ -936,8 +951,15 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     gap: 1.5rem;
                 }
 
+                @media (max-width: 1024px) {
+                    .works-text-side {
+                        text-align: center;
+                        align-items: center;
+                    }
+                }
+
                 .works-item-title {
-                    font-size: 2.5rem;
+                    font-size: clamp(1.5rem, 4vw, 2.5rem);
                     font-weight: 800;
                     color: #ffffff;
                     margin: 0;
@@ -969,7 +991,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .recognitions-title {
-                    font-size: 4rem;
+                    font-size: clamp(2.5rem, 8vw, 4rem);
                     font-weight: 900;
                     color: #ffffff;
                     letter-spacing: -0.02em;
@@ -977,24 +999,30 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
 
                 .awards-grid {
                     display: grid;
-                    grid-template-columns: repeat(4, 280px);
-                    grid-auto-rows: 500px;
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                     justify-content: center;
-                    gap: 30px;
+                    gap: clamp(1.5rem, 4vw, 30px);
                     max-width: 1400px;
-                    width: fit-content;
+                    width: 100%;
                     margin: 0 auto;
                     padding: 4rem 0;
                 }
 
+                @media (max-width: 640px) {
+                    .awards-grid {
+                        grid-template-columns: 1fr;
+                        padding: 2rem 0;
+                    }
+                }
+
                 .award-card {
-                    width: 280px !important;
-                    height: 500px !important;
+                    width: 100% !important;
+                    min-height: 450px;
                     background: #111111;
                     border-radius: 24px !important;
                     box-sizing: border-box;
                     overflow: hidden;
-                    padding: 3rem 2rem;
+                    padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 2rem);
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -1005,6 +1033,14 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
                     cursor: pointer;
                     transform: rotateY(-12deg) rotateX(4deg) skewX(-1deg);
+                    transition: transform 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease !important;
+                }
+
+                @media (max-width: 1100px) {
+                    .award-card {
+                        transform: none !important;
+                        min-height: 400px;
+                    }
                 }
 
                 .award-logo-box {
@@ -1091,7 +1127,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .stat-value {
-                    font-size: 2rem;
+                    font-size: clamp(1.5rem, 3vw, 2rem);
                     font-weight: 700;
                     color: #ff6b35;
                 }
@@ -1101,6 +1137,14 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     color: #666666;
                     letter-spacing: 0.1em;
                     font-weight: 600;
+                }
+
+                @media (hover: none) {
+                    .award-card:active {
+                        background-color: #ef441f;
+                        box-shadow: 0 30px 100px rgba(239, 68, 31, 0.4);
+                        transform: scale(0.98) !important;
+                    }
                 }
 
                 @media (max-width: 1200px) {

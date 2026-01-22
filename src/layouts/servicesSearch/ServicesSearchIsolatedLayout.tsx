@@ -10,10 +10,6 @@ interface ServicesSearchIsolatedLayoutProps {
 }
 
 export default function ServicesSearchIsolatedLayout({ showText, sidebarTextRef, onSwitchLayout }: ServicesSearchIsolatedLayoutProps) {
-    // Local state for the menu button (Isolated from HomeClient)
-    // In HomeClient, this was initialized to false upon entry.
-    const [showButtons, setShowButtons] = useState(false);
-
     return (
         <div className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-black text-white services-search-isolation">
             {/* Background - Strictly Black */}
@@ -27,26 +23,6 @@ export default function ServicesSearchIsolatedLayout({ showText, sidebarTextRef,
                     <ServicesSearchLayout showText={showText} sidebarTextRef={sidebarTextRef as RefObject<HTMLDivElement>} />
                 </div>
             </div>
-
-            {/* Toggle Button */}
-            <button
-                onClick={() => {
-                    if (showButtons) {
-                        setShowButtons(false);
-                    } else {
-                        // Exit servicesSearch mode
-                        onSwitchLayout("static");
-                    }
-                }}
-                className="fixed bottom-4 left-4 z-40 px-3 py-2 rounded-lg text-xs font-medium shadow-lg transition-all duration-300 ease-in-out bg-white/90 text-black hover:bg-white"
-                style={{
-                    backdropFilter: "blur(10px)",
-                }}
-            >
-                <span className="flex items-center gap-1.5">
-                    {showButtons ? "✕" : "☰"} {showButtons ? "Hide" : "Menu"}
-                </span>
-            </button>
         </div>
     );
 }

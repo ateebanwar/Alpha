@@ -153,7 +153,7 @@ export default function Carousel3D() {
     }, []);
 
     return (
-        <div ref={componentRef} className="carousel_component" style={{ height: '100vh', overflow: 'hidden', cursor: 'grab', touchAction: 'none' }}>
+        <div ref={componentRef} className="carousel_component" style={{ height: '100vh', overflow: 'hidden', cursor: 'default', touchAction: 'none' }}>
             <div className="carousel_track">
                 <div className="carousel_sticky">
                     <div ref={wrapRef} data-carousel="wrap" className="carousel_wrap w-dyn-list">

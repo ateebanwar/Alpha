@@ -159,21 +159,20 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
 
                 /* Sidebar Styles - Neumorphic Design */
                 .sidebar {
-                    width: 25vw;
-                    min-width: 340px;
-                    max-width: 520px;
+                    width: clamp(340px, 25vw, 520px);
                     height: calc(100% - 20px);
                     margin: 10px;
                     background: #1c1c1c;
                     display: flex;
                     flex-direction: column;
-                    padding: 2rem;
+                    padding: clamp(1.5rem, 3vw, 2.5rem);
                     position: relative;
                     z-index: 10;
                     border-radius: 24px;
                     box-shadow: 
                         -6px -6px 15px rgba(255, 255, 255, 0.05),
                         12px 12px 30px rgba(0, 0, 0, 0.9);
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
                 /* Logo Styles */
@@ -182,7 +181,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 }
 
                 .logo-title {
-                    font-size: 1.65rem;
+                    font-size: clamp(1.2rem, 2vw, 1.65rem);
                     font-weight: 600;
                     background: linear-gradient(135deg, #9ca3af 0%, #38bdf8 100%);
                     -webkit-background-clip: text;
@@ -238,7 +237,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 }
 
                 .nav-card-text {
-                    font-size: 0.9rem;
+                    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
                     font-weight: 400;
                     color: #38bdf8;
                     line-height: 1.3;
@@ -300,10 +299,11 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 /* Neumorphic Image Card */
                 .image-card {
                     width: 100%;
-                    height: 100%;
+                    height: calc(100% - 20px);
                     background: #1c1c1c;
                     border-radius: 24px;
-                    padding: 1.25rem;
+                    padding: clamp(1rem, 2vw, 1.5rem);
+                    margin: 10px 10px 10px 0;
                     display: flex;
                     flex-direction: column;
                     box-shadow: 
@@ -350,7 +350,7 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                 .description-text {
                     flex: 1;
                     margin: 0;
-                    font-size: 0.95rem;
+                    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
                     font-weight: 700;
                     font-style: italic;
                     color: #38bdf8;
@@ -391,151 +391,61 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
 
 
                 /* Responsive Design - Breakpoints */
-                @media (min-width: 1440px) {
-                     .sidebar {
-                        padding: 3rem 2.5rem;
-                     }
-                     .nav-cards {
-                        gap: 1.25rem;
-                     }
-                }
-
-                @media (min-width: 1920px) {
-                    .sidebar {
-                        max-width: 580px;
-                        padding: 3.5rem 3rem;
-                    }
-                    .nav-cards {
-                        gap: 1.5rem;
-                    }
-                }
-
                 @media (max-width: 1024px) {
                     .sidebar {
-                        min-width: 300px;
-                        padding: 2rem 1.5rem;
+                        width: 320px;
+                        padding: 1.5rem 1rem;
                     }
-
-                    .logo-title {
-                        font-size: 1.5rem;
-                    }
-
-                    .nav-card {
-                        padding: 1rem 1.25rem;
-                    }
-
-                    .nav-card-text {
-                        font-size: 0.95rem;
-                    }
-
                     .main-content {
-                        padding: 2rem;
+                        padding: 0;
                     }
                 }
 
                 @media (max-width: 768px) {
                     .services-search-layout {
                         flex-direction: column;
+                        overflow-y: auto;
                     }
-
                     .sidebar {
+                        width: calc(100% - 20px);
+                        margin: 10px;
+                        height: auto;
+                        max-height: none;
+                        padding: 1.5rem;
+                    }
+                    .main-content {
                         width: 100%;
                         height: auto;
-                        max-height: 60vh;
-                        overflow-y: auto;
-                        padding: 1.5rem;
-                        min-width: 0;
-                        max-width: none;
+                        padding: 0;
                     }
-
-                    .logo {
-                        margin-bottom: 1.5rem;
+                    .image-card {
+                        height: auto;
+                        min-height: 400px;
+                        margin: 10px;
+                        width: calc(100% - 20px);
                     }
-
-                    .logo-title {
-                        font-size: 1.3rem;
-                    }
-
-                    .nav-cards {
-                        gap: 0.75rem;
-                        margin-bottom: 1.5rem;
-                    }
-
-                    .nav-card {
-                        padding: 0.9rem 1.2rem;
-                    }
-
-                    .menu-section {
-                        padding-top: 1rem;
-                    }
-
-                    .main-content {
-                        flex: 1;
-                        padding: 1.5rem;
-                    }
-
-                    .hamburger-menu {
-                        top: 1.5rem;
-                        right: 1.5rem;
-                    }
-
-                    .tags {
-                        font-size: 0.75rem;
-                        padding: 0.5rem 1rem;
-                        left: 1rem;
-                        bottom: 1rem;
-                    }
-
-                    .follow-us {
-                        bottom: 1.5rem;
-                        right: 1.5rem;
-                        font-size: 0.8rem;
-                    }
-
-                    .play-button {
-                        bottom: 2rem;
+                    .image-frame {
+                        aspect-ratio: 16/9;
+                        flex: none;
+                        height: 250px;
                     }
                 }
 
                 @media (max-width: 480px) {
                     .sidebar {
-                        padding: 1rem;
-                        max-height: 55vh;
+                        padding: 1.25rem 1rem;
                     }
-
                     .logo-title {
-                        font-size: 1.1rem;
+                        font-size: 1.2rem;
                     }
-
-                    .nav-cards {
-                        gap: 0.6rem;
-                    }
-
-                    .nav-card {
-                        padding: 0.8rem 1rem;
-                        border-radius: 16px;
-                    }
-
-                    .nav-card-text {
-                        font-size: 0.85rem;
-                    }
-
-                    .menu-icon {
-                        width: 48px;
-                        height: 48px;
-                    }
-
-                    .main-content {
+                    .image-card {
                         padding: 1rem;
                     }
-
-                    .placeholder-text {
-                        font-size: 1.5rem;
+                    .description-area {
+                        padding: 0.8rem 1rem;
                     }
-
-                    .tags {
-                        font-size: 0.7rem;
-                        padding: 0.4rem 0.8rem;
+                    .image-frame {
+                        height: 200px;
                     }
                 }
             `}</style>
