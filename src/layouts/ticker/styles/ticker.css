@@ -1,0 +1,53 @@
+/* Ticker Manual Scroll Styles */
+
+.ticker-iso-root {
+    background: hsl(var(--background));
+    position: relative;
+    overflow: hidden;
+    /* Hardware acceleration hint */
+    will-change: transform;
+}
+
+.ticker-column {
+    /* Ensure smooth rendering */
+    -webkit-font-smoothing: antialiased;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    /* Transition for smooth sync if needed, but direct transform is faster */
+    will-change: transform;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .ticker-column-hidden-mobile {
+        display: none;
+    }
+}
+
+/* Scroll Proxy - Invisible overlay */
+.scroll-proxy {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 50;
+    /* Above columns */
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 10+ */
+}
+
+.scroll-proxy::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.virtual-track {
+    width: 100%;
+    pointer-events: none;
+    /* Let clicks pass through if needed, but layout might block */
+}

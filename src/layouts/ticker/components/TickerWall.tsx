@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useEffect, useState, useCallback } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { getDataForHoneycomb, CircleData } from "@/data/dataAdapter";
 import TickerCard from "./TickerCard";
 
@@ -12,172 +11,194 @@ const TickerWall = ({
     expandedId: string | null,
     onExpandedChange: (id: string | null) => void
 }) => {
-    // 1. Setup Scroll State - Restore original Framer Motion scrolling
-    const scrollY = useMotionValue(0);
+    // Load Data
     const [circleData, setCircleData] = useState<CircleData[]>([]);
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
-    const [columnHeight, setColumnHeight] = useState(0);
-    const colRef = useRef<HTMLDivElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [singleSetHeight, setSingleSetHeight] = useState(0);
 
-    // Load data on mount to avoid blocking initial render
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const data = getDataForHoneycomb();
-                setCircleData(data);
-                setIsDataLoaded(true);
-            } catch (error) {
-                console.error("Failed to load circle data:", error);
-            }
-        };
-        loadData();
+        const data = getDataForHoneycomb();
+        setCircleData(data);
+        setIsLoaded(true);
     }, []);
 
-    // 2. Optimized height measurement - only when data is loaded and DOM is ready
-    const measureHeight = useCallback(() => {
-        if (colRef.current && isDataLoaded) {
-            // Use requestAnimationFrame to avoid blocking
-            requestAnimationFrame(() => {
-                const totalHeight = colRef.current!.offsetHeight;
-                setColumnHeight(totalHeight / 3);
-            });
-        }
-    }, [isDataLoaded]);
+    // Refs
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const colRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+    // Initial Scroll Position
+    const INITIAL_SCROLL_OFFSET = 500000;
+    const SCROLL_BUFFER_SIZE = 1000000;
+
+    // Robust Measurement Logic (ResizeObserver)
     useEffect(() => {
-        if (isDataLoaded) {
-            // Measure immediately, then again after a short delay for stability
-            measureHeight();
-            const timer = setTimeout(measureHeight, 50);
-            return () => clearTimeout(timer);
-        }
-    }, [isDataLoaded, measureHeight]);
+        if (!isLoaded || !colRefs.current[1]) return;
 
-    // Resize handler - throttled
-    useEffect(() => {
-        let resizeTimeout: NodeJS.Timeout;
-        const handleResize = () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(measureHeight, 100);
-        };
+        // Measure Column 1 (Present on mobile & desktop)
+        const targetCol = colRefs.current[1];
 
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            clearTimeout(resizeTimeout);
-        };
-    }, [measureHeight]);
-
-    // 3. Handle Wheel Event - Restore original wheel scrolling
-    useEffect(() => {
-        const handleWheel = (e: WheelEvent) => {
-            if (expandedId) return; // Disable scroll when expanded
-            e.preventDefault();
-            // Standardize scroll speed
-            const delta = e.deltaY;
-            const current = scrollY.get();
-            scrollY.set(current - delta);
-        };
-
-        // Attach to window for better scroll capture
-        window.addEventListener("wheel", handleWheel, { passive: false });
-
-        return () => {
-            window.removeEventListener("wheel", handleWheel);
-        };
-    }, [scrollY, expandedId]);
-
-    // 4. Optimized columns computation - only when data is ready
-    const columns = useMemo(() => {
-        if (!isDataLoaded || circleData.length === 0) return [];
-
-        const count = 4;
-        const result = Array.from({ length: count }, () => [...circleData]);
-
-        // Shuffle each column a bit so they aren't identical - but do it efficiently
-        return result.map((col) => {
-            // Simple shuffle - more efficient than sort
-            for (let i = col.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [col[i], col[j]] = [col[j], col[i]];
+        const updateHeight = () => {
+            // We need the height of ONE loop iteration.
+            // Our columns contain 4 copies. So loop height = totalHeight / 4.
+            // We subtract a bit of gap if padding is internal, but flex-gap is external.
+            // Flex gap is handled by the container. The column is just a div of cards.
+            // If cards have gaps inside the column-div (flex-col gap-6), then totalHeight includes them.
+            // Total Height = (Card + Gap) * Count
+            // Loop Height = Total Height / 4
+            if (targetCol) {
+                const totalHeight = targetCol.scrollHeight;
+                setSingleSetHeight(totalHeight / 4);
             }
-            // Triple the data for seamless infinite scroll
-            return [...col, ...col, ...col];
+        };
+
+        const observer = new ResizeObserver(() => {
+            // Debounce slightly or just run
+            requestAnimationFrame(updateHeight);
         });
-    }, [circleData, isDataLoaded]);
 
-    // 5. Transform Logic - Restore original infinite scrolling transforms
-    const yEven = useTransform(scrollY, (value) => {
-        if (!columnHeight) return 0;
-        const directionValue = value;
-        return (directionValue % columnHeight + columnHeight) % columnHeight - columnHeight;
-    });
+        observer.observe(targetCol);
+        updateHeight(); // Initial check
 
-    const yOdd = useTransform(scrollY, (value) => {
-        if (!columnHeight) return 0;
-        const directionValue = value * -1;
-        return (directionValue % columnHeight + columnHeight) % columnHeight - columnHeight;
-    });
+        return () => observer.disconnect();
+    }, [isLoaded, circleData]); // Re-bind on load
 
-    // Don't render until data is loaded to prevent layout shifts
-    if (!isDataLoaded || columns.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <div className="text-muted-foreground">Loading ticker...</div>
-            </div>
-        );
-    }
+    // Scroll Logic
+    useEffect(() => {
+        const container = scrollRef.current;
+        if (!container || !singleSetHeight) return;
 
+        // Initialize Center
+        if (container.scrollTop < 1000) {
+            container.scrollTop = INITIAL_SCROLL_OFFSET;
+        }
+
+        let frameId: number;
+
+        const handleScroll = () => {
+            const scrollTop = container.scrollTop;
+
+            frameId = requestAnimationFrame(() => {
+                const loopHeight = singleSetHeight;
+                // Relative scroll from center
+                const relativeScroll = scrollTop - INITIAL_SCROLL_OFFSET;
+
+                // Modulo
+                const loopOffset = relativeScroll % loopHeight;
+
+                colRefs.current.forEach((col, index) => {
+                    if (!col) return;
+                    const isEven = index % 2 === 0;
+
+                    if (isEven) {
+                        // Even Cols: Scroll UP
+                        col.style.transform = `translate3d(0, ${-loopOffset}px, 0)`;
+                    } else {
+                        // Odd Cols: Scroll DOWN
+                        // We check math:
+                        // If scrolling down (pos relativeScroll), loopOffset positive.
+                        // We want content moving down.
+                        // translate: -loopHeight + loopOffset
+                        // e.g. loopHeight=1000. offset=100. result = -900 (moved down 100 from -1000)
+                        col.style.transform = `translate3d(0, ${loopOffset - loopHeight}px, 0)`;
+                    }
+                });
+            });
+        };
+
+        container.addEventListener("scroll", handleScroll, { passive: true });
+        handleScroll();
+
+        return () => {
+            container.removeEventListener("scroll", handleScroll);
+            cancelAnimationFrame(frameId);
+        };
+    }, [isLoaded, singleSetHeight]);
+
+    // Data Prep
+    const columns = useMemo(() => {
+        if (!isLoaded || circleData.length === 0) return [];
+
+        const cols: CircleData[][] = [[], [], [], []];
+        // Consistent Shuffle
+        const shuffled = [...circleData].sort((a, b) => a.id.localeCompare(b.id)); // Deterministic sort or use seed
+        // To keep it random-looking but stable across re-renders without seed:
+        // We can just dist raw. 
+        // Or strictly shuffling inside useEffect to state. 
+        // For now, let's just distribute sequentially for stability or use the initial load state if needed.
+        // Re-using the random sort from prev step might cause jitter if re-memoized.
+        // Let's stick to stable distribution of the input array which is already random-ish or constant.
+
+        circleData.forEach((item, i) => { cols[i % 4].push(item); });
+
+        return cols.map(col => {
+            // 4 copies for buffer
+            return [...col, ...col, ...col, ...col];
+        });
+    }, [circleData, isLoaded]);
+
+    if (!isLoaded) return null;
+
+    // Opacity fade-in to hide initial jump
     return (
         <div
-            id="ticker-container"
-            ref={containerRef}
-            className={`relative w-full h-full overflow-hidden bg-background px-4 md:px-8 ${expandedId ? 'pointer-events-none' : ''}`}
+            className="relative w-full h-full overflow-hidden bg-background transition-opacity duration-300"
+            style={{ opacity: singleSetHeight ? 1 : 0 }}
         >
-            <div className="flex gap-4 md:gap-8 h-full max-w-[1600px] mx-auto">
-                {columns.map((col, colIndex) => {
-                    const isEven = colIndex % 2 === 0;
-                    const y = isEven ? yEven : yOdd;
+            {/* Native Scroll Proxy */}
+            <div ref={scrollRef} className="scroll-proxy">
+                <div className="virtual-track" style={{ height: `${SCROLL_BUFFER_SIZE}px` }} />
+            </div>
+
+            {/* Top/Bottom Fade Masks */}
+            <div className="absolute top-0 left-0 right-0 h-24 z-20 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-24 z-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+
+            {/* Visual Columns */}
+            <div className="flex w-full h-full gap-4 md:gap-6 px-4 md:px-8 justify-center pointer-events-none">
+                {columns.map((colItems, colIndex) => {
+                    // Mobile Visibility: Col 1 & 2 only (Index 1 & 2) to ensure density?
+                    // Previous CSS was hiding 0 and 3. That leaves 1 and 2. Correct.
+                    // We measure Index 1, which is visible.
+                    const mobileClass = (colIndex === 0 || colIndex === 3) ? "ticker-column-hidden-mobile" : "";
 
                     return (
                         <div
-                            key={`ticker-col-${colIndex}`}
-                            className={`flex-1 flex flex-col gap-4 md:gap-8 h-full relative`}
-                            style={{
-                                display: (colIndex === 0 || colIndex === 3) ? 'var(--mobile-display, flex)' : 'flex'
-                            }}
+                            key={`col-${colIndex}`}
+                            className={`flex-1 relative h-full overflow-visible ticker-column ${mobileClass} flex justify-center`}
                         >
-                            {/* Masking gradients for top/bottom smoothness */}
-                            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
-
-                            <motion.div
-                                ref={colIndex === 0 ? colRef : null} // Measure first column
-                                style={{ y }}
-                                className="flex flex-col gap-4 md:gap-8"
+                            <div
+                                ref={el => { colRefs.current[colIndex] = el }}
+                                className={`flex flex-col gap-6 w-full`}
+                                style={{
+                                    willChange: 'transform',
+                                    // Initial offset for down-scrolling (odd) cols is handled by transform logic
+                                    // But we need to ensure content exists "above"
+                                    // Our transform for odd is `loopOffset - loopHeight`.
+                                    // Max negative is `-loopHeight`.
+                                    // So we need clear space above? No, negative transform moves it UP.
+                                    // Wait. `translateY(-1000px)` moves the element UP.
+                                    // If we conform to `loopOffset - loopHeight` (e.g. 0 - 1000 = -1000), 
+                                    // The element is shifted UP by 1000px.
+                                    // So we are seeing the "bottom" part of the column?
+                                    // Yes. As we scroll down (offset increases), the value becomes less negative (-900), moving DOWN.
+                                    // So we simply need to ensure the column is rendered normally in flow.
+                                    // Since we have 4 copies, shifting up by 1/4th height is safe.
+                                }}
                             >
-                                {col.map((circle, itemIndex) => (
-                                    <TickerCard
-                                        key={`${colIndex}-${circle.id}-${itemIndex}`}
-                                        circle={circle}
-                                        onClick={() => onExpandedChange(circle.id)}
-                                    />
+                                {/* Render Items */}
+                                {colItems.map((item, i) => (
+                                    <div key={`${item.id}-${colIndex}-${i}`} className="pointer-events-auto">
+                                        <TickerCard
+                                            circle={item}
+                                            onClick={() => onExpandedChange(item.id)}
+                                        />
+                                    </div>
                                 ))}
-                            </motion.div>
+                            </div>
                         </div>
                     );
                 })}
             </div>
-
-            <style jsx global>{`
-                @media (max-width: 768px) {
-                    /* Hide outer columns on mobile for better density */
-                    .flex-1:nth-child(1), .flex-1:nth-child(4) {
-                        --mobile-display: none;
-                    }
-                }
-            `}</style>
         </div>
     );
 };

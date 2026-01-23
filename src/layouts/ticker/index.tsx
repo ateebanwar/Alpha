@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import TickerWall from './components/TickerWall';
 import { LayoutProps } from '../core/Layout.types';
-import "./styles/ticker-isolated.css";
+import "./styles/ticker.css";
 
 const TickerLayoutComponent = ({ isActive, expandedId, onExpandedChange }: LayoutProps) => {
     return (
