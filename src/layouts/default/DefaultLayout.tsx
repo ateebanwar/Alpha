@@ -45,7 +45,7 @@ export default function DefaultLayout({ navbarTextRef, onSwitchLayout, expandedI
                     style={{ textShadow: "none" }}
                 >
                     <span>Alphabet</span>
-                    <span className="block sm:inline ml-0 sm:ml-2 text-gradient">
+                    <span className="inline ml-2 text-gradient">
                         Consultancy Services
                     </span>
                 </h1>

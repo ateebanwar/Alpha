@@ -71,7 +71,7 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
                     opacity: 1, // Always visible
                     zIndex: 100000,
                     fontSize: getComputedStyle(target).fontSize,
-                    whiteSpace: layoutMode === "servicesSearch" ? "normal" : "normal", // Always allow normal wrapping
+                    whiteSpace: layoutMode === "servicesSearch" ? "normal" : "nowrap",
                     textAlign: "center"
                 });
             }
@@ -242,7 +242,7 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
 
     // Render Layouts and Global Text
     return (
-        <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background">
+        <main className="fixed inset-0 flex flex-col p-0 overflow-hidden bg-background" data-layout={layoutMode}>
             {layoutMode === "static" && (
                 <DefaultLayout
                     navbarTextRef={navbarTextRef as any}
@@ -308,7 +308,7 @@ export default function HomeClient({ initialLayoutMode = "static" }: { initialLa
                     Alphabet
                 </span>
                 <span
-                    className={`block sm:inline ml-0 sm:ml-2 text-gradient`}
+                    className={`inline ml-2 text-gradient`}
                 >
                     Consultancy Services
                 </span>

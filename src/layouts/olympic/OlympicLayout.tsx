@@ -49,7 +49,7 @@ export default function OlympicLayout({ navbarTextRef, onSwitchLayout }: Olympic
                     style={{ textShadow: "0 0 20px rgba(255,255,255,0.3)" }}
                 >
                     <span className="text-white">Alphabet</span>
-                    <span className="block sm:inline ml-0 sm:ml-2 text-gradient">
+                    <span className="inline ml-2 text-gradient">
                         Consultancy Services
                     </span>
                 </h1>

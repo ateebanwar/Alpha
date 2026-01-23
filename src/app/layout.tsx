@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -43,14 +41,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <style dangerouslySetInnerHTML={{
           __html: `
+            :root {
+              --background: 200 30% 92%;
+            }
+            .dark, [data-layout="servicesSearch"], [data-layout="olympic"], [data-layout="3d-carousel"] {
+              --background: 210 25% 12%;
+            }
             .no-animations * {
               animation-duration: 0s !important;
               animation-delay: 0s !important;
@@ -82,11 +80,9 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={`${outfit.variable} ${inter.variable} antialiased`} suppressHydrationWarning={true}>
+      <body className={`${outfit.variable} ${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <Providers>
           {children}
-          <Toaster />
-          <Sonner />
         </Providers>
       </body>
     </html>
