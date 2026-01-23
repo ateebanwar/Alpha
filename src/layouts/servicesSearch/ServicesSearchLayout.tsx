@@ -1,10 +1,10 @@
 /**
- * ServicesSearchLayout - Sophisticated Dark Theme Design
+ * ServicesSearchLayout - Minimalist Black Design
+ * Inspired by modern architecture portfolio layouts
  * 
- * Matching reference design with:
- * - Dark sidebar with logo, navigation, and pagination
- * - Large image/gallery area
- * - Interactive elements and social sharing
+ * Pure black sidebar with white text
+ * Large image showcase area
+ * Clean, minimal typography
  */
 
 "use client";
@@ -21,11 +21,9 @@ interface ServicesSearchLayoutProps {
 }
 
 export default function ServicesSearchLayout({ showText = true, sidebarTextRef }: ServicesSearchLayoutProps) {
-    const [currentSlide, setCurrentSlide] = useState(1);
     const [selectedNav, setSelectedNav] = useState(0);
     const [hoveredNav, setHoveredNav] = useState<number | null>(null);
     const [imageKey, setImageKey] = useState(0);
-    const totalSlides = 6;
 
     // Navigation items
     const navItems = [
@@ -40,100 +38,136 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
 
     // Images for each navigation item
     const navImages = [
-        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop", // Application Development - coding
-        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop", // Backend & System Architecture - server/architecture
-        "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&h=600&fit=crop", // Database & Performance - data/analytics
-        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop", // Cloud & DevOps - cloud technology
-        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop", // AI, Data & Analytics - AI/ML
-        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop", // Business & Automation - business analytics
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop"  // Consulting, Support & Training - team collaboration
-    ];
-
-    // Service descriptions for each category
-    const serviceDescriptions = [
-        "Web & Mobile Apps using React, Next.js, Flutter, iOS (Swift), Android (Kotlin), .NET, Django",
-        "Scalable backend & APIs with Node.js, Express, FastAPI, Django, REST, GraphQL, Microservices",
-        "Data storage & speed optimization using PostgreSQL, MongoDB, Redis, SQL Server, CDN, Nginx",
-        "Cloud hosting & automation with AWS, Azure, Docker, Kubernetes, Terraform, CI/CD pipelines",
-        "AI models & data insights using Python, TensorFlow, GPT/LLMs, Power BI, Spark, Computer Vision",
-        "E-commerce & workflow automation with Shopify, WooCommerce, Zapier, Power Automate, RPA",
-        "Tech strategy, system design, 24/7 support, maintenance & developer training"
+        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=800&fit=crop"
     ];
 
     return (
-        <div className="services-search-layout">
-            {/* Left Sidebar */}
+        <div className="services-layout">
+            {/* Black Sidebar */}
             <aside className="sidebar">
-                {/* Logo - Visible */}
+                {/* Logo */}
                 <div className="logo">
-                    <h2 className="logo-title">Alphabet Consultancy Services</h2>
+                    <h1>
+                        <div>Alphabet</div>
+                        <div>Consultancy</div>
+                        <div>Services</div>
+                    </h1>
                 </div>
 
-                {/* Navigation Cards */}
-                <nav className="nav-cards">
+                {/* Navigation List */}
+                <nav className="nav-list">
                     {navItems.map((item, index) => (
                         <Link
                             key={index}
                             href={`/services/${slugify(item)}`}
-                            className="nav-card-link"
+                            className={`nav-item ${selectedNav === index ? 'active' : ''}`}
                             onMouseEnter={() => {
                                 setHoveredNav(index);
                                 setSelectedNav(index);
                                 setImageKey(prev => prev + 1);
                             }}
-                            onMouseLeave={() => setHoveredNav(null)}
+                            onClick={(e) => {
+                                // Check if the click target or its parent is the explore button
+                                const isExploreButton = (e.target as HTMLElement).closest('.explore-button');
+
+                                if (!isExploreButton) {
+                                    // If NOT clicking explore, change image but prevent navigation
+                                    e.preventDefault();
+                                    setSelectedNav(index);
+                                    setHoveredNav(index);
+                                    setImageKey(prev => prev + 1);
+                                }
+                                // If IS explore button, allow standard Link navigation
+                            }}
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                flexWrap: 'nowrap',
+                                overflow: 'hidden'
+                            }}
                         >
-                            <div className={`nav-card ${selectedNav === index ? 'active' : ''}`}>
-                                <span className="nav-card-text">{item}</span>
-                                <svg
-                                    className="nav-card-chevron"
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
+                            <span
+                                className="nav-text"
+                                style={{
+                                    flex: 1,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    minWidth: 0,
+                                    pointerEvents: 'none' // Ensures click logic targets the explore button correctly
+                                }}
+                            >
+                                {item}
+                            </span>
+                            {(hoveredNav === index || selectedNav === index) && (
+                                <span
+                                    className="explore-button"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        color: '#ffffff',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 400,
+                                        fontStyle: 'italic',
+                                        whiteSpace: 'nowrap',
+                                        flexShrink: 0
+                                    }}
                                 >
-                                    <path
-                                        d="M7.5 15L12.5 10L7.5 5"
-                                        stroke="currentColor"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
-                            </div>
+                                    <span style={{ pointerEvents: 'none' }}>explore</span>
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ pointerEvents: 'none' }}>
+                                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            )}
                         </Link>
                     ))}
                 </nav>
 
+                {/* Large Background Number */}
+                <div className="background-number">
+                    {selectedNav + 1}
+                </div>
 
-
-                {/* Hidden ref for parent component */}
+                {/* Hidden ref */}
                 <div ref={sidebarTextRef} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} />
             </aside>
 
-            {/* Main Content Area */}
-            <main className="main-content">
-                {/* Neumorphic Image Card */}
-                <div className="image-card">
-                    <div className="image-frame">
-                        <img
-                            key={imageKey}
-                            src={navImages[hoveredNav !== null ? hoveredNav : selectedNav]}
-                            alt={navItems[hoveredNav !== null ? hoveredNav : selectedNav]}
-                            className="gallery-image"
-                        />
+            {/* Main Image Area */}
+            <main className="main-area">
+                <div className="image-container">
+                    <img
+                        key={imageKey}
+                        src={navImages[hoveredNav !== null ? hoveredNav : selectedNav]}
+                        alt={navItems[hoveredNav !== null ? hoveredNav : selectedNav]}
+                        className="main-image"
+                    />
+
+                    {/* Image Label */}
+                    <div className="image-label">
+                        <span>{navItems[selectedNav]}</span>
                     </div>
 
-                    {/* Description Area */}
-                    <div className="description-area">
-                        <p className="description-text">
-                            {serviceDescriptions[selectedNav]}
-                        </p>
+                    {/* Follow Us */}
+                    <div className="follow-us">
+                        <span>follow us</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M13 3L3 13M13 3H5M13 3V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                     </div>
                 </div>
             </main>
 
-            {/* Isolated Styles */}
+            {/* Minimalist Black Theme Styles */}
             <style jsx>{`
                 @keyframes fadeIn {
                     from {
@@ -146,306 +180,488 @@ export default function ServicesSearchLayout({ showText = true, sidebarTextRef }
                     }
                 }
 
-                .services-search-layout {
-                    position: absolute;
+                .services-layout {
+                    position: fixed;
                     inset: 0;
-                    width: 100%;
-                    height: 100%;
+                    width: 100vw;
+                    height: 100vh;
                     display: flex;
                     background: #000000;
                     overflow: hidden;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    font-family: 'Poppins', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
                 }
 
-                /* Sidebar Styles - Neumorphic Design */
+                /* Black Sidebar */
                 .sidebar {
-                    width: clamp(340px, 25vw, 520px);
-                    height: calc(100% - 20px);
-                    margin: 10px;
-                    background: #1c1c1c;
+                    width: clamp(380px, 28vw, 550px);
+                    height: 100%;
+                    background: #000000;
                     display: flex;
                     flex-direction: column;
-                    padding: clamp(1.5rem, 3vw, 2.5rem);
+                    padding: clamp(2.5rem, 4vw, 5rem) clamp(2rem, 3.5vw, 4.5rem);
                     position: relative;
                     z-index: 10;
-                    border-radius: 24px;
-                    box-shadow: 
-                        -6px -6px 15px rgba(255, 255, 255, 0.05),
-                        12px 12px 30px rgba(0, 0, 0, 0.9);
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    overflow: hidden;
                 }
 
-                /* Logo Styles */
+                /* Logo */
                 .logo {
-                    margin-bottom: 2.5rem;
+                    margin-top: 18px;
+                    margin-bottom: clamp(3rem, 5vh, 6rem);
                 }
 
-                .logo-title {
-                    font-size: clamp(1.2rem, 2vw, 1.65rem);
-                    font-weight: 600;
-                    background: linear-gradient(135deg, #9ca3af 0%, #38bdf8 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                    line-height: 1.3;
-                    letter-spacing: -0.02em;
+                .logo h1 {
+                    font-size: clamp(0.9rem, 1.2vw, 1.4rem);
+                    font-weight: 700;
+                    color: #ffffff;
                     margin: 0;
-                    text-align: center;
-                    width: 100%;
+                    letter-spacing: 0.05em;
+                    line-height: 1.3;
+                    text-align: left;
                 }
 
-                /* Navigation Cards */
-                .nav-cards {
+                .logo h1 div {
+                    margin: 0;
+                }
+
+                /* Navigation List */
+                .nav-list {
                     display: flex;
                     flex-direction: column;
-                    gap: 0.5rem;
+                    gap: clamp(0.8rem, 1.5vh, 1.5rem);
                     flex: 1;
-                    margin-bottom: 1rem;
-                    overflow: visible;
+                    margin-top: 18px;
+                    margin-bottom: clamp(2rem, 3vh, 3.5rem);
+                    overflow-y: auto;
+                    overflow-x: hidden;
                 }
 
-                .nav-card-link {
+                .nav-list::-webkit-scrollbar {
+                    width: 4px;
+                }
+
+                .nav-list::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .nav-list::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 2px;
+                }
+
+                .nav-list::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+
+                .nav-item {
+                    font-size: clamp(0.95rem, 1.1vw, 1.25rem);
+                    font-weight: 700 !important;
+                    color: #8E8B96 !important;
                     text-decoration: none;
-                    display: block;
-                }
-
-                .nav-card {
-                    background: #1c1c1c;
-                    padding: 0.75rem 1.25rem;
-                    border-radius: 18px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
+                    padding: clamp(0.5rem, 0.8vh, 0.9rem) 0;
+                    transition: all 0.3s ease;
                     cursor: pointer;
-                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow: 
-                        -4px -4px 10px rgba(255, 255, 255, 0.04),
-                        6px 6px 15px rgba(0, 0, 0, 0.8);
+                    line-height: 1.5;
+                    letter-spacing: 0;
                 }
 
-                .nav-card:hover {
-                    box-shadow: 
-                        -6px -6px 15px rgba(255, 255, 255, 0.06),
-                        10px 10px 20px rgba(0, 0, 0, 0.9);
-                    transform: translateY(-1px);
+                .nav-item:hover,
+                .nav-item.active {
+                    color: #ffffff !important;
                 }
 
-                .nav-card.active {
-                    box-shadow: 
-                        inset -2px -2px 6px rgba(255, 255, 255, 0.03),
-                        inset 4px 4px 12px rgba(0, 0, 0, 0.7);
+                /* Large Background Number */
+                .background-number {
+                    position: absolute;
+                    bottom: calc(2rem - 18px);
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: clamp(8rem, 15vw, 18rem);
+                    font-weight: 700;
+                    color: rgba(255, 255, 255, 0.1);
+                    line-height: 1;
+                    pointer-events: none;
+                    z-index: 0;
                 }
 
-                .nav-card-text {
-                    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-                    font-weight: 400;
-                    color: #38bdf8;
-                    line-height: 1.3;
-                    letter-spacing: -0.01em;
-                }
-
-                .nav-card:hover .nav-card-text {
-                    color: #0ea5e9;
-                }
-
-                .nav-card-chevron {
-                    color: #38bdf8;
-                    flex-shrink: 0;
-                    transition: all 0.25s ease;
-                    opacity: 0.7;
-                }
-
-                .nav-card:hover .nav-card-chevron {
-                    opacity: 1;
-                    transform: translateX(3px);
-                }
-
-
-
-                /* Main Content Styles */
-                .main-content {
+                /* Main Image Area */
+                .main-area {
                     flex: 1;
                     height: 100%;
                     position: relative;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 10px;
-                    background: #000000;
-                }
-
-                .hamburger-menu {
-                    position: absolute;
-                    top: 3vh;
-                    right: 2vw;
-                    background: transparent;
-                    border: none;
-                    cursor: pointer;
-                    padding: 0.5rem;
-                    z-index: 20;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
-                }
-
-                .hamburger-menu span {
-                    width: 28px;
-                    height: 2px;
-                    background: #ffffff;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-
-
-                /* Neumorphic Image Card */
-                .image-card {
-                    width: 100%;
-                    height: calc(100% - 20px);
-                    background: #1c1c1c;
-                    border-radius: 24px;
-                    padding: clamp(1rem, 2vw, 1.5rem);
-                    margin: 10px 10px 10px 0;
-                    display: flex;
-                    flex-direction: column;
-                    box-shadow: 
-                        -8px -8px 25px rgba(255, 255, 255, 0.05),
-                        18px 18px 40px rgba(0, 0, 0, 0.95);
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-
-                .image-frame {
-                    width: 100%;
-                    flex: 1;
-                    background: #000000;
-                    border-radius: 12px;
                     overflow: hidden;
-                    box-shadow: 
-                        inset -5px -5px 15px rgba(255, 255, 255, 0.03),
-                        inset 6px 6px 20px rgba(0, 0, 0, 1);
                 }
 
-                .gallery-image {
+                .image-container {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                }
+
+                .main-image {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
-                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-                    transform: scale(1);
-                    animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
                 }
 
-                /* Description Area */
-                .description-area {
-                    margin-top: 1rem;
-                    background: #1c1c1c;
-                    padding: 1rem 1.5rem;
-                    border-radius: 16px;
+                /* Image Label */
+                .image-label {
+                    position: absolute;
+                    bottom: 3rem;
+                    left: 3rem;
+                    background: rgba(0, 0, 0, 0.7);
+                    backdrop-filter: blur(10px);
+                    padding: 0.65rem 1.25rem;
+                    border-radius: 2px;
+                    font-size: 0.8rem;
+                    font-weight: 400;
+                    color: #ffffff;
+                    letter-spacing: 0.05em;
+                    text-transform: lowercase;
+                }
+
+                /* Follow Us */
+                .follow-us {
+                    position: absolute;
+                    bottom: 3rem;
+                    right: 3rem;
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
-                    gap: 1.5rem;
-                    box-shadow: 
-                        inset -4px -4px 10px rgba(255, 255, 255, 0.04),
-                        inset 4px 4px 15px rgba(0, 0, 0, 0.6);
-                }
-
-                .description-text {
-                    flex: 1;
-                    margin: 0;
-                    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
-                    font-weight: 700;
-                    font-style: italic;
-                    color: #38bdf8;
-                    line-height: 1.5;
-                    letter-spacing: 0.01em;
-                }
-
-                .chevron-button {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    background: #e8ecf0;
-                    border: none;
+                    gap: 0.75rem;
+                    font-size: 0.8rem;
+                    font-weight: 400;
+                    color: #ffffff;
+                    letter-spacing: 0.05em;
                     cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    flex-shrink: 0;
-                    color: #9ca3af;
-                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow: 
-                        -4px -4px 10px rgba(255, 255, 255, 0.8),
-                        4px 4px 10px rgba(163, 177, 198, 0.4);
+                    transition: gap 0.3s ease;
                 }
 
-                .chevron-button:hover {
-                    box-shadow: 
-                        -5px -5px 12px rgba(255, 255, 255, 0.9),
-                        5px 5px 12px rgba(163, 177, 198, 0.5);
-                    transform: translateY(1px);
+                .follow-us:hover {
+                    gap: 1rem;
                 }
 
-                .chevron-button:active {
-                    box-shadow: 
-                        inset -2px -2px 6px rgba(255, 255, 255, 0.6),
-                        inset 2px 2px 6px rgba(163, 177, 198, 0.3);
+                .follow-us svg {
+                    color: #ffffff;
                 }
 
-
-                /* Responsive Design - Breakpoints */
+                /* Responsive Design */
                 @media (max-width: 1024px) {
                     .sidebar {
-                        width: 320px;
-                        padding: 1.5rem 1rem;
-                    }
-                    .main-content {
-                        padding: 0;
+                        width: 260px;
+                        padding: 2.5rem 2rem;
                     }
                 }
 
+                /* Responsive Design - 100vh Viewport for All Screens */
+                
+                /* Ultra Large Desktop - 27" and above (2560px+) */
+                @media (min-width: 2560px) {
+                    .sidebar {
+                        width: clamp(550px, 30vw, 700px);
+                        padding: clamp(4rem, 5vw, 6rem) clamp(3rem, 4vw, 5rem);
+                    }
+
+                    .logo {
+                        margin-bottom: clamp(5rem, 6vh, 8rem);
+                    }
+
+                    .logo h1 {
+                        font-size: clamp(1.3rem, 1.5vw, 1.8rem);
+                        letter-spacing: 0.08em;
+                    }
+
+                    .nav-list {
+                        gap: clamp(1.2rem, 2vh, 2rem);
+                        margin-bottom: clamp(3rem, 4vh, 5rem);
+                    }
+
+                    .nav-item {
+                        font-size: clamp(1.2rem, 1.3vw, 1.5rem);
+                        padding: clamp(0.8rem, 1vh, 1.2rem) 0;
+                    }
+
+                    .background-number {
+                        font-size: clamp(16rem, 18vw, 22rem);
+                    }
+
+                    .image-label,
+                    .follow-us {
+                        font-size: clamp(0.9rem, 1vw, 1.1rem);
+                        padding: clamp(0.8rem, 1vh, 1rem) clamp(1.2rem, 1.5vw, 1.5rem);
+                    }
+                }
+
+                /* Large Desktop (1920px - 27" at 1440p) */
+                @media (min-width: 1920px) and (max-width: 2559px) {
+                    .sidebar {
+                        width: clamp(480px, 29vw, 600px);
+                        padding: clamp(3.5rem, 4.5vw, 5.5rem) clamp(2.5rem, 3.5vw, 4.5rem);
+                    }
+
+                    .logo h1 {
+                        font-size: clamp(1.1rem, 1.3vw, 1.6rem);
+                    }
+
+                    .nav-list {
+                        gap: clamp(1rem, 1.8vh, 1.8rem);
+                    }
+
+                    .nav-item {
+                        font-size: clamp(1.1rem, 1.2vw, 1.35rem);
+                        padding: clamp(0.7rem, 0.9vh, 1rem) 0;
+                    }
+
+                    .background-number {
+                        font-size: clamp(14rem, 16vw, 20rem);
+                    }
+                }
+
+                /* Large Desktop (1440px and above) */
+                @media (min-width: 1440px) and (max-width: 1919px) {
+                    .sidebar {
+                        width: clamp(420px, 28vw, 550px);
+                        padding: clamp(3rem, 4vw, 5rem) clamp(2.5rem, 3.5vw, 4rem);
+                    }
+
+                    .logo h1 {
+                        font-size: clamp(1rem, 1.2vw, 1.4rem);
+                    }
+
+                    .nav-item {
+                        font-size: clamp(1.05rem, 1.15vw, 1.3rem);
+                    }
+
+                    .background-number {
+                        font-size: clamp(12rem, 15vw, 18rem);
+                    }
+                }
+
+                /* Tablet (1024px and below) */
+                @media (max-width: 1024px) {
+                    .sidebar {
+                        width: 300px;
+                        padding: 2.5rem 2rem;
+                    }
+
+                    .logo h1 {
+                        font-size: 0.9rem;
+                    }
+
+                    .nav-item {
+                        font-size: 0.95rem;
+                    }
+
+                    .background-number {
+                        font-size: 10rem;
+                    }
+                }
+
+                /* Tablet Portrait (768px and below) - Still 100vh */
                 @media (max-width: 768px) {
-                    .services-search-layout {
-                        flex-direction: column;
+                    .services-layout {
+                        flex-direction: row;
+                        height: 100vh;
+                    }
+                    
+                    .sidebar {
+                        width: 280px;
+                        height: 100vh;
+                        padding: 2rem 1.5rem;
                         overflow-y: auto;
                     }
-                    .sidebar {
-                        width: calc(100% - 20px);
-                        margin: 10px;
-                        height: auto;
-                        max-height: none;
-                        padding: 1.5rem;
+
+                    .logo {
+                        margin-top: 0;
+                        margin-bottom: 2rem;
                     }
-                    .main-content {
-                        width: 100%;
-                        height: auto;
-                        padding: 0;
+
+                    .logo h1 {
+                        font-size: 0.85rem;
                     }
-                    .image-card {
-                        height: auto;
-                        min-height: 400px;
-                        margin: 10px;
-                        width: calc(100% - 20px);
+
+                    .nav-list {
+                        margin-top: 0;
+                        gap: 0.8rem;
                     }
-                    .image-frame {
-                        aspect-ratio: 16/9;
-                        flex: none;
-                        height: 250px;
+
+                    .nav-item {
+                        font-size: 0.9rem;
+                        padding: 0.5rem 0;
+                    }
+
+                    .background-number {
+                        font-size: 7rem;
+                        bottom: 1rem;
+                    }
+
+                    .main-area {
+                        flex: 1;
+                        height: 100vh;
+                    }
+
+                    .image-label {
+                        font-size: 0.75rem;
+                        padding: 0.5rem 1rem;
+                    }
+
+                    .follow-us {
+                        font-size: 0.75rem;
+                        padding: 0.5rem 0.85rem;
                     }
                 }
 
+                /* Mobile (480px and below) - Stylish Background Image with Overlay */
                 @media (max-width: 480px) {
+                    .services-layout {
+                        flex-direction: column;
+                        height: 100vh;
+                        overflow: hidden;
+                        position: relative;
+                    }
+
+                    /* Image as Full Background */
+                    .main-area {
+                        position: absolute;
+                        inset: 0;
+                        width: 100vw;
+                        height: 100vh;
+                        z-index: 1;
+                    }
+
+                    .image-container {
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                    .main-image {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+
+                    /* Dark Gradient Overlay */
+                    .main-area::after {
+                        content: '';
+                        position: absolute;
+                        inset: 0;
+                        background: linear-gradient(
+                            180deg,
+                            rgba(0, 0, 0, 0.85) 0%,
+                            rgba(0, 0, 0, 0.7) 40%,
+                            rgba(0, 0, 0, 0.5) 70%,
+                            rgba(0, 0, 0, 0.8) 100%
+                        );
+                        pointer-events: none;
+                        z-index: 2;
+                    }
+
+                    /* Sidebar as Glassy Overlay Card */
                     .sidebar {
+                        position: relative;
+                        z-index: 10;
+                        width: calc(100% - 2rem);
+                        height: auto;
+                        max-height: 100vh;
+                        margin: 1rem;
+                        padding: 1.5rem 1.25rem;
+                        background: rgba(0, 0, 0, 0.15);
+                        backdrop-filter: blur(80px) saturate(180%);
+                        -webkit-backdrop-filter: blur(80px) saturate(180%);
+                        border-radius: 24px;
+                        border: 1px solid rgba(255, 255, 255, 0.25);
+                        box-shadow: 
+                            0 8px 32px rgba(0, 0, 0, 0.5),
+                            0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                            0 1px 0 rgba(255, 255, 255, 0.2) inset;
+                        overflow: visible;
+                        display: flex;
+                        flex-direction: column;
+                    }
+
+                    .logo {
+                        margin-top: 0;
+                        margin-bottom: 1.5rem;
+                        text-align: center;
+                    }
+
+                    .logo h1 {
+                        font-size: 0.8rem;
+                        letter-spacing: 0.1em;
+                        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+                    }
+
+                    .logo h1 div {
+                        margin: 0.05rem 0;
+                    }
+
+                    .nav-list {
+                        gap: 0.5rem;
+                        margin-top: 0;
+                        margin-bottom: 1rem;
+                        overflow: visible;
+                        flex: none;
+                    }
+
+                    .nav-item {
+                        font-size: 0.8rem;
+                        padding: 0.4rem 0;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+                    }
+                    .nav-item:hover,
+                    .nav-item.active {
+                        color: #ffffff !important;
+                        border-bottom-color: rgba(142, 139, 150, 0.4);
+                        padding-left: 0.5rem;
+                    }
+
+                    .background-number {
+                        font-size: 4.5rem;
+                        bottom: 0.5rem;
+                        opacity: 0.15;
+                        color: rgba(255, 255, 255, 0.15);
+                    }
+
+                    /* Hide image labels on mobile overlay */
+                    .image-label {
+                        display: none;
+                    }
+
+                    .follow-us {
+                        position: fixed;
+                        bottom: 1rem;
+                        right: 1rem;
+                        z-index: 100;
+                        font-size: 0.7rem;
+                        padding: 0.5rem 0.8rem;
+                        background: rgba(0, 0, 0, 0.85);
+                        backdrop-filter: blur(15px);
+                        border-radius: 12px;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+                    }
+                }
+
+                /* Extra Small Mobile (360px and below) */
+                @media (max-width: 360px) {
+                    .sidebar {
+                        margin: 0.75rem;
                         padding: 1.25rem 1rem;
+                        border-radius: 16px;
                     }
-                    .logo-title {
-                        font-size: 1.2rem;
+
+                    .logo h1 {
+                        font-size: 0.7rem;
                     }
-                    .image-card {
-                        padding: 1rem;
+
+                    .nav-item {
+                        font-size: 0.75rem;
+                        padding: 0.35rem 0;
                     }
-                    .description-area {
-                        padding: 0.8rem 1rem;
-                    }
-                    .image-frame {
-                        height: 200px;
+
+                    .background-number {
+                        font-size: 4rem;
                     }
                 }
             `}</style>
