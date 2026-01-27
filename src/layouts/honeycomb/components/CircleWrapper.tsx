@@ -44,7 +44,7 @@ const CircleWrapper = ({
     // Apply oscillation to inner ref (currently disabled for performance)
     useOscillation(innerRef, oscillationParams, false);
 
-    // Entrance animation
+    // Entrance animation - smooth card-dealing effect for default variant
     useEffect(() => {
         if (!outerRef.current) return;
 
@@ -52,7 +52,7 @@ const CircleWrapper = ({
             const zIndex = navCircleIds.includes(circle.id) ? 20 : 10;
 
             if (variant === "default") {
-                // Set initial state: off-screen top, invisible
+                // Set initial state: off-screen top, invisible (like rummy cards)
                 gsap.set(outerRef.current, {
                     x: targetX,
                     y: -window.innerHeight, // Start from above the screen
@@ -65,12 +65,12 @@ const CircleWrapper = ({
                     zIndex
                 });
 
-                // Animate entrance
+                // Animate entrance - smooth fall one by one
                 gsap.to(outerRef.current, {
                     y: targetY,
                     opacity: 1,
                     duration: 0.8,
-                    delay: index * 0.1, // Stagger by index
+                    delay: index * 0.08, // Stagger by index (faster than before)
                     ease: "power2.out"
                 });
             } else {
@@ -92,49 +92,51 @@ const CircleWrapper = ({
         return () => ctx.revert();
     }, [animationKey, targetX, targetY, circleSize, index, circle.id, navCircleIds, variant]);
 
-    // Optimized GSAP animations with consolidated operations
+    // Optimized GSAP animations - removed for default variant
     useLayoutEffect(() => {
         if (!outerRef.current || !innerRef.current) return;
 
         const ctx = gsap.context(() => {
             const zIndex = navCircleIds.includes(circle.id) ? 20 : 10;
 
-            // State updates - instant transitions
-            if (expandedId) {
-                // All circles get same treatment when any is expanded
-                gsap.to(outerRef.current, {
-                    opacity: 0.5,
-                    scale: 0.9,
-                    z: -50,
-                    y: targetY + 50,
-                    x: targetX,
-                    zIndex,
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            } else {
-                // Normal state - position outer ref, let CSS handle inner oscillation
-                gsap.to(outerRef.current, {
+            if (variant === "default") {
+                // No animations for default variant - just update position/size immediately
+                gsap.set(outerRef.current, {
                     x: targetX,
                     y: targetY,
                     width: circleSize,
                     height: circleSize,
                     opacity: 1,
                     scale: 1,
-                    z: 0,
                     rotation: 0,
                     filter: "blur(0px)",
-                    zIndex,
-                    duration: 0.3,
-                    ease: "power2.out",
-                    // Don't override inner element's CSS animations
-                    onComplete: () => {
-                        if (innerRef.current && variant === 'default') {
-                            // Ensure CSS animation can run by clearing any GSAP transforms on inner
-                            gsap.set(innerRef.current, { clearProps: "transform" });
-                        }
-                    }
+                    zIndex
                 });
+            } else {
+                // Keep animations for non-default variants (olympic)
+                if (expandedId) {
+                    gsap.to(outerRef.current, {
+                        opacity: 0.3,
+                        scale: 0.95,
+                        zIndex,
+                        duration: 0.25,
+                        ease: "power2.out"
+                    });
+                } else {
+                    gsap.to(outerRef.current, {
+                        x: targetX,
+                        y: targetY,
+                        width: circleSize,
+                        height: circleSize,
+                        opacity: 1,
+                        scale: 1,
+                        rotation: 0,
+                        filter: "blur(0px)",
+                        zIndex,
+                        duration: 0.25,
+                        ease: "power2.out"
+                    });
+                }
             }
         });
 

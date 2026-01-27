@@ -1,8 +1,8 @@
 "use client";
 
-import { memo, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { memo, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { CircleData } from "@/data/circleData";
 import CircleContent from "./CircleContent";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -15,9 +15,9 @@ interface CirclePopupProps {
 
 const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) => {
     const isMobile = useIsMobile();
+    const [topOffset, setTopOffset] = useState(0);
 
     useEffect(() => {
-        // Optimized scroll lock
         const originalOverflow = document.body.style.overflow;
         const originalTouchAction = document.body.style.touchAction;
 
@@ -30,101 +30,92 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
         };
     }, []);
 
-    // Instant rendering - no animations
-    const backdropTransition = { duration: 0 };
-    const cardTransition = { duration: 0 };
+    // Calculate top offset to avoid overlapping header text
+    useEffect(() => {
+        const calculateTopOffset = () => {
+            // Try to find the header/navbar text element
+            const header = document.querySelector('header h1');
+            if (header) {
+                const rect = header.getBoundingClientRect();
+                // Set top to be 6px below the header text
+                setTopOffset(rect.bottom + 6);
+            }
+        };
+
+        calculateTopOffset();
+        // Recalculate on resize in case header position changes
+        window.addEventListener('resize', calculateTopOffset);
+        return () => window.removeEventListener('resize', calculateTopOffset);
+    }, []);
 
     return (
-        <div className="fixed inset-0 z-[99990] flex items-start justify-center pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-            {/* Instant Backdrop */}
+        <div
+            className="fixed z-[99990] flex items-center justify-center p-0 md:p-4"
+            style={{
+                top: `${topOffset}px`,
+                left: 0,
+                right: 0,
+                bottom: 0,
+            }}
+        >
+            {/* Backdrop */}
             <motion.div
-                initial={{ opacity: 1 }}
+                initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={backdropTransition}
-                className={`absolute inset-0 pointer-events-auto ${isOlympic ? 'bg-black/90' : 'bg-background/95 md:bg-background/80'} ${isMobile ? 'backdrop-blur-none' : 'backdrop-blur-md'
-                    }`}
+                transition={{ duration: 0.2 }}
+                className={`absolute inset-0 ${isOlympic ? 'bg-black/90' : 'bg-black/60 md:bg-background/80'} ${isMobile ? '' : 'backdrop-blur-md'}`}
                 onClick={onClose}
                 style={{
-                    willChange: 'opacity',
                     WebkitBackdropFilter: isMobile ? 'none' : 'blur(8px)',
-                    transform: 'translate3d(0, 0, 0)',
-                    backfaceVisibility: 'hidden'
                 }}
             />
 
-            {/* Instant Card */}
+            {/* Card Popup - Mobile optimized */}
             <motion.div
-                layoutId={undefined}
-                className={`relative w-full md:max-w-4xl h-full rounded-2xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto border-x-0 md:border border-white/10`}
-                transition={cardTransition}
+                initial={{ opacity: 0, y: isMobile ? 50 : 0, scale: isMobile ? 1 : 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: isMobile ? 50 : 0, scale: isMobile ? 1 : 0.95 }}
+                transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30
+                }}
+                className={`relative flex flex-col overflow-hidden pointer-events-auto ${isMobile
+                    ? 'w-[calc(100%-2rem)] mx-4 h-[calc(100%-2rem)] rounded-3xl shadow-2xl border border-white/10'
+                    : 'w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl border border-white/10'
+                    }`}
                 style={{
                     backgroundColor: isOlympic ? '#000000' : 'hsl(var(--card))',
-                    marginTop: isMobile ? '130px' : '90px',
-                    height: isMobile ? 'calc(100dvh - 160px)' : 'calc(100vh - 120px)',
-                    willChange: 'transform, height',
-                    transform: 'translate3d(0, 0, 0)',
-                    WebkitTransform: 'translate3d(0, 0, 0)',
-                    backfaceVisibility: 'hidden',
-                    perspective: 1000,
-                    contain: 'layout style paint'
+                    maxHeight: isMobile ? 'calc(100dvh - 2rem)' : '85vh',
                 }}
             >
-                {/* Background decorative elements */}
-                {!isOlympic && <div className="absolute inset-0 neu-circle opacity-100 pointer-events-none" />}
-
-                {/* Instant Header */}
-                <motion.div
-                    initial={{ opacity: 1, y: 0 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0 }}
-                    className={`relative z-50 flex items-center py-2 px-4 md:py-3 md:px-6 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-white/5 bg-card/50 backdrop-blur-sm'
-                        }`}
-                    style={{
-                        willChange: 'opacity, transform',
-                        WebkitTransform: 'translate3d(0, 0, 0)',
-                        transform: 'translate3d(0, 0, 0)',
-                        backfaceVisibility: 'hidden'
-                    }}
-                >
+                {/* Header */}
+                <div className={`flex items-center justify-between px-4 py-3 md:px-6 md:py-4 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-border/50 bg-card'
+                    }`}>
+                    <h2 className={`text-lg md:text-xl font-semibold ${isOlympic ? 'text-white' : 'text-foreground'
+                        }`} style={isOlympic ? { textShadow: '0 0 10px rgba(255, 255, 255, 0.5)' } : {}}>
+                        {circle.label}
+                    </h2>
                     <button
                         onClick={onClose}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 px-3 ${isOlympic
-                            ? "bg-white text-black hover:bg-white/90"
-                            : "bg-primary text-primary-foreground hover:bg-primary/90"
+                        className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isOlympic
+                            ? 'bg-white/10 hover:bg-white/20 text-white'
+                            : 'bg-muted hover:bg-muted/80 text-foreground'
                             }`}
-                        style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.4)' } : {}}
+                        aria-label="Close"
                     >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back
+                        <X className="w-5 h-5" />
                     </button>
-                    <div className={`ml-4 font-semibold text-base ${isOlympic ? 'text-white' : 'text-primary/80'}`}
-                        style={isOlympic ? { textShadow: '0 0 10px rgba(255, 255, 255, 0.5)' } : {}}>
-                        {circle.label}
-                    </div>
-                </motion.div>
+                </div>
 
-                {/* Scrollable Content - Ultra-fast animation */}
-                <motion.div
-                    initial={{ opacity: 1, y: 0 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        duration: isMobile ? 0.14 : 0.18,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                    className={`relative flex-1 overflow-y-auto z-10 overscroll-contain p-4 pt-1 md:p-8 md:pt-1 pb-10 ${isOlympic ? 'olympic-scrollbar' : 'custom-scrollbar'
-                        }`}
-                    style={{
-                        willChange: 'opacity, transform',
-                        WebkitTransform: 'translate3d(0, 0, 0)',
-                        transform: 'translate3d(0, 0, 0)',
-                        backfaceVisibility: 'hidden'
-                    }}
-                >
+                {/* Content */}
+                <div className={`flex-1 overflow-y-auto overscroll-contain px-4 py-4 md:px-8 md:py-6 ${isOlympic ? 'olympic-scrollbar' : 'custom-scrollbar'
+                    }`}>
                     <MemoizedCircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} />
-                </motion.div>
+                </div>
             </motion.div>
-        </div >
+        </div>
     );
 };
 

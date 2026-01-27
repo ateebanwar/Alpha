@@ -109,9 +109,11 @@ const CircleGrid = ({
     const circlePositions = useMemo(() => {
         const positions: Array<{ id: string; x: number; y: number; size: number; variant: "default" | "olympic"; color?: string }> = [];
 
-        // --- SHARED PARAMETERS ---
+        // --- ENHANCED RESPONSIVE PARAMETERS ---
+        const isUltraSmall = windowSize.width < 375;
         const isMobile = windowSize.width < 640;
         const isTablet = windowSize.width >= 640 && windowSize.width < 1024;
+        const isLandscape = windowSize.height < windowSize.width && windowSize.height < 600;
 
         // --- HEADER HEIGHT CONSTANTS (Sync with DefaultLayout) ---
         const HEADER_HEIGHTS = { mobile: 120, tablet: 80, desktop: 80 };
@@ -119,22 +121,28 @@ const CircleGrid = ({
         const availableHeight = windowSize.height - currentHeaderHeight;
 
         // --- OLYMPIC CALCULATIONS ---
-        const oWidthConstraint = (windowSize.width - (isMobile ? 20 : 80)) / 3.2;
+        const oPadding = isUltraSmall ? 10 : (isMobile ? 20 : 80);
+        const oWidthConstraint = (windowSize.width - oPadding) / 3.2;
         const oHeightConstraint = (availableHeight - (isMobile ? 40 : 100)) / 2.2;
         const oDeterminedSize = Math.min(oWidthConstraint, oHeightConstraint);
-        const oSize = isMobile ? Math.max(oDeterminedSize, 110) : Math.max(oDeterminedSize, 80);
+        // Better min/max bounds for Olympic circles
+        const oSize = isUltraSmall ? Math.max(oDeterminedSize, 90) : (isMobile ? Math.max(oDeterminedSize, 110) : Math.max(oDeterminedSize, 80));
         const oGridCellSize = oSize / 2;
-        const oHorizontalGap = isMobile ? 10 : 20;
+        const oHorizontalGap = isUltraSmall ? 8 : (isMobile ? 10 : 20);
 
         // --- STATIC CALCULATIONS ---
         let sCols = 6;
         let sPadding = 30;
         let sSafetyBuffer = 80;
 
-        if (isMobile) {
-            sCols = 4;
+        if (isUltraSmall) {
+            sCols = 3;
+            sPadding = 10;
+            sSafetyBuffer = 30;
+        } else if (isMobile) {
+            sCols = isLandscape ? 5 : 4;
             sPadding = 15;
-            sSafetyBuffer = 40;
+            sSafetyBuffer = isLandscape ? 20 : 40;
         } else if (isTablet) {
             sCols = 5;
             sPadding = 25;
@@ -142,12 +150,26 @@ const CircleGrid = ({
         }
 
         const availableWidth = windowSize.width - (sPadding * 2);
-        const sizeByWidth = (availableWidth / sCols) - 15;
+        const sizeByWidth = (availableWidth / sCols) - (isUltraSmall ? 8 : 15);
         const numRows = Math.ceil(sortedCircleData.length / sCols);
         const sizeByHeight = (availableHeight - sSafetyBuffer) / (numRows * 0.9);
 
-        // Responsive size with min/max bounds
-        const sSize = Math.min(Math.max(Math.min(sizeByWidth, sizeByHeight), 60), 160);
+        // Improved responsive size with better min/max bounds
+        let minSize = 60;
+        let maxSize = 160;
+
+        if (isUltraSmall) {
+            minSize = 70;
+            maxSize = 100;
+        } else if (isMobile && isLandscape) {
+            minSize = 50;
+            maxSize = 80;
+        } else if (isMobile) {
+            minSize = 65;
+            maxSize = 120;
+        }
+
+        const sSize = Math.min(Math.max(Math.min(sizeByWidth, sizeByHeight), minSize), maxSize);
 
         // Staggered layout parameters
         const isStaggered = windowSize.width > 640;
@@ -329,17 +351,10 @@ const CircleGrid = ({
                         </div>
                     </div>
                 ) : (
-                    <motion.div
-                        animate={expandedId ? "expanded" : "normal"}
-                        variants={{
-                            normal: { translateZ: 0, scale: 1, y: 0, opacity: 1 },
-                            expanded: { translateZ: -50, scale: 0.9, y: 50, opacity: 0.5 }
-                        }}
-                        transition={{ duration: 0 }}
+                    <div
                         className="absolute inset-0"
                         style={{
                             pointerEvents: expandedId ? 'none' : 'auto',
-                            transformStyle: 'preserve-3d'
                         }}
                     >
                         <div
@@ -349,19 +364,6 @@ const CircleGrid = ({
                                 minHeight: "100dvh"
                             }}
                         >
-                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                <motion.div
-                                    className="absolute w-[500px] h-[500px] rounded-full opacity-20"
-                                    style={{
-                                        background: "radial-gradient(circle, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
-                                        top: "10%",
-                                        left: "5%",
-                                    }}
-                                    animate={false}
-                                    transition={{ duration: 0 }}
-                                />
-                            </div>
-
                             {circlePositions.map((pos, index) => (
                                 <CircleWrapper
                                     key={pos.id}
@@ -380,7 +382,7 @@ const CircleGrid = ({
                                 />
                             ))}
                         </div>
-                    </motion.div>
+                    </div>
                 )
             )}
         </div>
