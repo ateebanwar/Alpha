@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { circleData } from "@/data/circleData";
 import InteractiveCircle from "@/layouts/shared/InteractiveCircle";
 import CircleWrapper from "./CircleWrapper";
@@ -13,12 +13,14 @@ const OlympicChunk = ({
     children,
     index,
     scrollY,
-    height
+    height,
+    isVisible
 }: {
     children: React.ReactNode;
     index: number;
     scrollY: any;
     height: number;
+    isVisible: boolean;
 }) => {
     return (
         <div
@@ -29,7 +31,9 @@ const OlympicChunk = ({
                 width: '100%',
                 scrollSnapAlign: 'start',
                 zIndex: index + 10,
-                pointerEvents: 'none',
+                pointerEvents: isVisible ? 'none' : 'none',
+                opacity: isVisible ? 1 : 0,
+                transition: 'opacity 0.3s ease-out',
             }}
         >
             {children}
@@ -54,6 +58,8 @@ const CircleGrid = ({
     const [isClient, setIsClient] = useState(false);
     // Animation key to trigger entrance animation on layout changes
     const [animationKey, setAnimationKey] = useState(0);
+    // Track visible chunks for Olympic layout
+    const [visibleChunks, setVisibleChunks] = useState<Set<number>>(new Set([0]));
 
     useEffect(() => {
         setIsClient(true);
@@ -229,9 +235,34 @@ const CircleGrid = ({
     const HEADER_HEIGHTS_UI = { mobile: 120, desktop: 80 };
     const currentHeaderHeight = isMobileUI ? HEADER_HEIGHTS_UI.mobile : HEADER_HEIGHTS_UI.desktop;
 
+    // Track scroll position and update visible chunks for Olympic layout
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        if (layoutMode === "olympic") {
+            const availableHeight = windowSize.height - currentHeaderHeight;
+            const totalChunks = Math.ceil(sortedCircleData.length / 5);
+            const newVisibleChunks = new Set<number>();
+
+            // Calculate which chunk is currently active based on scroll position
+            const currentChunkIndex = Math.floor(latest / availableHeight);
+
+            // Show current chunk and next chunk, hide all previous chunks
+            for (let i = 0; i < totalChunks; i++) {
+                if (i >= currentChunkIndex) {
+                    newVisibleChunks.add(i);
+                }
+            }
+
+            setVisibleChunks(newVisibleChunks);
+        }
+    });
+
     useEffect(() => {
         if (layoutMode === "static" && containerRef.current) {
             containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        // Reset visible chunks when entering Olympic mode
+        if (layoutMode === "olympic") {
+            setVisibleChunks(new Set([0]));
         }
     }, [layoutMode]);
 
@@ -261,6 +292,7 @@ const CircleGrid = ({
                         >
                             {olympicChunks.map((chunk, chunkIndex) => {
                                 const availableHeight = windowSize.height - currentHeaderHeight;
+                                const isVisible = visibleChunks.has(chunkIndex);
 
                                 return (
                                     <OlympicChunk
@@ -268,11 +300,12 @@ const CircleGrid = ({
                                         index={chunkIndex}
                                         scrollY={scrollY}
                                         height={availableHeight}
+                                        isVisible={isVisible}
                                     >
                                         {chunk.map((pos, idxInChunk) => {
                                             const globalIndex = chunkIndex * 5 + idxInChunk;
                                             return (
-                                                <div key={pos.id} style={{ pointerEvents: 'auto' }}>
+                                                <div key={pos.id} style={{ pointerEvents: isVisible ? 'auto' : 'none' }}>
                                                     <CircleWrapper
                                                         circle={sortedCircleData[globalIndex]}
                                                         index={globalIndex}
