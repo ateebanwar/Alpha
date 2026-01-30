@@ -11,9 +11,10 @@ interface CirclePopupProps {
     circle: CircleData;
     onClose: () => void;
     isOlympic?: boolean;
+    isGlassy?: boolean; // For 3D carousel natural glass effect
 }
 
-const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) => {
+const CirclePopup = ({ circle, onClose, isOlympic = false, isGlassy = false }: CirclePopupProps) => {
     const isMobile = useIsMobile();
     const [topOffset, setTopOffset] = useState(0);
 
@@ -64,14 +65,14 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className={`absolute inset-0 ${isOlympic ? 'bg-black/90' : 'bg-black/60 md:bg-background/80'} ${isMobile ? '' : 'backdrop-blur-md'}`}
+                className={`absolute inset-0 ${isOlympic ? 'bg-black/90' : isGlassy ? 'bg-black/60' : 'bg-black/60 md:bg-background/80'} ${isMobile || isGlassy ? '' : 'backdrop-blur-md'}`}
                 onClick={onClose}
                 style={{
-                    WebkitBackdropFilter: isMobile ? 'none' : 'blur(8px)',
+                    WebkitBackdropFilter: (isMobile || isGlassy) ? 'none' : 'blur(8px)',
                 }}
             />
 
-            {/* Card Popup - Mobile optimized */}
+            {/* Card Popup - Mobile optimized with Glassy Effect */}
             <motion.div
                 initial={{ opacity: 0, y: isMobile ? 50 : 0, scale: isMobile ? 1 : 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -82,19 +83,23 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                     damping: 30
                 }}
                 className={`relative flex flex-col overflow-hidden pointer-events-auto ${isMobile
-                    ? 'w-[calc(100%-2rem)] mx-4 h-[calc(100%-2rem)] rounded-3xl shadow-2xl border border-white/10'
-                    : 'w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl border border-white/10'
+                    ? 'w-[calc(100%-2rem)] mx-4 h-[calc(100%-2rem)] rounded-3xl shadow-2xl border'
+                    : 'w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl border'
                     }`}
                 style={{
-                    backgroundColor: isOlympic ? '#000000' : 'hsl(var(--card))',
+                    backgroundColor: isOlympic ? '#000000' : isGlassy ? 'transparent' : 'hsl(var(--card))',
+                    backdropFilter: isGlassy ? 'blur(12px) saturate(180%)' : 'none',
+                    WebkitBackdropFilter: isGlassy ? 'blur(12px) saturate(180%)' : 'none',
+                    borderColor: isOlympic ? 'rgba(255, 255, 255, 0.1)' : isGlassy ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.1)',
+                    boxShadow: isOlympic ? '0 8px 32px rgba(0, 0, 0, 0.37)' : isGlassy ? '0 8px 32px rgba(31, 38, 135, 0.1)' : undefined,
                     maxHeight: isMobile ? 'calc(100dvh - 2rem)' : '85vh',
                 }}
             >
                 {/* Header */}
-                <div className={`flex items-center justify-between px-4 py-3 md:px-6 md:py-4 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : 'border-border/50 bg-card'
+                <div className={`flex items-center justify-between px-4 py-3 md:px-6 md:py-4 shrink-0 border-b ${isOlympic ? 'border-white/10 bg-[#000000]' : isGlassy ? 'border-white/20' : 'border-border/50 bg-card'
                     }`}>
-                    <h2 className={`text-lg md:text-xl font-semibold ${isOlympic ? 'text-white' : 'text-foreground'
-                        }`} style={isOlympic ? { textShadow: '0 0 10px rgba(255, 255, 255, 0.5)' } : {}}>
+                    <h2 className={`text-lg md:text-xl font-semibold ${isOlympic ? 'text-white' : isGlassy ? 'text-white' : 'text-foreground'
+                        }`} style={isOlympic ? { textShadow: '0 0 10px rgba(255, 255, 255, 0.5)' } : isGlassy ? { textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' } : {}}>
                         {circle.label}
                     </h2>
                     <button
@@ -112,7 +117,7 @@ const CirclePopup = ({ circle, onClose, isOlympic = false }: CirclePopupProps) =
                 {/* Content */}
                 <div className={`flex-1 overflow-y-auto overscroll-contain px-4 py-4 md:px-8 md:py-6 ${isOlympic ? 'olympic-scrollbar' : 'custom-scrollbar'
                     }`}>
-                    <MemoizedCircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} />
+                    <MemoizedCircleContent circle={circle} isMobile={isMobile} isOlympic={isOlympic} isGlassy={isGlassy} />
                 </div>
             </motion.div>
         </div>
@@ -124,7 +129,8 @@ const MemoizedCircleContent = memo(CircleContent, (prevProps, nextProps) => {
     return (
         prevProps.circle.id === nextProps.circle.id &&
         prevProps.isMobile === nextProps.isMobile &&
-        prevProps.isOlympic === nextProps.isOlympic
+        prevProps.isOlympic === nextProps.isOlympic &&
+        prevProps.isGlassy === nextProps.isGlassy
     );
 });
 

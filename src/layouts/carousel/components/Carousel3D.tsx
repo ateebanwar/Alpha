@@ -20,7 +20,7 @@ const colorMap: Record<string, string> = {
     muted: "from-gray-500 to-slate-400",
 };
 
-export default function Carousel3D() {
+export default function Carousel3D({ onCardClick }: { onCardClick?: (id: string) => void }) {
     const componentRef = useRef<HTMLDivElement>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -159,7 +159,12 @@ export default function Carousel3D() {
                     <div ref={wrapRef} data-carousel="wrap" className="carousel_wrap w-dyn-list">
                         <div role="list" className="carousel_list w-dyn-items">
                             {SLIDES.map((slide, index) => (
-                                <div key={index} role="listitem" className="carousel_item w-dyn-item">
+                                <div
+                                    key={index}
+                                    role="listitem"
+                                    className="carousel_item w-dyn-item cursor-pointer"
+                                    onClick={() => onCardClick?.(slide.id)}
+                                >
                                     {slide.img ? (
                                         <img alt={slide.title} src={slide.img} className="carousel_img" />
                                     ) : (

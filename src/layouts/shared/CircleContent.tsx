@@ -5,13 +5,16 @@ interface CircleContentProps {
     circle: CircleData;
     isMobile?: boolean;
     isOlympic?: boolean;
+    isGlassy?: boolean;
 }
 
-const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleContentProps) => {
+const CircleContent = ({ circle, isMobile = false, isOlympic = false, isGlassy = false }: CircleContentProps) => {
     const Icon = circle.icon;
 
     const textBlurGlow = isOlympic ? {
         textShadow: '0 0 12px rgba(255, 255, 255, 0.4)',
+    } : isGlassy ? {
+        textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3)',
     } : {};
 
     return (
@@ -44,10 +47,14 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
                 }}
             >
                 <div
-                    className={`w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-4 rounded-full ${isOlympic ? "border border-primary/40 bg-primary/10" : "neu-circle"
+                    className={`w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-4 rounded-full ${isOlympic ? "border border-primary/40 bg-primary/10" : isGlassy ? "border border-white/20" : "neu-circle"
                         }`}
                     style={isOlympic ? {
                         boxShadow: '0 0 20px rgba(var(--primary-rgb), 0.2)'
+                    } : isGlassy ? {
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)'
                     } : {}}
                 >
                     <div style={isOlympic ? { filter: 'drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.5))' } : {}}>
@@ -57,14 +64,14 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
                     </div>
                 </div>
                 <h2
-                    className={`text-xl md:text-2xl font-semibold mb-2 ${isOlympic ? "text-white" : "text-foreground"}`}
+                    className={`text-xl md:text-2xl font-semibold mb-2 ${isOlympic ? "text-white" : isGlassy ? "text-white" : "text-foreground"}`}
                     style={textBlurGlow}
                 >
                     {circle.content.title}
                 </h2>
                 <p
-                    className={`text-sm md:text-base max-w-md mx-auto ${isOlympic ? "text-white/70" : "text-muted-foreground"}`}
-                    style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.2)' } : {}}
+                    className={`text-sm md:text-base max-w-md mx-auto ${isOlympic ? "text-white/70" : isGlassy ? "text-white/90" : "text-muted-foreground"}`}
+                    style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.2)' } : isGlassy ? { textShadow: '0 2px 6px rgba(0, 0, 0, 0.6)' } : {}}
                 >
                     {circle.content.description}
                 </p>
@@ -98,11 +105,16 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
                                     duration: isMobile ? 0.15 : 0.2,
                                     ease: [0.4, 0.0, 0.2, 1]
                                 }}
-                                className={`flex items-start gap-3 p-4 rounded-xl ${isOlympic ? "border border-white/10 bg-white/5" : "neu-tile"
+                                className={`flex items-start gap-3 p-4 rounded-xl ${isOlympic ? "border border-white/10 bg-white/5" : isGlassy ? "border border-white/20 bg-white/5" : "neu-tile"
                                     }`}
                                 style={{
                                     willChange: 'opacity, transform',
-                                    WebkitTransform: 'translate3d(0, 0, 0)'
+                                    WebkitTransform: 'translate3d(0, 0, 0)',
+                                    ...(isGlassy && {
+                                        backdropFilter: 'blur(10px)',
+                                        WebkitBackdropFilter: 'blur(10px)',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                                    })
                                 }}
                             >
                                 {ItemIcon && (
@@ -117,15 +129,15 @@ const CircleContent = ({ circle, isMobile = false, isOlympic = false }: CircleCo
                                 )}
                                 <div className="flex-1 min-w-0">
                                     <p
-                                        className={`font-medium text-sm md:text-base truncate ${isOlympic ? "text-white" : "text-foreground"}`}
-                                        style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.3)' } : {}}
+                                        className={`font-medium text-sm md:text-base truncate ${isOlympic ? "text-white" : isGlassy ? "text-white" : "text-foreground"}`}
+                                        style={isOlympic ? { textShadow: '0 0 8px rgba(255, 255, 255, 0.3)' } : isGlassy ? { textShadow: '0 2px 6px rgba(0, 0, 0, 0.7)' } : {}}
                                     >
                                         {item.label}
                                     </p>
                                     {item.description && (
                                         <p
-                                            className={`text-xs md:text-sm mt-0.5 ${isOlympic ? "text-white/60" : "text-muted-foreground"}`}
-                                            style={isOlympic ? { textShadow: '0 0 5px rgba(255, 255, 255, 0.2)' } : {}}
+                                            className={`text-xs md:text-sm mt-0.5 ${isOlympic ? "text-white/60" : isGlassy ? "text-white/80" : "text-muted-foreground"}`}
+                                            style={isOlympic ? { textShadow: '0 0 5px rgba(255, 255, 255, 0.2)' } : isGlassy ? { textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' } : {}}
                                         >
                                             {item.description}
                                         </p>

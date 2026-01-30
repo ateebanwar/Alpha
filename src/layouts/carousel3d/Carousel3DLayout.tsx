@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, RefObject } from "react";
+import { useState, RefObject, useMemo } from "react";
 import { LAYOUT_REGISTRY } from "@/layouts/core/LayoutRegistry";
+import CirclePopup from "@/layouts/shared/CirclePopup";
+import { getDataForHoneycomb } from "@/data/dataAdapter";
 
 interface Carousel3DLayoutProps {
     navbarTextRef: RefObject<HTMLHeadingElement>;
@@ -17,6 +19,13 @@ export default function Carousel3DLayout({ navbarTextRef, onSwitchLayout }: Caro
 
     // Get Carousel component
     const CarouselComponent = LAYOUT_REGISTRY["3d-carousel"]?.component;
+
+    // Get data for popup
+    const circleData = useMemo(() => getDataForHoneycomb(), []);
+    const activeCircle = useMemo(() =>
+        expandedId ? circleData.find(c => c.id === expandedId) : null,
+        [expandedId, circleData]
+    );
 
     // Helper for button styles (simplified for 3D Layout context)
     const getButtonClassName = (mode: string) => {
@@ -66,16 +75,23 @@ export default function Carousel3DLayout({ navbarTextRef, onSwitchLayout }: Caro
                             expandedId={expandedId}
                             onExpandedChange={setExpandedId}
                             layoutMode="3d-carousel"
+                            onCardClick={setExpandedId}
                         />
                     </div>
                 )}
             </div>
 
-            {/* 3D Layout might need popups? 
-                The original code didn't render CirclePopup for 3d-carousel explicitly in the bottom block, 
-                so relying on inner component logic or no popup.
-                Original 'TargetLayout' (CarouselLayout) prop 'expandedId' suggests it might handle expansion internally.
-            */}
+            {/* Popup Container - Isolated inside 3D Layout */}
+            {activeCircle && (
+                <div id="carousel-3d-layout-container" style={{ position: 'absolute', zIndex: 99999 }}>
+                    <CirclePopup
+                        circle={activeCircle}
+                        onClose={() => setExpandedId(null)}
+                        isOlympic={false}
+                        isGlassy={true}
+                    />
+                </div>
+            )}
         </div>
     );
 }

@@ -11,4 +11,5 @@ export interface LayoutProps {
     expandedId: string | null;
     onExpandedChange: (id: string | null) => void;
     layoutMode?: string; // Optional, for sub-modes like 'olympic' vs 'static' if handled within one module
+    onCardClick?: (id: string) => void; // Optional callback for card clicks in carousel
 }
