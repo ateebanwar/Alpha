@@ -26,12 +26,7 @@ export default function TickerIsolatedLayout({ navbarTextRef, onSwitchLayout }: 
         const baseClasses = "inline-flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap rounded-md text-[10px] xs:text-xs sm:text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 sm:h-10 px-2 sm:px-4 py-2";
 
         if (isActive) {
-            return `${baseClasses} bg-secondary text-secondary-foreground hover:bg-secondary/80`; // Ticker usually light/default theme?
-            // Checking HomeClient: isDark includes 'servicesSearch', 'olympic', '3d-carousel'.
-            // So Ticker is NOT dark?
-            // Line 198: layoutMode === "olympic" || layoutMode === "3d-carousel" || layoutMode === "servicesSearch"
-            // Ticker is NOT in that list. So isDark = false.
-            // Hence using Light mode styles.
+            return `${baseClasses} bg-primary text-primary-foreground hover:bg-primary/90`;
         }
         return `${baseClasses} bg-secondary text-secondary-foreground hover:bg-secondary/80`;
     };
@@ -46,19 +41,19 @@ export default function TickerIsolatedLayout({ navbarTextRef, onSwitchLayout }: 
                 }}
             />
 
-            <header className="fixed left-0 right-0 flex flex-col sm:flex-row items-center pointer-events-none px-4 md:px-8 gap-3 sm:gap-6 z-30 top-[10px] sm:top-[20px] justify-center">
+            <header className="fixed left-0 right-0 flex flex-col sm:flex-row items-center pointer-events-none px-4 md:px-8 gap-3 sm:gap-6 z-30 top-[10px] sm:top-[20px] justify-center transition-all duration-500">
                 <h1
                     ref={navbarTextRef}
-                    className="font-bold tracking-tight pointer-events-none select-none text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center invisible"
+                    className="font-bold tracking-tight pointer-events-none select-none text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center invisible"
                     style={{ textShadow: "none" }}
                 >
-                    <span className="">Alphabet</span>
+                    <span>Alphabet</span>
                     <span className="inline ml-2 text-gradient">
                         Consultancy Services
                     </span>
                 </h1>
 
-                <div className="pointer-events-auto flex items-center backdrop-blur-sm p-1 sm:p-1.5 rounded-full border border-white/10 shadow-lg sm:ml-4 gap-0.5 sm:gap-2 transition-all duration-500 ease-in-out bg-background/50 max-w-full">
+                <div className="pointer-events-auto flex items-center backdrop-blur-md p-1 sm:p-1.5 rounded-full border border-white/10 shadow-lg sm:ml-4 gap-0.5 sm:gap-2 transition-all duration-500 ease-in-out bg-background/50 max-w-full">
                     <button onClick={() => onSwitchLayout("static")} className={getButtonClassName("static")}>Default</button>
                     <button onClick={() => onSwitchLayout("olympic")} className={getButtonClassName("olympic")}>Olympic</button>
                     <button onClick={() => onSwitchLayout("3d-carousel")} className={getButtonClassName("3d-carousel")}>3D View</button>
