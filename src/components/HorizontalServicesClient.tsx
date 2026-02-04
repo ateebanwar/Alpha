@@ -505,6 +505,51 @@ const recentWorks = [
             { label: "SECURITY", value: "100%" },
             { label: "COMPLIANCE", value: "SOC2" }
         ]
+    },
+    {
+        title: "E-commerce Platform",
+        desc: "Built a high-conversion e-commerce platform with advanced product filtering, real-time inventory management, and seamless payment integration. Delivered a lightning-fast checkout experience that boosted sales.",
+        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+        stats: [
+            { label: "CONVERSION", value: "180%" },
+            { label: "REVENUE", value: "+65%" }
+        ]
+    },
+    {
+        title: "Data Analytics Dashboard",
+        desc: "Created an enterprise-grade analytics platform with interactive visualizations and predictive insights. Empowered stakeholders with real-time data to make informed business decisions faster.",
+        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        stats: [
+            { label: "INSIGHTS", value: "Real-time" },
+            { label: "EFFICIENCY", value: "3x" }
+        ]
+    },
+    {
+        title: "Blockchain Solution",
+        desc: "Developed a decentralized application for supply chain transparency using smart contracts. Enabled immutable tracking and verification across multiple stakeholders, reducing fraud significantly.",
+        image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=600&fit=crop",
+        stats: [
+            { label: "TRANSPARENCY", value: "100%" },
+            { label: "FRAUD", value: "-95%" }
+        ]
+    },
+    {
+        title: "IoT Platform",
+        desc: "Engineered an IoT ecosystem connecting thousands of smart devices with edge computing capabilities. Achieved sub-second response times for critical operations and reduced bandwidth usage dramatically.",
+        image: "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=800&h=600&fit=crop",
+        stats: [
+            { label: "DEVICES", value: "50K+" },
+            { label: "LATENCY", value: "<1s" }
+        ]
+    },
+    {
+        title: "DevOps Transformation",
+        desc: "Revolutionized the deployment pipeline with containerization and automated CI/CD workflows. Reduced deployment time from hours to minutes while increasing deployment frequency and stability.",
+        image: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=800&h=600&fit=crop",
+        stats: [
+            { label: "DEPLOY TIME", value: "92%" },
+            { label: "FREQUENCY", value: "10x" }
+        ]
     }
 ];
 
@@ -667,7 +712,8 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     ))}
                 </div>
 
-                {/* RECOGNITIONS Section */}
+                {/* RECOGNITIONS Section - COMMENTED OUT */}
+                {/* 
                 <div className="recognitions-section">
                     <div className="recognitions-header">
                         <span className="recognitions-badge">ACCOLADES</span>
@@ -716,6 +762,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                         ))}
                     </div>
                 </div>
+                */}
             </div>
 
             <style jsx>{`
@@ -852,7 +899,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     flex-direction: column;
                     align-items: center;
                     text-align: center;
-                    background: #000000;
+                    background: #e0e5ec;
                 }
 
                 .works-header {
@@ -868,6 +915,12 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     color: #ff6b35;
                     letter-spacing: 0.2rem;
                     margin-bottom: 1.5rem;
+                    background: #e0e5ec;
+                    padding: 0.6rem 1.5rem;
+                    border-radius: 50px;
+                    box-shadow: 
+                        6px 6px 12px rgba(163, 177, 198, 0.5),
+                        -6px -6px 12px rgba(255, 255, 255, 0.8);
                 }
 
                 .works-title {
@@ -875,15 +928,16 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     font-weight: 900;
                     margin: 0;
                     line-height: 1;
-                    background: linear-gradient(180deg, #ffffff 0%, #444444 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
+                    color: #444444;
                     text-transform: uppercase;
+                    text-shadow: 
+                        2px 2px 4px rgba(255, 255, 255, 0.8),
+                        -2px -2px 4px rgba(163, 177, 198, 0.5);
                 }
 
                 .works-subtitle {
                     font-size: clamp(0.9rem, 2vw, 1.2rem);
-                    color: #888888;
+                    color: #666666;
                     margin-top: 1.5rem;
                     max-width: 600px;
                     margin-left: auto;
@@ -902,12 +956,13 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 }
 
                 .works-card {
-                    background: #0a0a0a;
+                    background: #e0e5ec;
                     border-radius: clamp(20px, 5vw, 40px);
                     padding: clamp(1rem, 3vw, 2rem);
                     position: relative;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+                    box-shadow: 
+                        12px 12px 24px rgba(163, 177, 198, 0.6),
+                        -12px -12px 24px rgba(255, 255, 255, 0.8);
                 }
 
                 .works-card-inner.flex-layout {
@@ -916,9 +971,12 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     gap: clamp(1.5rem, 5vw, 4rem);
                     min-height: auto;
                     padding: clamp(1rem, 3vw, 2.5rem);
-                    background: #111111;
+                    background: #e0e5ec;
                     border-radius: clamp(15px, 4vw, 30px);
                     overflow: hidden;
+                    box-shadow: 
+                        inset 6px 6px 12px rgba(163, 177, 198, 0.4),
+                        inset -6px -6px 12px rgba(255, 255, 255, 0.7);
                 }
 
                 @media (max-width: 1024px) {
@@ -940,7 +998,9 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     max-width: 450px;
                     height: auto;
                     border-radius: 20px;
-                    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+                    box-shadow: 
+                        8px 8px 16px rgba(163, 177, 198, 0.6),
+                        -4px -4px 12px rgba(255, 255, 255, 0.5);
                 }
 
                 .works-text-side {
@@ -961,8 +1021,11 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                 .works-item-title {
                     font-size: clamp(1.5rem, 4vw, 2.5rem);
                     font-weight: 800;
-                    color: #ffffff;
+                    color: #333333;
                     margin: 0;
+                    text-shadow: 
+                        1px 1px 2px rgba(255, 255, 255, 0.8),
+                        -1px -1px 2px rgba(163, 177, 198, 0.4);
                 }
 
                 .recognitions-section {
@@ -1109,7 +1172,7 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
 
                 .works-item-desc {
                     font-size: 1.1rem;
-                    color: #999999;
+                    color: #555555;
                     line-height: 1.6;
                     margin: 0;
                     max-width: 500px;
@@ -1130,11 +1193,14 @@ export default function HorizontalServicesClient({ slug }: { slug: string }) {
                     font-size: clamp(1.5rem, 3vw, 2rem);
                     font-weight: 700;
                     color: #ff6b35;
+                    text-shadow: 
+                        1px 1px 2px rgba(255, 255, 255, 0.8),
+                        -1px -1px 2px rgba(163, 177, 198, 0.3);
                 }
 
                 .stat-label {
                     font-size: 0.75rem;
-                    color: #666666;
+                    color: #333333;
                     letter-spacing: 0.1em;
                     font-weight: 600;
                 }
